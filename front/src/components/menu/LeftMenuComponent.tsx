@@ -39,11 +39,11 @@ const LeftMenuComponent = () => {
           <div className='Block h-100'>
               <h5>Управление складом</h5>
               {
-                  menu.map(e => <>
-                      <h3 className='mt-4 mb-3'>{e.label}</h3>
+                  menu.map(e => <div key={e.label}>
+                      <h3  className='mt-4 mb-3'>{e.label}</h3>
                       {
                           e.elems.map(elem =>
-                          <div className='w-100 ps-2'>
+                          <div key={elem.href} className='w-100 ps-2'>
                             <Button className='w-100 mt-1 text-start' onClick={() => navigate(elem.href)}
                                     variant={location.pathname === elem.href ? 'dark' : 'outline-dark'} >
                                 {elem.name}
@@ -51,7 +51,7 @@ const LeftMenuComponent = () => {
                           </div>
                           )
                       }
-                  </>)
+                  </div>)
               }
           </div>
       </div>
