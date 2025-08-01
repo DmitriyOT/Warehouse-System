@@ -12,7 +12,7 @@ function App() {
               routes.map(e => <Route id={e.path} path={e.path} element={
                   <div className='d-flex'>
                       <LeftMenuComponent/>
-                      <div className='p-3'>
+                      <div className='p-3 w-100'>
                           <e.Component/>
                       </div>
                   </div>} />)

@@ -31,11 +31,10 @@ const menu: Array<{label: string, elems: Array<{name: string, href: string}>}> =
 const LeftMenuComponent = () => {
 
     const navigate = useNavigate()
-
     const location = useLocation()
 
   return (
-      <div className='min-vh-100 p-3' style={{width: '300px'}}>
+      <div className='min-vh-100 p-3' style={{width: '300px', minWidth: '300px'}}>
           <div className='Block h-100'>
               <h5>Управление складом</h5>
               {
