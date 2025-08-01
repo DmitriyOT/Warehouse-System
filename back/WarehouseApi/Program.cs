@@ -37,13 +37,20 @@ public class Program
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             var xmlFileDomain = $"{Assembly.GetAssembly(typeof(BaseEntityWithId))?.GetName().Name}.xml";
-            string locationDomain = Path.GetDirectoryName( Assembly.GetAssembly(typeof(BaseEntityWithId))?.Location );
+            string locationDomain = Path.GetDirectoryName( Assembly.GetAssembly(typeof(BaseEntityWithId))?.Location ) ?? "";
             if (locationDomain != null)
             {
                 var xmlPathDomain = Path.Combine(locationDomain, xmlFileDomain);
                 c.IncludeXmlComments(xmlPathDomain);
             }
             c.IncludeXmlComments(xmlPath);
+            var contractAssembly = Assembly.GetAssembly(typeof(ResponseDto<>));
+            if(contractAssembly != null)
+            {
+                var xmlFileContract = contractAssembly.GetName().Name + ".xml";
+                var xmlPathContract = Path.Combine(Path.GetDirectoryName(contractAssembly.Location) ?? "", xmlFileContract);
+                c.IncludeXmlComments(xmlPathContract);
+            }
         });
 
         builder.Services.AddDbContextPool<PostgresDbContext>((service, options) =>
