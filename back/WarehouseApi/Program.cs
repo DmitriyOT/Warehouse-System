@@ -25,6 +25,8 @@ public class Program
     /// <param name="args"></param>
     public static void Main(string[] args)
     {
+        var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
@@ -70,6 +72,18 @@ public class Program
         builder.Services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
 
+        builder.Services.AddCors(options =>
+         {
+             options.AddPolicy(name: MyAllowSpecificOrigins,
+                               policy =>
+                               {
+                                   policy.WithOrigins("http://localhost:5173", "https://warehouse.dimonogen.ru")
+                                       .AllowAnyHeader()
+                                       .WithMethods("GET", "POST", "PUT", "DELETE")
+                                       .AllowCredentials();
+                               });
+         });
+
         var app = builder.Build();
 
         ILogger<Program>? logger = null;
@@ -91,6 +105,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors(MyAllowSpecificOrigins);
 
         app.UseHttpsRedirection();
 

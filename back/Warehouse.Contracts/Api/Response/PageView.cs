@@ -8,11 +8,11 @@ public class PageView
     /// <summary>
     /// Page number, first page is 1, not 0
     /// </summary>
-    public int PageNumber { get; set; }
+    public int Page { get; set; }
     /// <summary>
     /// Page size, count elements in one page
     /// </summary>
-    public int PageSize { get; set; }
+    public int Size { get; set; }
 
     /// <summary>
     /// Total count elements
@@ -42,11 +42,11 @@ public class PageView
             throw new ArgumentOutOfRangeException(nameof(totalCount));
         }
 
-        PageNumber = pageNumber;
-        PageSize = pageSize;
+        Page = pageNumber;
+        Size = pageSize;
 
         TotalCount = totalCount;
-        TotalPages = (int)Math.Ceiling((float)totalCount / PageSize);
+        TotalPages = (int)Math.Ceiling((float)totalCount / Size);
     }
 
 
@@ -55,7 +55,7 @@ public class PageView
     /// </summary>
     public int GetTake()
     {
-        return PageSize;
+        return Size;
     }
 
     /// <summary>
@@ -63,6 +63,6 @@ public class PageView
     /// </summary>
     public int GetSkip()
     {
-        return (PageNumber - 1) * PageSize;
+        return (Page - 1) * Size;
     }
 }

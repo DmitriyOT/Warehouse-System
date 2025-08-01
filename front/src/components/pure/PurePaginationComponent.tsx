@@ -30,7 +30,7 @@ const PurePaginationComponent = ({pageView, pageSizes, onPageChange, onPageSizeC
         <div className='d-flex flex-wrap align-items-center mt-2 justify-content-center'>
             <div>Размер страницы</div>
             <div className='ms-2 me-2 '>
-                <Form.Select id='Pagination' value={pageView.size} onChange={(size) => onPageSizeChange(size)}>
+                <Form.Select id='Pagination' value={pageView.size} onChange={(size) => onPageSizeChange(+size.target.value)}>
                     {pageSizes.map(s => <option key={s}>{s}</option>)}
                 </Form.Select>
             </div>

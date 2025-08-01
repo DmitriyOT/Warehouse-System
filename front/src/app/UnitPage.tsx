@@ -3,7 +3,9 @@ import EntityGridComponent from "../components/pure/EntityGridComponent";
 const UnitPage = () => {
     return (
         <>
-            <EntityGridComponent title='Единицы измерения' />
+            <EntityGridComponent title='Единицы измерения'
+                                 columns={[{field:'name', headerName:'Наименование', width: 300}]} rows={[]}
+            />
         </>
     )
 }
