@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Warehouse.Api.Controllers;
 
+/// <summary>
+/// Баланс
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class BalanceController : ControllerBase

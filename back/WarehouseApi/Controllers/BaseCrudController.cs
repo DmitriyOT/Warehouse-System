@@ -3,7 +3,7 @@ using Warehouse.Api.Controllers.Interfaces;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
-using Warehouse.Domain.Models;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Api.Controllers;
 

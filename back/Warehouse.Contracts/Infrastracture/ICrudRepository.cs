@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
-using Warehouse.Domain.Models;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Contracts.Infrastracture;
 

@@ -1,16 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Contracts.Application;
+using Warehouse.Domain.Models;
 
 namespace Warehouse.Api.Controllers;
 
+/// <summary>
+/// Контроллер для единиц измерения
+/// </summary>
 [ApiController]
 [Route("[controller]")]
-public class UnitController : ControllerBase
+public class UnitController : BaseCrudController<UnitEntity>
 {
-
-    private readonly ILogger<UnitController> _logger;
-
-    public UnitController(ILogger<UnitController> logger)
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="crudService"></param>
+    public UnitController(ILogger<UnitController> logger, ICrudService<UnitEntity> crudService)
+        : base(logger, crudService)
     {
-        _logger = logger;
     }
 }

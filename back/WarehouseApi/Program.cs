@@ -9,6 +9,7 @@ using Warehouse.Contracts.Application;
 using Warehouse.Application.Services;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Infrastructure.Db.Repository;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Api;
 
@@ -35,6 +36,13 @@ public class Program
         {
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            var xmlFileDomain = $"{Assembly.GetAssembly(typeof(BaseEntityWithId))?.GetName().Name}.xml";
+            string locationDomain = Path.GetDirectoryName( Assembly.GetAssembly(typeof(BaseEntityWithId))?.Location );
+            if (locationDomain != null)
+            {
+                var xmlPathDomain = Path.Combine(locationDomain, xmlFileDomain);
+                c.IncludeXmlComments(xmlPathDomain);
+            }
             c.IncludeXmlComments(xmlPath);
         });
 

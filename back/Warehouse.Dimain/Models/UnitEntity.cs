@@ -3,9 +3,9 @@
 namespace Warehouse.Domain.Models;
 
 /// <summary>
-/// Ресурс на складе
+/// Единица измерения, шт. кг. и тп.
 /// </summary>
-public class ResourceEntity : BaseEntityWithIdArchive
+public class UnitEntity : BaseEntityWithIdArchive
 {
     /// <summary>
     /// Наименование

@@ -3,12 +3,16 @@
 namespace Warehouse.Domain.Models;
 
 /// <summary>
-/// Ресурс на складе
+/// Клиент склада
 /// </summary>
-public class ResourceEntity : BaseEntityWithIdArchive
+public class ClientEntity : BaseEntityWithIdArchive
 {
     /// <summary>
     /// Наименование
     /// </summary>
     public required string Name { get; set; }
+    /// <summary>
+    /// Адресс клиента
+    /// </summary>
+    public required string Address { get; set; }
 }
