@@ -10,6 +10,7 @@ using Warehouse.Application.Services;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Infrastructure.Db.Repository;
 using Warehouse.Domain.Models.Base;
+using Microsoft.OpenApi.Models;
 
 namespace Warehouse.Api;
 
@@ -34,6 +35,12 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
         {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Warehouse API",
+                Description = "Реализация api для склада в рамках тестового задания."
+            });
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             var xmlFileDomain = $"{Assembly.GetAssembly(typeof(BaseEntityWithId))?.GetName().Name}.xml";
