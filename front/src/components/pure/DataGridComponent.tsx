@@ -11,32 +11,22 @@ type DataGridProps = {
     pageView: PageView,
     onPageChange: (number) => void,
     onPageSizeChange: (number) => void,
+    onItemOpen: (number) => void,
 }
 
-const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageChange }: DataGridProps) => {
+const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageChange, onItemOpen }: DataGridProps) => {
   return(
   <>
       <div className='h-100 w-100'>
           <ThemeProvider theme={GridTheme}>
               <Box className='d-flex' sx={{ height: '100%', width: '100%' }} >
                   <DataGrid rows={rows} columns={columns}
-                             style={{backgroundColor: "rgba(0,0,0,0)"}}  hideFooter
+                             style={{backgroundColor: "rgba(0,0,0,0)"}}  hideFooter rowHeight={40}
                             //onRowSelectionModelChange={(ids) =>{SetSelectionIds( Array.from(ids.ids) )}}
                             getRowClassName={(params) =>
                                 params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                             }
-                            /*onRowDoubleClick={(params) => {
-                                user.setPath(objData.find((x) => x.id == params.id).name, 1);
-                                navigate(MENU_ROUTE + '/' + id + '/' + params.id)} }
-                            onColumnWidthChange={(params) => {
-                                let state = apiRef.current.exportState();
-                                let stateJson = JSON.stringify(state);
-                                console.log(state);
-                                const code = "GridTypeId"+typeData.id;
-                                userSettings.setSettings(code, state);
-                                saveUserSettings(code, {settings:stateJson}).then(data =>{ });
-                            }}
-                            apiRef={apiRef}*/
+                            onRowDoubleClick={(params) => onItemOpen(params.id) }
                   />
               </Box>
           </ThemeProvider>

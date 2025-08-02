@@ -11,9 +11,10 @@ type EntityGridProps = {
     pageView: PageView,
     onPageChange: (number) => void,
     onPageSizeChange: (number) => void,
+    onItemOpen: (number) => void,
 }
 
-const EntityGridComponent = ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange}: EntityGridProps) => {
+const EntityGridComponent = ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange, onItemOpen}: EntityGridProps) => {
 
 
   return (
@@ -28,7 +29,7 @@ const EntityGridComponent = ({title, buttons, rows, columns, pageView, onPageCha
               </div>
           </div>
 
-          <DataGridComponent rows={rows} columns={columns} pageView={pageView}
+          <DataGridComponent rows={rows} columns={columns} pageView={pageView} onItemOpen={onItemOpen}
                              onPageChange={onPageChange} onPageSizeChange={onPageSizeChange}  />
 
       </div>

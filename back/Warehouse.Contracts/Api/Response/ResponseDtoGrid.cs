@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Warehouse.Contracts.Api.Response;
+﻿namespace Warehouse.Contracts.Api.Response;
 
 /// <summary>
 /// Возврат данных для фронта, для грида с пагинацией

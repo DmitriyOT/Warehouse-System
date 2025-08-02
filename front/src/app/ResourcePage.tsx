@@ -29,7 +29,7 @@ const ResourcePage = () => {
                                  pageView={ pageView }
                                  onPageChange={(page) => LoadData({page:page})}
                                  onPageSizeChange={(size) => LoadData({size:size})}
-
+                                 onItemOpen={(id) => console.log('item id =', id)}
             />
         </>
     )
