@@ -28,7 +28,7 @@ const ResourcePage = () => {
     return (
         <>
             <EntityGridComponent title='Ресурсы' buttons={[
-                {id: "add", className:"me-2", variant:"outline-success", text:"Добавить", onClick: () => {} },
+                {id: "add", className:"me-2", variant:"outline-success", text:"Добавить", onClick: () => {navigate(RESOURCE_PAGE_ROUTE + '/0');} },
                 {id: "В архив", className:"", variant:"outline-secondary", text:"В архив", onClick: () => {} }
             ]}
                                  columns={[{field:'name', headerName:'Наименование', width: 300}]} rows={data?.items ?? []}

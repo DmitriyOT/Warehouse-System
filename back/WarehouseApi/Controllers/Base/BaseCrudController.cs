@@ -5,7 +5,7 @@ using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
 using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Api.Controllers;
+namespace Warehouse.Api.Controllers.Base;
 
 /// <summary>
 /// Базовый класс контроллера для реализации CRUD операций в нём
@@ -50,14 +50,14 @@ public abstract class BaseCrudController<Entity> : ControllerBase, ICrudControll
     }
 
     /// <summary>
-    /// Удалить элемент или элементы
+    /// Удалить элемент
     /// </summary>
-    /// <param name="ids"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost("DeleteItems")]
-    public async Task<ActionResult> DeleteItems(IEnumerable<long> ids)
+    public async Task<ActionResult> DeleteItems(long id)
     {
-        await _crudService.DeleteItems(ids);
+        await _crudService.DeleteItem(id);
         return Ok(new ResponseDtoEmpty());
     }
 

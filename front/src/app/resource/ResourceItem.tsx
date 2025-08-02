@@ -2,24 +2,20 @@ import type {ResourceEntity} from "../../types/ResourceEntity";
 import {Input} from "@mui/material";
 import {Form} from "react-bootstrap";
 import {useEffect, useState} from "react";
+import PureTextInput from "../../components/pure/controls/PureTextInput";
 
 type ResourceItemProps = {
     id: number,
-    data: ResourceEntity | undefined
+    data: ResourceEntity | undefined,
+    onChange: (ResourceEntity) => void
 }
 
-const ResourceItem = ({id, data}: ResourceItemProps) => {
-
-    const [name, setName] = useState<string>('')
-
-    useEffect(() => {
-        setName(data?.name ?? '')
-    }, [data])
+const ResourceItem = ({id, data, onChange}: ResourceItemProps) => {
 
    return (
        <>
-        Resource item id {id}
-           <Form.Control value={name} onChange={(e) => setName(e.target.value) } />
+           <PureTextInput value={data?.name ?? ''} onChange={ (e) => onChange({...data, name: e}) }
+                          name={'Наименование'} placeholder={'Введите наименование'} />
        </>
    )
 }

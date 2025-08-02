@@ -1,20 +1,36 @@
 import {Button} from "react-bootstrap";
 
+type ItemButtonCode = 'save' | 'delete' | 'archiveToggle';
+
 type EntityCardProps = {
     title: string,
-    buttons: Array<{ id: string, className: string, variant: string, text: string, onClick: () => void }>,
-    Component: JSX.Element
+    buttons: Array<{ code: ItemButtonCode, onClick: () => void }>,
+    Component: JSX.Element,
+    isArchive: boolean | undefined
 }
 
-const EntityCardComponent = ({title, buttons, Component} : EntityCardProps) => {
+const EntityCardComponent = ({title, buttons, Component, isArchive} : EntityCardProps) => {
+
+    const buttonsTemplate: Array<{ code: ItemButtonCode, className: string, variant: string, text: string}> = [
+        {code: 'save', className: 'me-2', variant: 'outline-success', text:'Сохранить' },
+        {code: 'archiveToggle', className: 'me-2', variant: 'outline-dark', text: isArchive ? 'Из архива' : 'В архив' },
+        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить'},
+    ]
+
   return (
       <div className='h-100 w-100 d-flex flex-column'>
           <div>
               <h3 className='mt-3'>{title}</h3>
               <div className='d-flex flex-wrap mt-3 mb-3'>
                   <span className='me-2 mt-1 fs-5'>Действия: </span>
-                  {buttons?.map(b =>
-                      <Button key={b.id} className={b.className} variant={b.variant} onClick={b.onClick}>{b.text}</Button>
+                  {buttonsTemplate?.map(button => {
+                      let b = buttons.find(x => x.code === button.code);
+                      if(button)
+                          return <Button key={b.code} className={button.className} variant={button.variant}
+                                  onClick={() => b.onClick()}>{button.text}</Button>
+                      else
+                          return null;
+                      }
                   )}
               </div>
           </div>

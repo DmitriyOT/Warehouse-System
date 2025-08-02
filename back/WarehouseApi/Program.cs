@@ -70,6 +70,8 @@ public class Program
 
         builder.Services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
+        builder.Services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
+        builder.Services.AddScoped(typeof(IArchiveCrudRepository<>), typeof(ArchiveCrudRepository<>));
 
         builder.Services.AddCors(options =>
          {
