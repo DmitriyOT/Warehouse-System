@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
@@ -41,12 +42,45 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// <returns></returns>
     public async Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options)
     {
+        var query = GetQuery(options);
         return Tuple.Create(
-            await entities.OrderBy(x => x.Id)//Sorting base on ID
+            await query.OrderBy(x => x.Id)
                 .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
                 .AsNoTracking().ToListAsync(),//To array (List)
-            await entities.LongCountAsync()
+            await query.LongCountAsync()
             );
+    }
+
+    private IQueryable<Entity> GetQuery(GridOptionsDto options)
+    {
+        var query = entities.AsQueryable();//Sorting base on ID
+        if (options.Filters != null)
+        {
+            var restrictionParameter = Expression.Parameter(typeof(Entity), "p");
+            foreach (var filter in options.Filters)
+            {
+                var property = typeof(Entity).GetProperty(filter.PropertyName);
+                if(property == null)
+                {
+                    continue; //exception ?
+                }
+                switch (property.PropertyType.Name)
+                {
+                    case "Boolean":
+                        var propertyAccess = Expression.MakeMemberAccess(restrictionParameter, property);
+                        var exp = Expression.Equal(propertyAccess, Expression.Constant(bool.Parse(filter.Argument)));
+                        var whereExp = Expression.Lambda<Func<Entity, bool>>(exp, restrictionParameter);
+                        query = query.Where(whereExp);
+                        break;
+                    case "String":
+                        break;
+                    case "Long":
+                        break;
+                }
+                //query = query.Where(x => x.)
+            }
+        }
+        return query;
     }
 
     /// <summary>

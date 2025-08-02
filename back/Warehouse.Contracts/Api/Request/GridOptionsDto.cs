@@ -13,10 +13,7 @@ public class GridOptionsDto
     /// Размер страницы
     /// </summary>
     public int PageSize { get; set; }
-    /// <summary>
-    /// Тип сущности
-    /// </summary>
-    public string? EntityType { get; set; }
+
     /// <summary>
     /// Строка поиска по всем полям
     /// </summary>
