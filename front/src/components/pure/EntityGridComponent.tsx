@@ -6,7 +6,7 @@ import type {PageView} from "../../types/PageView";
 type EntityGridProps = {
     title: string,
     buttons: Array<{id: string, className: string, variant: string, text:string, onClick: () => void}>
-    rows: any[],
+    rows: Array<{id: number}>,
     columns: Array<{field: string, headerName: string, width: number}>,
     pageView: PageView,
     onPageChange: (page: number) => void,

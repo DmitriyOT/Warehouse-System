@@ -1,14 +1,18 @@
-import EntityGridComponent from "../components/pure/EntityGridComponent";
+import EntityGridComponent from "../../components/pure/EntityGridComponent";
 import {useEffect, useState} from "react";
-import {$host} from "../api/Api";
-import type {PageView} from "../types/PageView";
-import type {GridData, ResponseGridDto} from "../types/Response";
-import type {ResourceEntity} from "../types/ResourceEntity";
+import {$host} from "../../api/Api";
+import type {PageView} from "../../types/PageView";
+import type {GridData, ResponseGridDto} from "../../types/Response";
+import type {ResourceEntity} from "../../types/ResourceEntity";
+import {useNavigate} from "react-router-dom";
+import {RESOURCE_PAGE_ROUTE} from "../../utils/consts";
 
 const ResourcePage = () => {
 
     const [data, setData] = useState<GridData<ResourceEntity> | undefined>(undefined);
-    const [pageView, setPageView] = useState<PageView>({page: 1, totalPages: 1, size: 10})
+    const [pageView, setPageView] = useState<PageView>({page: 1, totalPages: 1, size: 10});
+
+    const navigate = useNavigate();
 
     const LoadData = async (pageN: {page?:number, size?: number}) => {
         $host.post<ResponseGridDto<ResourceEntity>>('/Resource/getAll',
@@ -31,7 +35,7 @@ const ResourcePage = () => {
                                  pageView={ pageView }
                                  onPageChange={(page) => LoadData({page:page})}
                                  onPageSizeChange={(size) => LoadData({size:size})}
-                                 onItemOpen={(id) => console.log('item id =', id)}
+                                 onItemOpen={(id) => navigate(RESOURCE_PAGE_ROUTE + '/' + id )}
             />
         </>
     )

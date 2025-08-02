@@ -12,9 +12,10 @@ import IncomePage from "../app/IncomePage";
 import ShipmentPage from "../app/ShipmentPage";
 import ClientPage from "../app/ClientPage";
 import UnitPage from "../app/UnitPage";
-import ResourcePage from "../app/ResourcePage";
+import ResourcePage from "../app/resource/ResourcePage";
+import ResourceItemPage from "../app/resource/ResourceItemPage";
 
-export const routes = [
+export const routes: Array<{path: string, Component: JSX.Element}> = [
     {
         path: BASE_PAGE_ROUTE,
         Component: BasePage
@@ -46,5 +47,9 @@ export const routes = [
     {
         path: RESOURCE_PAGE_ROUTE,
         Component: ResourcePage,
+    },
+    {
+        path: RESOURCE_PAGE_ROUTE + '/:id',
+        Component: ResourceItemPage,
     },
 ]
