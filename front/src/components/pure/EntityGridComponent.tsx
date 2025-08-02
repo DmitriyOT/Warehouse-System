@@ -1,6 +1,6 @@
 import {Button} from "react-bootstrap";
 import DataGridComponent from "./DataGridComponent";
-import {PageView} from "../../types/PageView";
+import type {PageView} from "../../types/PageView";
 
 
 type EntityGridProps = {
@@ -9,9 +9,9 @@ type EntityGridProps = {
     rows: any[],
     columns: Array<{field: string, headerName: string, width: number}>,
     pageView: PageView,
-    onPageChange: (number) => void,
-    onPageSizeChange: (number) => void,
-    onItemOpen: (number) => void,
+    onPageChange: (page: number) => void,
+    onPageSizeChange: (size: number) => void,
+    onItemOpen: (id: number) => void,
 }
 
 const EntityGridComponent = ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange, onItemOpen}: EntityGridProps) => {

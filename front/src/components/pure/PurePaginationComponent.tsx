@@ -1,10 +1,10 @@
 import {Button, Form} from "react-bootstrap";
-import {PageView} from "../../types/PageView";
+import type {PageView} from "../../types/PageView";
 
 type PurePaginationProps = {
     pageView: PageView,
-    onPageChange: (number) => void,
-    onPageSizeChange: (number) => void,
+    onPageChange: (page: number) => void,
+    onPageSizeChange: (size: number) => void,
     pageSizes?: number[]
 }
 

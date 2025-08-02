@@ -1,9 +1,9 @@
-import EntityGridComponent from "../components/pure/EntityGridComponent";
+
 
 const BalancePage = () => {
   return (
       <>
-        <EntityGridComponent title='Баланс' />
+          {/*<EntityGridComponent title='Баланс' />*/}
       </>
   )
 }

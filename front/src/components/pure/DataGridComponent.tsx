@@ -1,17 +1,16 @@
 import {Box, ThemeProvider} from "@mui/material";
 import GridTheme from "../style/GridTheme";
 import {DataGrid} from "@mui/x-data-grid";
-import {Button} from "react-bootstrap";
 import PurePaginationComponent from "./PurePaginationComponent";
-import {PageView} from "../../types/PageView";
+import type {PageView} from "../../types/PageView";
 
 type DataGridProps = {
     rows: any[],
     columns: any[],
     pageView: PageView,
-    onPageChange: (number) => void,
-    onPageSizeChange: (number) => void,
-    onItemOpen: (number) => void,
+    onPageChange: (page: number) => void,
+    onPageSizeChange: (size: number) => void,
+    onItemOpen: (id: number) => void,
 }
 
 const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageChange, onItemOpen }: DataGridProps) => {
@@ -26,7 +25,7 @@ const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageCha
                             getRowClassName={(params) =>
                                 params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                             }
-                            onRowDoubleClick={(params) => onItemOpen(params.id) }
+                            onRowDoubleClick={(params) => onItemOpen(+params.id) }
                   />
               </Box>
           </ThemeProvider>
