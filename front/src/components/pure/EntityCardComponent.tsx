@@ -25,7 +25,7 @@ const EntityCardComponent = ({title, buttons, Component, isArchive} : EntityCard
                   <span className='me-2 mt-1 fs-5'>Действия: </span>
                   {buttonsTemplate?.map(button => {
                       let b = buttons.find(x => x.code === button.code);
-                      if(button)
+                      if(b)
                           return <Button key={b.code} className={button.className} variant={button.variant}
                                   onClick={() => b.onClick()}>{button.text}</Button>
                       else

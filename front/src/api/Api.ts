@@ -7,7 +7,7 @@ const $host = axios.create({
     baseURL: baseUrlApi
 })
 
-const createItemApi = function<T> (itemPath) {
+const createItemApi = function<T> (itemPath: string) {
     return {
         load: async (itemId: number) => {
             if(itemId !== 0) {

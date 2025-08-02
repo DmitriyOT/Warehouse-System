@@ -16,7 +16,7 @@ const PureTextInput = ({value, onChange, name, rows, placeholder, disabled, maxL
         <div>
             <Form.Group className={"mb-1 mt-1 w-100 d-flex fs-5"}>
                 <div className={"FieldLeft d-flex text-end fw-semibold"}>
-                    <span className="ms-auto me-3 mt-2" style={{textTransform: ""}}>{name}</span>
+                    <span className="ms-auto me-3 mt-2" >{name}</span>
                 </div>
 
                 <div className="W-100 me-0">

@@ -27,12 +27,15 @@ const ResourceItemPage = () => {
 
   return (
       <>
-        <EntityCardComponent title='Ресурс'  Component={<ResourceItem id={+id} data={data} onChange={setData} />} isArchive={data?.isArchive}
-                             buttons={[
-                                 {code:'save', onClick: () => { save(data!).then(res => { if(res !== +id) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} },
+        <EntityCardComponent title='Ресурс'  Component={<ResourceItem id={+id } data={data} onChange={setData} />} isArchive={data?.isArchive}
+                             buttons={ +id !== 0 ? [
+                                 {code:'save', onClick: () => { save(data!).then(res => { if(res !== +id ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} },
                                  {code:'delete', onClick: () => { deleteItems(data!.id).then(() => navigate(RESOURCE_PAGE_ROUTE))} },
                                  {code:'archiveToggle', onClick: () => {archive(data!.id, !data!.isArchive).then(() => {setData({...data!, isArchive:!data!.isArchive})})} }
-                             ]}
+                             ]
+                                 :
+                                 [{code:'save', onClick: () => { save(data!).then(res => { if(res !== +id ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} }]
+                        }
         />
       </>
   )
