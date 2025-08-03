@@ -14,6 +14,8 @@ import ClientPage from "../app/client/ClientPage";
 import UnitPage from "../app/unit/UnitPage";
 import ResourcePage from "../app/resource/ResourcePage";
 import ResourceItemPage from "../app/resource/ResourceItemPage";
+import ClientItemPage from "../app/client/ClientItemPage";
+import UnitItemPage from "../app/unit/UnitItemPage";
 
 export const routes: Array<{path: string, Component: any}> = [
     {
@@ -41,8 +43,16 @@ export const routes: Array<{path: string, Component: any}> = [
         Component: ClientPage,
     },
     {
+        path: CLIENT_PAGE_ROUTE + '/:id',
+        Component: ClientItemPage,
+    },
+    {
         path: UNIT_PAGE_ROUTE,
         Component: UnitPage,
+    },
+    {
+        path: UNIT_PAGE_ROUTE + '/:id',
+        Component: UnitItemPage,
     },
     {
         path: RESOURCE_PAGE_ROUTE,

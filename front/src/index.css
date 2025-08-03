@@ -18,3 +18,9 @@ body{
     width: 20%;
     min-height: 100vh;/*100vh;*/
 }
+
+.FieldLeft {
+    width: 30%;
+    max-width: 30%;
+    min-width: 30%;
+}
