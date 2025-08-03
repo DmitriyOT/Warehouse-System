@@ -1,5 +1,7 @@
 import axios from 'axios'
 import type {ResponseDto} from "../types/Response";
+import type {ResponseGridDto} from "../types/Response";
+import type {GridOptions} from "../types/Request";
 
 const baseUrlApi = import.meta.env.VITE_APP_API_URL
 
@@ -34,4 +36,13 @@ const createItemApi = function<T> (itemPath: string) {
     }
 }
 
-export { $host, createItemApi }
+const createGridApi = function<T> (itemPath: string) {
+    return {
+        load: async (gridOptions: GridOptions) => {
+            let data = await $host.post<ResponseGridDto<T>>(itemPath + '/getAll', gridOptions );
+            return data.data.response;
+        }
+    }
+}
+
+export { $host, createItemApi, createGridApi }

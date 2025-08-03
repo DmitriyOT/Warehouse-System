@@ -11,7 +11,7 @@ import BalancePage from "../app/BalancePage";
 import IncomePage from "../app/IncomePage";
 import ShipmentPage from "../app/ShipmentPage";
 import ClientPage from "../app/ClientPage";
-import UnitPage from "../app/UnitPage";
+import UnitPage from "../app/unit/UnitPage";
 import ResourcePage from "../app/resource/ResourcePage";
 import ResourceItemPage from "../app/resource/ResourceItemPage";
 

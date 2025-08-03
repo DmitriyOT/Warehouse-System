@@ -1,27 +1,27 @@
 import EntityGridComponent from "../../components/pure/EntityGridComponent";
 import {useEffect, useState} from "react";
-import {$host} from "../../api/Api";
+import {createGridApi} from "../../api/Api";
 import type {PageView} from "../../types/PageView";
-import type {GridData, ResponseGridDto} from "../../types/Response";
+import type {GridData} from "../../types/Response";
 import type {ResourceEntity} from "../../types/ResourceEntity";
 import {useNavigate} from "react-router-dom";
-import {RESOURCE_PAGE_ROUTE} from "../../utils/consts";
+import {DEFAULT_PAGE_VIEW, RESOURCE_PAGE_ROUTE} from "../../utils/consts";
 import type {FilterDto} from "../../types/Request";
 
 const ResourcePage = () => {
 
     const [data, setData] = useState<GridData<ResourceEntity> | undefined>(undefined);
-    const [pageView, setPageView] = useState<PageView>({page: 1, totalPages: 1, size: 10});
+    const [pageView, setPageView] = useState<PageView>(DEFAULT_PAGE_VIEW);
     const [archive, setArchive] = useState<boolean>(false);
     const [filter, setFilter] = useState<Array<FilterDto>>([{type: 'equal', propertyName: 'IsArchive', argument: 'false'}]);
 
+    const {load} = createGridApi('/Resource');
     const navigate = useNavigate();
 
     const LoadData = async (pageN: {page?:number, size?: number}) => {
-        $host.post<ResponseGridDto<ResourceEntity>>('/Resource/getAll',
-            {"page":pageN.page ?? pageView.page, "pageSize":pageN.size ?? pageView.size, filters: filter})
+        load({"page":pageN.page ?? pageView.page, "pageSize":pageN.size ?? pageView.size, filters: filter})
             .then(data =>
-                { setData(data.data.response); setPageView(data.data.response.page) })
+                { setData(data); setPageView(data.page) })
     }
 
     useEffect(() => {
@@ -39,10 +39,10 @@ const ResourcePage = () => {
     return (
         <>
             <EntityGridComponent title='Ресурсы' buttons={
-                !archive ? [{id: "add", className:"me-2", variant:"outline-success", text:"Добавить", onClick: () => {navigate(RESOURCE_PAGE_ROUTE + '/0');} },
-                {id: "toArchive", className:"", variant:"outline-secondary", text: "В архив", onClick: () => {invertArchive()} }]
+                !archive ? [{id: "create", onClick: () => {navigate(RESOURCE_PAGE_ROUTE + '/0');} },
+                {id: "toArchive", onClick: () => {invertArchive()} }]
                     :
-                    [{id: "fromArchive", className:"", variant:"outline-secondary", text: 'Из архива', onClick: () => {invertArchive()} }]
+                    [{id: "fromArchive", onClick: () => {invertArchive()} }]
             }
                                  columns={[{field:'name', headerName:'Наименование', width: 300}]} rows={data?.items ?? []}
                                  pageView={ pageView }
