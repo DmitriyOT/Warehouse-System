@@ -1,13 +1,8 @@
-import type {ResourceEntity} from "../../types/ResourceEntity";
+import type {ItemComponentProps, ResourceEntity} from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 
-type ResourceItemProps = {
-    id: number,
-    data: ResourceEntity | undefined,
-    onChange: (item: ResourceEntity) => void
-}
 
-const ResourceItem = ({data, onChange}: ResourceItemProps) => {
+const ResourceItem = ({data, onChange}: ItemComponentProps<ResourceEntity>) => {
 
    return (
        <>

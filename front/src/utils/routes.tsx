@@ -10,12 +10,12 @@ import BasePage from "../app/BasePage";
 import BalancePage from "../app/BalancePage";
 import IncomePage from "../app/IncomePage";
 import ShipmentPage from "../app/ShipmentPage";
-import ClientPage from "../app/ClientPage";
+import ClientPage from "../app/client/ClientPage";
 import UnitPage from "../app/unit/UnitPage";
 import ResourcePage from "../app/resource/ResourcePage";
 import ResourceItemPage from "../app/resource/ResourceItemPage";
 
-export const routes: Array<{path: string, Component: JSX.Element}> = [
+export const routes: Array<{path: string, Component: any}> = [
     {
         path: BASE_PAGE_ROUTE,
         Component: BasePage

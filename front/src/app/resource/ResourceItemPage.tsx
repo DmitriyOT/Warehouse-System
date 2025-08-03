@@ -1,7 +1,7 @@
 import EntityCardComponent from "../../components/pure/EntityCardComponent";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {createItemApi} from "../../api/Api";
-import type {ResourceEntity} from "../../types/ResourceEntity";
+import type {ResourceEntity} from "../../types/Entities";
 import {useEffect, useState} from "react";
 import ResourceItem from "./ResourceItem";
 import {RESOURCE_PAGE_ROUTE} from "../../utils/consts";
@@ -17,7 +17,7 @@ const ResourceItemPage = () => {
     const location = useLocation();
 
     const LoadData = async () => {
-        const response = await load(+id);
+        const response = await load(+(id ?? '0') );
         setData(response);
     }
 
@@ -27,14 +27,14 @@ const ResourceItemPage = () => {
 
   return (
       <>
-        <EntityCardComponent title='Ресурс'  Component={<ResourceItem id={+id } data={data} onChange={setData} />} isArchive={data?.isArchive}
-                             buttons={ +id !== 0 ? [
-                                 {code:'save', onClick: () => { save(data!).then(res => { if(res !== +id ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} },
+        <EntityCardComponent title='Ресурс'  Component={<ResourceItem id={+(id ?? '0') } data={data} onChange={setData} />} isArchive={data?.isArchive}
+                             buttons={ +(id ?? '0') !== 0 ? [
+                                 {code:'save', onClick: () => { save(data!).then(res => { if(res !== +(id ?? '0') ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} },
                                  {code:'delete', onClick: () => { deleteItems(data!.id).then(() => navigate(RESOURCE_PAGE_ROUTE))} },
                                  {code:'archiveToggle', onClick: () => {archive(data!.id, !data!.isArchive).then(() => {setData({...data!, isArchive:!data!.isArchive})})} }
                              ]
                                  :
-                                 [{code:'save', onClick: () => { save(data!).then(res => { if(res !== +id ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} }]
+                                 [{code:'save', onClick: () => { save(data!).then(res => { if(res !== +(id ?? '0') ) navigate(RESOURCE_PAGE_ROUTE + '/' + res) } )} }]
                         }
         />
       </>

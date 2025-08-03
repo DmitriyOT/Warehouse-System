@@ -4,13 +4,12 @@ type PureTextInputProps = {
     value: string,
     onChange: (value: string) => void,
     name: string,
-    rows?: number,
     placeholder?: string,
     disabled?: boolean,
     maxLen?: number
 }
 
-const PureTextInput = ({value, onChange, name, rows, placeholder, disabled, maxLen} : PureTextInputProps) => {
+const PureTextInput = ({value, onChange, name, placeholder, disabled, maxLen} : PureTextInputProps) => {
 
     return (
         <div>
@@ -23,12 +22,9 @@ const PureTextInput = ({value, onChange, name, rows, placeholder, disabled, maxL
                     <Form.Control
                         id={name}
                         value={value}
-                        as={rows !== undefined?'textarea':"input"}
-                        rows={rows}
-                        className={(value == null? "": value.length > maxLen?"text-danger":"")
+                        className={(value == null? "": value.length > (maxLen ?? 256) ?"text-danger":"")
                             + " fs-5"}
-                        onChange={e => {onChange(e.target.value);if(rows != null)
-                            e.target.style.height = (e.target.scrollHeight + "px");} }
+                        onChange={e => {onChange(e.target.value);} }
                         placeholder={placeholder}
                         disabled={disabled}
                     />

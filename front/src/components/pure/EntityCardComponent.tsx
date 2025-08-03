@@ -5,7 +5,7 @@ type ItemButtonCode = 'save' | 'delete' | 'archiveToggle';
 type EntityCardProps = {
     title: string,
     buttons: Array<{ code: ItemButtonCode, onClick: () => void }>,
-    Component: JSX.Element,
+    Component: any,
     isArchive: boolean | undefined
 }
 

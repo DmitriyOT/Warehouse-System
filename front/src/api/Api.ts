@@ -22,7 +22,7 @@ const createItemApi = function<T> (itemPath: string) {
             }
         },
         save: async (item: T) => {
-            const data = await $host.post<ResponseDto<T>>(itemPath + '/EditItem', item);
+            const data = await $host.post<ResponseDto<number>>(itemPath + '/EditItem', item);
             return data.data.response;
         },
         deleteItems: async (itemId: number ) => {

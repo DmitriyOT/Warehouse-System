@@ -14,7 +14,7 @@ const PurePaginationComponent = ({pageView, pageSizes, onPageChange, onPageSizeC
 
     const arrayPages = [
         {text: '«', id: -4, onClick: () => {onPageChange(1)}, variant: 'outline-dark'},
-        {text: '‹', id: -3, onClick: () => {onPageChange(pageView.page - 1)}, variant: 'outline-dark'},
+        {text: '‹', id: -3, onClick: () => {onPageChange(Math.max(pageView.page - 1, 1))}, variant: 'outline-dark'},
     ]
 
     for(let i = 1; i <= pageView.totalPages; i++)
@@ -23,7 +23,8 @@ const PurePaginationComponent = ({pageView, pageSizes, onPageChange, onPageSizeC
             variant: pageView.page === i ? 'dark' :'outline-dark'})
     }
 
-    arrayPages.push( {text: '›', id: -2, onClick: () => {onPageChange(pageView.page + 1)}, variant: 'outline-dark'} )
+    arrayPages.push( {text: '›', id: -2, onClick: () =>
+        {onPageChange(Math.min(pageView.page + 1, pageView.totalPages))}, variant: 'outline-dark'} )
     arrayPages.push( {text: '»', id: -1, onClick: () => {onPageChange(pageView.totalPages)}, variant: 'outline-dark'} )
 
     return(
