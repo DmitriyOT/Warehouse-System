@@ -6,13 +6,13 @@ import type {FilterDto} from "../types/Request";
 import {createGridApi} from "../api/Api";
 import EntityGridComponent from "./pure/EntityGridComponent";
 import {useNavigate} from "react-router-dom";
-import type {FIlterOptions} from "../types/Filters";
+import type {FilterOptions} from "../types/Filters";
 
 type GridPageVariant = 'Archive' | 'Filters';
 
 const createGridPage = function<T> (apiPath: string, navPath: string, title: string, variant: GridPageVariant,
                                     columns: Array<{field: string, headerName: string, width: number}>,
-                                    filters: Array<FIlterOptions> = []) {
+                                    filters: Array<FilterOptions> = []) {
     const GridPage = () => {
 
         const [data, setData] = useState<GridData<T> | undefined>(undefined);
@@ -64,6 +64,7 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
                                      onPageChange={(page) => LoadData({page:page})}
                                      onPageSizeChange={(size) => LoadData({size:size})}
                                      onItemOpen={(id) => navigate(navPath + '/' + id )}
+                                     filters={filters}
                 />
             </>
         )

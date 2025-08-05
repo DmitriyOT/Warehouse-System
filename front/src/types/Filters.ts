@@ -1,4 +1,4 @@
-export interface FIlterOptions{
+export interface FilterOptions {
     name: string,
     type: FilterTypes,
     fieldName: string,

@@ -1,6 +1,8 @@
 import {Button} from "react-bootstrap";
 import DataGridComponent from "./DataGridComponent";
 import type {PageView} from "../../types/PageView";
+import type {FilterOptions} from "../../types/Filters";
+import FilterComponent from "./FilterComponent";
 
 type GridButtonsId = 'create' | 'toArchive' | 'fromArchive' | 'applyFilter'
 
@@ -13,9 +15,11 @@ type EntityGridProps<T> = {
     onPageChange: (page: number) => void,
     onPageSizeChange: (size: number) => void,
     onItemOpen: (id: number) => void,
+    filters: Array<FilterOptions>
 }
 
-const EntityGridComponent = function<T> ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange, onItemOpen}: EntityGridProps<T>) {
+const EntityGridComponent = function<T> ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange,
+                                             onItemOpen, filters}: EntityGridProps<T>) {
 
     const buttonsTemplate: Array<{ id: GridButtonsId, className: string, variant: string, text: string}> = [
         {id: "applyFilter", className:"me-2", variant:"outline-dark", text: 'Применить фильтр' },
@@ -29,6 +33,21 @@ const EntityGridComponent = function<T> ({title, buttons, rows, columns, pageVie
       <div className='h-100 w-100 d-flex flex-column'>
           <div>
               <h3 className='mt-3'>{title}</h3>
+              {
+              filters.length > 0 ?
+                  <div className='d-flex flex-wrap mt-3'>
+                      <span className='me-2 mt-1 fs-5'>Фильтры: </span>
+                      {
+                          filters?.map(f =>
+                              <div className='me-3'>
+                                  <FilterComponent name={f.name} type={f.type} fieldName={f.fieldName} />
+                              </div>
+                          )
+                      }
+                  </div>
+                  :
+                  null
+              }
               <div className='d-flex flex-wrap mt-3 mb-3'>
                   <span className='me-2 mt-1 fs-5'>Действия: </span>
                   {buttonsTemplate?.map(bTemplate =>

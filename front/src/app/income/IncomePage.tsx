@@ -5,6 +5,10 @@ const IncomePage = createGridPage('/Income', INCOME_PAGE_ROUTE, 'Поступл�
     [
         {field: 'number', headerName: 'Номер', width: 150},
         {field: 'date', headerName: 'Дата', width: 150},
+    ], [
+        {fieldName: 'number', name: 'Номер', type:'select'},
+        {fieldName: 'resource', name: 'Ресурс', type:'select'},
+        {fieldName: 'unit', name: 'Единица измерения', type:'select'},
     ])
 
 export default IncomePage
