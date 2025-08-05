@@ -1,5 +1,8 @@
-export interface BaseEntityIdArchive {
-    id: number,
+export interface BaseEntityId {
+    id: number
+}
+
+export interface BaseEntityIdArchive extends BaseEntityId {
     isArchive: boolean
 }
 
@@ -14,6 +17,12 @@ export interface UnitEntity extends BaseEntityIdArchive{
 export interface ClientEntity extends BaseEntityIdArchive{
     name: string,
     address: string
+}
+
+export interface IncomeEntity extends BaseEntityId {
+    number: string,
+    date: Date,
+    incomeItems: Array<string>
 }
 
 export interface ItemComponentProps<T> {

@@ -4,6 +4,6 @@ import {RESOURCE_PAGE_ROUTE} from "../../utils/consts";
 import createItemPage from "../../components/ItemPageGenerator";
 
 const ResourceItemPage = createItemPage<ResourceEntity>('/Resource', RESOURCE_PAGE_ROUTE,
-    'Ресурс', ResourceItem )
+    'Ресурс', ResourceItem, true )
 
 export default ResourceItemPage

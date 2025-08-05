@@ -13,10 +13,20 @@ namespace Warehouse.Api.Controllers.Base;
 /// <typeparam name="Entity"></typeparam>
 public abstract class BaseCrudController<Entity> : ControllerBase, ICrudController where Entity : BaseEntityWithId
 {
+    /// <summary>
+    /// Логирование
+    /// </summary>
     protected ILogger<BaseCrudController<Entity>> _logger { get; }
-
+    /// <summary>
+    /// Сервис с поддержкой CRUD операций над данными
+    /// </summary>
     protected ICrudService<Entity> _crudService { get; }
 
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="crudService"></param>
     public BaseCrudController(ILogger<BaseCrudController<Entity>> logger, ICrudService<Entity> crudService)
     {
         _logger = logger;

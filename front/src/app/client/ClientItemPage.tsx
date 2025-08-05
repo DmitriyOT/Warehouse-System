@@ -4,6 +4,6 @@ import {CLIENT_PAGE_ROUTE} from "../../utils/consts";
 import createItemPage from "../../components/ItemPageGenerator";
 
 const ClientItemPage = createItemPage<ResourceEntity>('/Client', CLIENT_PAGE_ROUTE,
-    'Клиент', ClientItem )
+    'Клиент', ClientItem, true )
 
 export default ClientItemPage

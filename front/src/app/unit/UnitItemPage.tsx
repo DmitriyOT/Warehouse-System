@@ -4,6 +4,6 @@ import {UNIT_PAGE_ROUTE} from "../../utils/consts";
 import createItemPage from "../../components/ItemPageGenerator";
 
 const UnitItemPage = createItemPage<UnitEntity>('/Unit', UNIT_PAGE_ROUTE,
-    'Единица измерения', UnitItem )
+    'Единица измерения', UnitItem, true )
 
 export default UnitItemPage

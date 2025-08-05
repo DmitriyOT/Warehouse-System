@@ -2,7 +2,7 @@ import {Button} from "react-bootstrap";
 import DataGridComponent from "./DataGridComponent";
 import type {PageView} from "../../types/PageView";
 
-type GridButtonsId = 'create' | 'toArchive' | 'fromArchive'
+type GridButtonsId = 'create' | 'toArchive' | 'fromArchive' | 'applyFilter'
 
 type EntityGridProps<T> = {
     title: string,
@@ -18,9 +18,11 @@ type EntityGridProps<T> = {
 const EntityGridComponent = function<T> ({title, buttons, rows, columns, pageView, onPageChange, onPageSizeChange, onItemOpen}: EntityGridProps<T>) {
 
     const buttonsTemplate: Array<{ id: GridButtonsId, className: string, variant: string, text: string}> = [
+        {id: "applyFilter", className:"me-2", variant:"outline-dark", text: 'Применить фильтр' },
         {id: "create", className:"me-2", variant:"outline-success", text:"Добавить" },
         {id: "toArchive", className:"", variant:"outline-secondary", text: "В архив" },
-        {id: "fromArchive", className:"", variant:"outline-secondary", text: 'Из архива' }
+        {id: "fromArchive", className:"", variant:"outline-secondary", text: 'Из архива' },
+
     ]
 
   return (

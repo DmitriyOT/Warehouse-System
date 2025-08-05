@@ -6,15 +6,21 @@ import type {FilterDto} from "../types/Request";
 import {createGridApi} from "../api/Api";
 import EntityGridComponent from "./pure/EntityGridComponent";
 import {useNavigate} from "react-router-dom";
+import type {FIlterOptions} from "../types/Filters";
 
-const createGridPage = function<T> (apiPath: string, navPath: string, title: string,
-                                    columns: Array<{field: string, headerName: string, width: number}>) {
+type GridPageVariant = 'Archive' | 'Filters';
+
+const createGridPage = function<T> (apiPath: string, navPath: string, title: string, variant: GridPageVariant,
+                                    columns: Array<{field: string, headerName: string, width: number}>,
+                                    filters: Array<FIlterOptions> = []) {
     const GridPage = () => {
 
         const [data, setData] = useState<GridData<T> | undefined>(undefined);
         const [pageView, setPageView] = useState<PageView>(DEFAULT_PAGE_VIEW);
         const [archive, setArchive] = useState<boolean>(false);
-        const [filter, setFilter] = useState<Array<FilterDto>>([{type: 'equal', propertyName: 'IsArchive', argument: 'false'}]);
+        const [filter, setFilter] = useState<Array<FilterDto>>(
+            variant === 'Archive' ? [{type: 'equal', propertyName: 'IsArchive', argument: 'false'}] : []
+        );
 
         const {load} = createGridApi<T>(apiPath);
         const navigate = useNavigate();
@@ -40,10 +46,18 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
         return (
             <>
                 <EntityGridComponent<T> title={title} buttons={
-                    !archive ? [{id: "create", onClick: () => {navigate(navPath + '/0');} },
-                            {id: "toArchive", onClick: () => {invertArchive()} }]
-                        :
+                    variant === 'Archive' ?
+                    (
+                        !archive ? [{id: "create", onClick: () => {navigate(navPath + '/0');} },
+                        {id: "toArchive", onClick: () => {invertArchive()} }]
+                            :
                         [{id: "fromArchive", onClick: () => {invertArchive()} }]
+                    )
+                        :
+                    (
+                        [{id: "create", onClick: () => {navigate(navPath + '/0');} },
+                        {id: "applyFilter", onClick: () => {LoadData({});} }]
+                    )
                 }
                                      columns={columns} rows={data?.items ?? []}
                                      pageView={ pageView }

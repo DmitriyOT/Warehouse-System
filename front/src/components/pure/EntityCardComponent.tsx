@@ -1,6 +1,6 @@
 import {Button} from "react-bootstrap";
 
-type ItemButtonCode = 'save' | 'delete' | 'archiveToggle';
+export type ItemButtonCode = 'save' | 'delete' | 'archiveToggle';
 
 type EntityCardProps = {
     title: string,

@@ -2,7 +2,7 @@ import createGridPage from "../../components/GridPageGenerator";
 import {RESOURCE_PAGE_ROUTE} from "../../utils/consts";
 import type {ResourceEntity} from "../../types/Entities";
 
-const ResourcePage = createGridPage<ResourceEntity>('/Resource', RESOURCE_PAGE_ROUTE, 'Ресурсы',
+const ResourcePage = createGridPage<ResourceEntity>('/Resource', RESOURCE_PAGE_ROUTE, 'Ресурсы','Archive',
     [
         {field:'name', headerName:'Наименование', width: 300}
     ]);
