@@ -1,12 +1,20 @@
 import {Form} from "react-bootstrap";
 
-const PureSelectInput = () => {
+type SelectInputOptions = {
+    options: Array<{value: string, title: string}>,
+    onChange: (value: string) => void,
+}
+
+const PureSelectInput = ({options = [], onChange} : SelectInputOptions) => {
 
     return(
         <>
-            <Form.Select>
-                <option>1</option>
-                <option>2</option>
+            <Form.Select  onChange={(e) => {onChange(e.target.value);}}  >
+                {
+                    options.map(e =>
+                        <option key={e.title} value={e.value}>{e.title}</option>
+                    )
+                }
             </Form.Select>
         </>
   )

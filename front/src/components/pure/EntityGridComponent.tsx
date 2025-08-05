@@ -39,7 +39,7 @@ const EntityGridComponent = function<T> ({title, buttons, rows, columns, pageVie
                       <span className='me-2 mt-1 fs-5'>Фильтры: </span>
                       {
                           filters?.map(f =>
-                              <div className='me-3'>
+                              <div className='me-3' key={f.name}>
                                   <FilterComponent name={f.name} type={f.type} fieldName={f.fieldName} />
                               </div>
                           )
