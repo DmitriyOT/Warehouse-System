@@ -2,7 +2,7 @@ import {Button} from "react-bootstrap";
 import DataGridComponent from "./DataGridComponent";
 import type {PageView} from "../../types/PageView";
 import type {FilterOptions} from "../../types/Filters";
-import FilterComponent from "./FilterComponent";
+import FilterComponent from "../FilterComponent";
 
 type GridButtonsId = 'create' | 'toArchive' | 'fromArchive' | 'applyFilter'
 

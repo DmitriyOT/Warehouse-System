@@ -6,9 +6,9 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
         {field: 'number', headerName: 'Номер', width: 150},
         {field: 'date', headerName: 'Дата', width: 150},
     ], [
-        {fieldName: 'number', name: 'Номер', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}], selectedOptions: []},
-        {fieldName: 'resource', name: 'Ресурс', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}], selectedOptions: []},
-        {fieldName: 'unit', name: 'Единица измерения', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}], selectedOptions: []},
+        {fieldName: 'number', name: 'Номер', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}] },
+        {fieldName: 'resource', name: 'Ресурс', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}] },
+        {fieldName: 'unit', name: 'Единица измерения', type:'select', options: [{value: '1', title: '1'},{value: '2', title: '2'},{value: '3', title: '3'}] },
     ])
 
 export default IncomePage

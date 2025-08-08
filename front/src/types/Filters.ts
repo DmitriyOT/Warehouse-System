@@ -6,13 +6,12 @@ export type SelectOption = {
 interface BaseFilterOptions {
     name: string,
     fieldName: string,
-    onChange?: (value: any) => void,
+    onChange?: (value: any) => any,
 }
 
 interface SelectFilterOptions extends BaseFilterOptions{
     type: 'select',
     options: Array<SelectOption>,
-    selectedOptions: Array<SelectOption>,
 }
 
 interface DateFilterOptions extends BaseFilterOptions{
