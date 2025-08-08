@@ -57,6 +57,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
         if (options.Filters != null)
         {
             var restrictionParameter = Expression.Parameter(typeof(Entity), "p");
+            Expression? whereExp = null;
             foreach (var filter in options.Filters)
             {
                 var property = typeof(Entity).GetProperty(filter.PropertyName);
@@ -64,20 +65,57 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
                 {
                     continue; //exception ?
                 }
+                var propertyAccess = Expression.MakeMemberAccess(restrictionParameter, property);
+                BinaryExpression? exp = null;
                 switch (property.PropertyType.Name)
                 {
                     case "Boolean":
-                        var propertyAccess = Expression.MakeMemberAccess(restrictionParameter, property);
-                        var exp = Expression.Equal(propertyAccess, Expression.Constant(bool.Parse(filter.Argument)));
-                        var whereExp = Expression.Lambda<Func<Entity, bool>>(exp, restrictionParameter);
-                        query = query.Where(whereExp);
-                        break;
+                        {
+                            exp = Expression.Equal(propertyAccess, Expression.Constant(bool.Parse(filter.Argument)));
+                            break;
+                        }
                     case "String":
-                        break;
+                        {
+                            if (filter.Type == "equal")
+                            {
+                                
+                                if(filter.Argument.Contains(','))
+                                {
+                                    foreach(var item in filter.Argument.Split(','))
+                                    {
+                                        if(exp == null)
+                                        {
+                                            exp = Expression.Equal(propertyAccess, Expression.Constant(item));
+                                        }
+                                        else
+                                        {
+                                            exp = Expression.Or(exp, Expression.Equal(propertyAccess, Expression.Constant(item)));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    exp = Expression.Equal(propertyAccess, Expression.Constant(filter.Argument));
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                            break;
+                        }
                     case "Long":
-                        break;
+                        continue;
                 }
-                //query = query.Where(x => x.)
+                if (whereExp == null)
+                    whereExp = exp;
+                else
+                    whereExp = Expression.Add(whereExp, exp);
+            }
+            if(whereExp != null)
+            {
+                var lambdaExp = Expression.Lambda<Func<Entity, bool>>(whereExp, restrictionParameter);
+                query = query.Where(lambdaExp);
             }
         }
         return query;

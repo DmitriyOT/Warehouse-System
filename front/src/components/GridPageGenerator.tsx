@@ -47,14 +47,16 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
             let fil = [...filter];
             let f = fil.find(f => f.propertyName === value.fieldName);
             let argument = value.options.map(e => e.value).join(',');
-            console.log(argument)
             if(f === undefined)
             {
                 fil.push({propertyName: value.fieldName, type: 'equal', argument: argument})
             }
             else
             {
-                f.argument = argument;
+                if(argument !== '')
+                    f.argument = argument;
+                else
+                    fil = fil.filter(x => x.propertyName !== value.fieldName);
             }
             setFilter(fil)
         } }) );
