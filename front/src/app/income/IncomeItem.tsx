@@ -1,5 +1,7 @@
 import type {ItemComponentProps,IncomeEntity } from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
+import PureDateInput from "../../components/pure/controls/PureDateInput";
+import FieldComponent from "../../components/pure/controls/FieldComponent";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
@@ -8,8 +10,9 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
        <>
            <PureTextInput value={data?.number ?? ''} onChange={ (e) => onChange({...data!, number: e}) }
                           name={'Номер'} placeholder={'Введите номер'} />
-           <PureTextInput value={data?.date.toString() ?? ''} onChange={ (e) => onChange({...data!, date: new Date(e) }) }
-                          name={'Дата'} placeholder={'Введите дату'} />
+           <FieldComponent name='Дата' >
+               <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
+           </FieldComponent>
        </>
    )
 }
