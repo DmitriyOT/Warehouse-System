@@ -6,7 +6,7 @@ export type SelectOption = {
 interface BaseFilterOptions {
     name: string,
     fieldName: string,
-    onChange?: (value: any) => any,
+    onChange?: (value: ReturnFilter) => any,
 }
 
 interface SelectFilterOptions extends BaseFilterOptions{
@@ -23,4 +23,7 @@ interface DateFilterOptions extends BaseFilterOptions{
 
 export type FilterOptions = SelectFilterOptions | DateFilterOptions
 
-export type FilterTypes = 'select' | 'date'
+export type ReturnFilter = {
+    options: SelectOption[],
+    fieldName: string
+}

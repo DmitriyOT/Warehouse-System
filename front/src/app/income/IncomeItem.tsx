@@ -8,7 +8,7 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
        <>
            <PureTextInput value={data?.number ?? ''} onChange={ (e) => onChange({...data!, number: e}) }
                           name={'Номер'} placeholder={'Введите номер'} />
-           <PureTextInput value={data?.date.toString() ?? ''} onChange={ (e) => onChange({...data!, date: e}) }
+           <PureTextInput value={data?.date.toString() ?? ''} onChange={ (e) => onChange({...data!, date: new Date(e) }) }
                           name={'Дата'} placeholder={'Введите дату'} />
        </>
    )

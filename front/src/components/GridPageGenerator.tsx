@@ -6,7 +6,7 @@ import type {FilterDto} from "../types/Request";
 import {createGridApi} from "../api/Api";
 import EntityGridComponent from "./pure/EntityGridComponent";
 import {useNavigate} from "react-router-dom";
-import type {FilterOptions, SelectOption} from "../types/Filters";
+import type {FilterOptions, ReturnFilter} from "../types/Filters";
 
 type GridPageVariant = 'Archive' | 'Filters';
 
@@ -43,23 +43,25 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
             LoadData({})
         }
 
-        filters = filters.map(e => ({...e, onChange: (value) => {
-            let fil = [...filter];
-            let f = fil.find(f => f.propertyName === value.fieldName);
-            let argument = value.options.map(e => e.value).join(',');
-            if(f === undefined)
-            {
-                fil.push({propertyName: value.fieldName, type: 'equal', argument: argument})
+
+        for (const item of filters)
+        {
+            item.onChange = (value: ReturnFilter) => {
+                let fil = [...filter];
+                let f = fil.find(f => f.propertyName === value.fieldName);
+                let argument = value.options.map(e => e.value).join(',');
+                if (f === undefined) {
+                    fil.push({propertyName: value.fieldName, type: 'equal', argument: argument})
+                } else {
+                    if (argument !== '')
+                        f.argument = argument;
+                    else
+                        fil = fil.filter(x => x.propertyName !== value.fieldName);
+                }
+                setFilter(fil)
             }
-            else
-            {
-                if(argument !== '')
-                    f.argument = argument;
-                else
-                    fil = fil.filter(x => x.propertyName !== value.fieldName);
-            }
-            setFilter(fil)
-        } }) );
+        }
+
 
         return (
             <>

@@ -1,7 +1,8 @@
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {createItemApi} from "../api/Api";
-import EntityCardComponent, {ItemButtonCode} from "./pure/EntityCardComponent";
+import EntityCardComponent from "./pure/EntityCardComponent";
+import type {ItemButtonCode} from "./pure/EntityCardComponent";
 import type {BaseEntityId} from "../types/Entities";
 
 const createItemPage = function<T extends BaseEntityId>

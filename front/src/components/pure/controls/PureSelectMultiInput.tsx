@@ -1,4 +1,4 @@
-import {Dropdown, Form} from "react-bootstrap";
+import {Dropdown} from "react-bootstrap";
 import type {SelectOption} from "../../../types/Filters";
 
 type SelectMultiInputOptions = {
@@ -24,7 +24,7 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
     };
 
     return(
-        <Dropdown>
+        <Dropdown className='w-100'>
             <Dropdown.Toggle variant="outline-dark" className='w-100 d-flex align-items-center'>
                 <div className='d-flex flex-row me-auto'>
                     {
