@@ -1,15 +1,36 @@
-import type {ItemComponentProps,IncomeEntity } from "../../types/Entities";
+import type {ItemComponentProps, IncomeEntity, ResourceEntity, UnitEntity} from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
 import {Button} from "react-bootstrap";
 import PureSelectInput from "../../components/pure/controls/PureSelectInput";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {DataProvider} from "../../api/DataProvider";
+import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
+import type {SelectOption} from "../../types/Filters";
+import {GridData, ResponseGridDto} from "../../types/Response";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
 
+    const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH);
+    const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH);
     const [nextId, setNextId] = useState<number>(-1)
+
+    const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
+    const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
+
+    useEffect(() => {
+        DpResource.getData().then(data => {
+            let dataT = data as GridData<ResourceEntity>;
+            setOptionsResource( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) );
+        })
+        DpUnit.getData().then(data => {
+            let dataT = data as GridData<UnitEntity>;
+            setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
+        })
+
+    }, [])
 
    return (
        <>
@@ -41,10 +62,11 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
                    <tr key={item.id} className='border-dark border'>
                        <td className='p-1'><Button variant='outline-danger' onClick={
                            () => {onChange({...data, incomeItems: data?.incomeItems.filter((x) => x !== item)})} }>X</Button></td>
-                       <td><PureSelectInput selected={ item.unit?.id ? {value: item.unit?.id.toString(), title: item.unit?.name ?? ''} : undefined}
-                                            options={[{value:'1', title:'1'},{value:'2', title:'2'}]} onChange={() => {} } /> </td>
-                       <td>{item.unit?.name}</td>
-                       <td>{item.quantity}</td>
+                       <td><PureSelectInput selected={ item.resource?.id ? {value: item.resource?.id.toString(), title: item.resource?.name ?? ''} : undefined}
+                                            options={optionsResource} onChange={() => {} } /> </td>
+                       <td><PureSelectInput options={optionsUnit} onChange={() => {}}
+                                            selected={item.unit?.id ? {value: item.unit?.id.toString(), title: item.unit?.name ?? ''} : undefined} /></td>
+                       <td><PureTextInput value={item.quantity.toString()} onChange={() => {}} name={''} /></td>
                    </tr>
                    )
                }
