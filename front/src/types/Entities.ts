@@ -22,7 +22,13 @@ export interface ClientEntity extends BaseEntityIdArchive{
 export interface IncomeEntity extends BaseEntityId {
     number: string,
     date: string,
-    incomeItems: Array<string>
+    incomeItems: Array<IncomeItemEntity>
+}
+
+export interface IncomeItemEntity extends BaseEntityId {
+    quantity: number,
+    resource?: ResourceEntity,
+    unit?: UnitEntity,
 }
 
 export interface ItemComponentProps<T> {
