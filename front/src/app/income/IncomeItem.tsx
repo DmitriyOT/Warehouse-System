@@ -35,8 +35,10 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
 
    return (
        <>
-           <PureTextInput value={data?.number ?? ''} onChange={ (e) => onChange({...data!, number: e}) }
-                          name={'Номер'} placeholder={'Введите номер'} />
+           <FieldComponent name='Номер' >
+               <PureTextInput value={data?.number ?? ''} onChange={ (e) => onChange({...data!, number: e}) }
+                          id={'Номер'} placeholder={'Введите номер'} />
+           </FieldComponent>
            <FieldComponent name='Дата' >
                <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
            </FieldComponent>
@@ -44,8 +46,8 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
                                onChange={(items) => {onChange({...data, incomeItems: items})}}
                                nextId={nextId} setNextId={(id) => {setNextId(id)}}
                                columns={[
-                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resource', options: optionsResource},
-                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unit', options: optionsUnit},
+                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', options: optionsResource},
+                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unitId', options: optionsUnit},
                                    {id: 'quantity', type: 'number', title: 'Количество', field: 'quantity', options: []},
                                ]} />
        </>

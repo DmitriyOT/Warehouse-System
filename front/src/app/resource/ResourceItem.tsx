@@ -1,13 +1,16 @@
 import type {ItemComponentProps, ResourceEntity} from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
+import FieldComponent from "../../components/pure/controls/FieldComponent";
 
 
 const ResourceItem = ({data, onChange}: ItemComponentProps<ResourceEntity>) => {
 
    return (
        <>
-           <PureTextInput value={data?.name ?? ''} onChange={ (e) => onChange({...data!, name: e}) }
-                          name={'Наименование'} placeholder={'Введите наименование'} />
+           <FieldComponent name={'Наименование'} >
+               <PureTextInput value={data?.name ?? ''} onChange={ (e) => onChange({...data!, name: e}) }
+                          id={'Наименование'} placeholder={'Введите наименование'} />
+           </FieldComponent>
        </>
    )
 }
