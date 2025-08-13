@@ -79,6 +79,9 @@ public class Program
         builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
         builder.Services.AddScoped<IncomeService>();
 
+        builder.Services.AddScoped<IShipmentRepository, ShipmentRepository>();
+        builder.Services.AddScoped<ShipmentService>();
+
         builder.Services.AddCors(options =>
          {
              options.AddPolicy(name: MyAllowSpecificOrigins,

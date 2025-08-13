@@ -9,10 +9,10 @@ namespace Warehouse.Domain.Models;
 public class ShipmentItemEntity : BaseEntityWithId
 {
     /// <summary>
-    /// Документ поступления
+    /// Документ отгрузки
     /// </summary>
     [JsonIgnore]
-    public virtual IncomeEntity? Income { get; set; }
+    public virtual ShipmentEntity? Shipment { get; set; }
 
     /// <summary>
     /// Ресурс
