@@ -14,7 +14,7 @@ type GridPageVariant = 'Archive' | 'Filters';
 
 const createGridPage = function<T> (apiPath: string, navPath: string, title: string, variant: GridPageVariant,
                                     columns: Array<{field: string, headerName: string, width: number}>,
-                                    filters: Array<FilterOptions> = []) {
+                                    filters: Array<FilterOptions> = [], itemOpenCreate: boolean = true) {
     const GridPage = () => {
 
         const [data, setData] = useState<GridData<T> | undefined>(undefined);
@@ -79,15 +79,18 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
                     )
                         :
                     (
+                        itemOpenCreate ?
                         [{id: "create", onClick: () => {navigate(navPath + '/0');} },
                         {id: "applyFilter", onClick: () => {LoadData({});} }]
+                            :
+                        [{id: "applyFilter", onClick: () => {LoadData({});} }]
                     )
                 }
                                      columns={columns} rows={data?.items ?? []}
                                      pageView={ pageView }
                                      onPageChange={(page) => LoadData({page:page})}
                                      onPageSizeChange={(size) => LoadData({size:size})}
-                                     onItemOpen={(id) => navigate(navPath + '/' + id )}
+                                     onItemOpen={(id) => {if(itemOpenCreate) navigate(navPath + '/' + id )} }
                                      filters={filters}
                 />
             </>

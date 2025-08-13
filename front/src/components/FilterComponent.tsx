@@ -3,6 +3,7 @@ import PureSelectMultiInput from "./pure/controls/PureSelectMultiInput";
 import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../api/DataProvider";
 import {ModalContext} from "../App";
+import PureDateIntervalInput from "./pure/controls/PureDateIntervalInput";
 
 
 const FilterComponent = (props:FilterOptions) => {
@@ -40,7 +41,7 @@ const FilterComponent = (props:FilterOptions) => {
                                              selectedOptions={selectedOptions}
                                         onChange={(value) => {setSelectedOptions(value); onChange!({options: value, fieldName: fieldName}); } }/>
             case "date":
-                return <></>
+                return <PureDateIntervalInput valueStart={undefined} valueEnd={undefined} onChange={() => {} } />
         }
     }
 

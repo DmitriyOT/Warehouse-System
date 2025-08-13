@@ -35,15 +35,16 @@ const createItemPage = function<T extends BaseEntityId>
         let deleteB: { code: ItemButtonCode, onClick: () => void } = {code:'delete',
             onClick: () => { deleteItems(data!.id).then(() => navigate(navPath))} }
 
-        let archiveB: { code: ItemButtonCode, onClick: () => void } = {code:'archiveToggle',
-            onClick: () => {archive(data!.id, !(data! as unknown as BaseEntityIdArchive).isArchive).then(() => {setData({...data!, isArchive:!(data! as unknown as BaseEntityIdArchive).isArchive})})} }
-
         return (
             <>
-                <EntityCardComponent title={title}  Component={<Component id={+(id ?? '0') } data={data} onChange={setData} />} isArchive={(data! as unknown as BaseEntityIdArchive).isArchive}
+                <EntityCardComponent title={title}  Component={<Component id={+(id ?? '0') } data={data} onChange={setData} />}
+                                     isArchive={isArchive ? (data! as unknown as BaseEntityIdArchive)?.isArchive : false}
                                      buttons={ +(id ?? '0') !== 0 ? (
                                              isArchive ?
-                                            [ saveB, deleteB, archiveB ]
+                                            [ saveB, deleteB, {code:'archiveToggle',
+                                                onClick: () => {archive(data!.id, !(data! as unknown as BaseEntityIdArchive).isArchive)
+                                                    .then(() => {setData({...data!, isArchive:!(data! as unknown as BaseEntityIdArchive).isArchive})})} }
+                                            ]
                                              :
                                             [saveB, deleteB]
                                          )

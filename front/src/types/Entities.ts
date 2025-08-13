@@ -36,13 +36,13 @@ export interface IncomeItemEntity extends BaseEntityId {
 export interface ShipmentEntity extends BaseEntityId {
     number: string,
     date: string,
+    clientId: number,
     incomeItems: Array<ShipmentItemEntity>
 }
 
 export interface ShipmentItemEntity extends BaseEntityId {
     quantity: number,
     resource?: ResourceEntity,
-    client?: ClientEntity,
     unit?: UnitEntity,
     resourceId: number,
     unitId: number,
