@@ -9,7 +9,7 @@ export const ModalContext = createContext<ModalContextType>(null)
 
 function App() {
 
-  const [modal, setModal] = useState<Modal>(null);
+  const [modal, setModal] = useState<Modal | null>(null);
 
   return (
     <>

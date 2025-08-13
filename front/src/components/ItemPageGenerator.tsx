@@ -3,7 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import {createItemApi} from "../api/Api";
 import EntityCardComponent from "./pure/EntityCardComponent";
 import type {ItemButtonCode} from "./pure/EntityCardComponent";
-import type {BaseEntityId} from "../types/Entities";
+import type {BaseEntityId, BaseEntityIdArchive} from "../types/Entities";
 import {ModalContext} from "../App";
 
 const createItemPage = function<T extends BaseEntityId>
@@ -36,11 +36,11 @@ const createItemPage = function<T extends BaseEntityId>
             onClick: () => { deleteItems(data!.id).then(() => navigate(navPath))} }
 
         let archiveB: { code: ItemButtonCode, onClick: () => void } = {code:'archiveToggle',
-            onClick: () => {archive(data!.id, !data!.isArchive).then(() => {setData({...data!, isArchive:!data!.isArchive})})} }
+            onClick: () => {archive(data!.id, !(data! as unknown as BaseEntityIdArchive).isArchive).then(() => {setData({...data!, isArchive:!(data! as unknown as BaseEntityIdArchive).isArchive})})} }
 
         return (
             <>
-                <EntityCardComponent title={title}  Component={<Component id={+(id ?? '0') } data={data} onChange={setData} />} isArchive={data?.isArchive}
+                <EntityCardComponent title={title}  Component={<Component id={+(id ?? '0') } data={data} onChange={setData} />} isArchive={(data! as unknown as BaseEntityIdArchive).isArchive}
                                      buttons={ +(id ?? '0') !== 0 ? (
                                              isArchive ?
                                             [ saveB, deleteB, archiveB ]

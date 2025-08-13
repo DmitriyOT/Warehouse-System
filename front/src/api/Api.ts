@@ -17,7 +17,7 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
             return await script();
         }
         catch (e) {
-            modalC?.setModal({header:'Ошибка', content: e.message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
+            modalC?.setModal({header:'Ошибка', content: (e as unknown as Error).message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
         }
     }
 
@@ -61,7 +61,7 @@ const createGridApi = function<T> (itemPath: string, modalC: ModalContextType) {
                 return data.data.response;
             }
             catch (e) {
-                modalC?.setModal({header:'Ошибка', content: e.message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
+                modalC?.setModal({header:'Ошибка', content: (e as unknown as Error).message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
             }
         }
     }

@@ -1,4 +1,10 @@
-import type {ItemComponentProps, IncomeEntity, ResourceEntity, UnitEntity} from "../../types/Entities";
+import type {
+    ItemComponentProps,
+    IncomeEntity,
+    ResourceEntity,
+    UnitEntity,
+    IncomeItemEntity
+} from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
@@ -6,7 +12,7 @@ import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../../api/DataProvider";
 import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
-import {GridData} from "../../types/Response";
+import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 import {ModalContext} from "../../App";
 
@@ -43,8 +49,8 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
            <FieldComponent name='Дата' >
                <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
            </FieldComponent>
-           <ItemsGridComponent items={data?.incomeItems ?? []}
-                               onChange={(items) => {onChange({...data, incomeItems: items})}}
+           <ItemsGridComponent<IncomeItemEntity> items={data?.incomeItems ?? []}
+                               onChange={(items) => {onChange({...data!, incomeItems: items})}}
                                nextId={nextId} setNextId={(id) => {setNextId(id)}}
                                columns={[
                                    {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', options: optionsResource},

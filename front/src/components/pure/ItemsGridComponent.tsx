@@ -13,15 +13,15 @@ type GridColumn = {
     options?: Array<SelectOption>; // Обязательно для типа 'select'
 };
 
-type ItemsGridOptions = {
-    items: Array<any>;
-    onChange: (items: Array<any>) => any;
+type ItemsGridOptions<T> = {
+    items: Array<T>;
+    onChange: (items: Array<T>) => void;
     nextId: number;
     setNextId: (value: number) => void;
     columns: Array<GridColumn>;
 };
 
-const ItemsGridComponent = ({ items, onChange, nextId, setNextId, columns }: ItemsGridOptions) => {
+const ItemsGridComponent = function<T> ({ items, onChange, nextId, setNextId, columns }: ItemsGridOptions<T>) {
 
     // Обработчик добавления нового элемента
     const handleAddItem = () => {

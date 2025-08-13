@@ -1,7 +1,8 @@
 import type {FilterOptions, SelectFilterOptions, SelectOption} from "../types/Filters";
 import PureSelectMultiInput from "./pure/controls/PureSelectMultiInput";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../api/DataProvider";
+import {ModalContext} from "../App";
 
 
 const FilterComponent = (props:FilterOptions) => {
@@ -12,15 +13,17 @@ const FilterComponent = (props:FilterOptions) => {
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
     const [options, setOptions] = useState<Array<SelectOption>>([])
 
+    const mContext = useContext(ModalContext)
+
     useEffect(() => {
         switch (type)
         {
             case "select":
             {
-                const dp = new DataProvider((props as SelectFilterOptions).apiPath)
+                const dp = new DataProvider<any>((props as SelectFilterOptions).apiPath, mContext)
                 dp.getData().then(data => {
-                    let dataOp = []
-                    data.items.forEach(e => dataOp.push({value: e.id, title: e.name ?? e.number}))
+                    let dataOp: Array<SelectOption> = []
+                    data.items.forEach((e: any) => dataOp.push({value: e.id, title: e.name ?? e.number}))
                     setOptions(dataOp)
                 })
                 break;
