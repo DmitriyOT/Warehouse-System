@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import type {GridData} from "../types/Response";
 import type {PageView} from "../types/PageView";
 import {DEFAULT_PAGE_VIEW} from "../utils/consts";
@@ -7,6 +7,8 @@ import {createGridApi} from "../api/Api";
 import EntityGridComponent from "./pure/EntityGridComponent";
 import {useNavigate} from "react-router-dom";
 import type {FilterOptions, ReturnFilter} from "../types/Filters";
+import type {ModalContextType} from "../types/Modal";
+import {ModalContext} from "../App";
 
 type GridPageVariant = 'Archive' | 'Filters';
 
@@ -22,7 +24,9 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
             variant === 'Archive' ? [{type: 'equal', propertyName: 'IsArchive', argument: 'false'}] : []
         );
 
-        const {load} = createGridApi<T>(apiPath);
+        const mContext = useContext<ModalContextType>(ModalContext);
+
+        const {load} = createGridApi<T>(apiPath, mContext);
         const navigate = useNavigate();
 
         const LoadData = async (pageN: {page?:number, size?: number}) => {

@@ -2,6 +2,7 @@ import axios from 'axios'
 import type {ResponseDto} from "../types/Response";
 import type {ResponseGridDto} from "../types/Response";
 import type {GridOptions} from "../types/Request";
+import type {ModalContextType} from "../types/Modal";
 
 const baseUrlApi = import.meta.env.VITE_APP_API_URL
 
@@ -36,11 +37,16 @@ const createItemApi = function<T> (itemPath: string) {
     }
 }
 
-const createGridApi = function<T> (itemPath: string) {
+const createGridApi = function<T> (itemPath: string, modalC: ModalContextType) {
     return {
         load: async (gridOptions: GridOptions) => {
-            let data = await $host.post<ResponseGridDto<T>>(itemPath + '/getAll', gridOptions );
-            return data.data.response;
+            try {
+                let data = await $host.post<ResponseGridDto<T>>(itemPath + '/getAll', gridOptions);
+                return data.data.response;
+            }
+            catch (e) {
+                modalC?.setModal({header:'Ошибка', content: e.message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
+            }
         }
     }
 }
