@@ -2,6 +2,7 @@ import PureSelectInput from "./controls/PureSelectInput";
 import PureTextInput from "./controls/PureTextInput";
 import { Button } from "react-bootstrap";
 import type { SelectOption } from "../../types/Filters";
+import PureNumberInput from "./controls/PureNumberInput";
 
 // Определение типа для колонки
 type GridColumn = {
@@ -29,7 +30,7 @@ const ItemsGridComponent = ({ items, onChange, nextId, setNextId, columns }: Ite
         // Инициализация полей по колонкам
         columns.forEach(column => {
             newItem[column.field] = column.type === 'select'
-                ? column.options?.at(0)
+                ? column.options?.at(0).value
                 : '';
         });
 
@@ -59,7 +60,7 @@ const ItemsGridComponent = ({ items, onChange, nextId, setNextId, columns }: Ite
 
                 const currentValue = item[column.field];
                 const selectedOption = column.options.find(opt =>
-                    opt.value === currentValue
+                    opt.value === currentValue.toString()
                 );
 
                 return (
@@ -73,16 +74,25 @@ const ItemsGridComponent = ({ items, onChange, nextId, setNextId, columns }: Ite
                 );
 
             case 'text':
-            case 'number':
                 return (
                     <PureTextInput
-                        value={String(item[column.field] || '')}
+                        value={String(item[column.field])}
                         onChange={(value) =>
                             handleFieldChange(value)
                         }
-                        name={column.field}
+                        id={column.field}
                         textSize={'small'}
-                        type={column.type}
+                    />
+                );
+            case 'number':
+                return (
+                    <PureNumberInput
+                        value={item[column.field]}
+                        onChange={(value) =>
+                            handleFieldChange(value)
+                        }
+                        id={column.field}
+                        textSize={'small'}
                     />
                 );
 

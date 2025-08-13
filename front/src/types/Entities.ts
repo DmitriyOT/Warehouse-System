@@ -29,6 +29,8 @@ export interface IncomeItemEntity extends BaseEntityId {
     quantity: number,
     resource?: ResourceEntity,
     unit?: UnitEntity,
+    resourceId: number,
+    unitId: number,
 }
 
 export interface ItemComponentProps<T> {

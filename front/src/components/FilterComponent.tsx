@@ -17,9 +17,12 @@ const FilterComponent = (props:FilterOptions) => {
         {
             case "select":
             {
-                //load options ?
                 const dp = new DataProvider((props as SelectFilterOptions).apiPath)
-                dp.getData().then(data => setOptions(data.items))
+                dp.getData().then(data => {
+                    let dataOp = []
+                    data.items.forEach(e => dataOp.push({value: e.id, title: e.name ?? e.number}))
+                    setOptions(dataOp)
+                })
                 break;
             }
             case "date":
