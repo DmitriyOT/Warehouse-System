@@ -66,7 +66,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
 
                 return (
                     <PureSelectInput
-                        selected={selectedOption}
+                        selected={selectedOption?.value}
                         options={column.options}
                         onChange={(selected) =>
                             handleFieldChange(selected)
