@@ -1,16 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Api.Controllers.Base;
+using Warehouse.Contracts.Application;
+using Warehouse.Domain.Models;
 
 namespace Warehouse.Api.Controllers;
 
+/// <summary>
+/// Отгрузки
+/// </summary>
 [ApiController]
 [Route("[controller]")]
-public class ShipmentController : ControllerBase
+public class ShipmentController : BaseCrudController<ShipmentEntity>
 {
-
-    private readonly ILogger<ShipmentController> _logger;
-
-    public ShipmentController(ILogger<ShipmentController> logger)
+    /// <summary>
+    /// Конструктор
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="crudService"></param>
+    public ShipmentController(ILogger<ShipmentController> logger, ICrudService<ShipmentEntity> crudService)
+        : base(logger, crudService)
     {
-        _logger = logger;
     }
 }

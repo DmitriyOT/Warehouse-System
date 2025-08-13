@@ -17,6 +17,10 @@ public class PostgresDbContext : DbContext
 
     public DbSet<IncomeItemEntity> incomeItems { get; set; }
 
+    DbSet<ShipmentEntity> shipments { get; set; }
+
+    public DbSet<ShipmentItemEntity> shipmetItems { get; set; }
+
     public PostgresDbContext(DbContextOptions<PostgresDbContext> options) : base(options)
     {
     }

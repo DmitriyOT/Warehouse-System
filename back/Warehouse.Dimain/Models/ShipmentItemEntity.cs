@@ -6,7 +6,7 @@ namespace Warehouse.Domain.Models;
 /// <summary>
 /// Единица поступления
 /// </summary>
-public class IncomeItemEntity : BaseEntityWithId
+public class ShipmentItemEntity : BaseEntityWithId
 {
     /// <summary>
     /// Документ поступления

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Api.Controllers.Base;
+using Warehouse.Contracts.Application;
+using Warehouse.Domain.Models;
 
 namespace Warehouse.Api.Controllers;
 
@@ -7,17 +10,15 @@ namespace Warehouse.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class BalanceController : ControllerBase
+public class BalanceController : BaseCrudController<BalanceEntity>
 {
-
-    private readonly ILogger<BalanceController> _logger;
-
     /// <summary>
     /// Конструктор
     /// </summary>
     /// <param name="logger"></param>
-    public BalanceController(ILogger<BalanceController> logger)
+    /// <param name="crudService"></param>
+    public BalanceController(ILogger<BalanceController> logger, ICrudService<BalanceEntity> crudService)
+        : base(logger, crudService)
     {
-        _logger = logger;
     }
 }
