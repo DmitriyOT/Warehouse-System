@@ -32,7 +32,7 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
         const LoadData = async (pageN: {page?:number, size?: number}) => {
             load({"page":pageN.page ?? pageView.page, "pageSize":pageN.size ?? pageView.size, filters: filter})
                 .then(data =>
-                { setData(data); setPageView(data.page) })
+                { setData(data); setPageView(data?.page ?? DEFAULT_PAGE_VIEW) })
         }
 
         useEffect(() => {

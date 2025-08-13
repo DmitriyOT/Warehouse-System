@@ -3,6 +3,7 @@ import PureTextInput from "./controls/PureTextInput";
 import { Button } from "react-bootstrap";
 import type { SelectOption } from "../../types/Filters";
 import PureNumberInput from "./controls/PureNumberInput";
+import type {BaseEntityId} from "../../types/Entities";
 
 // Определение типа для колонки
 type GridColumn = {
@@ -21,7 +22,7 @@ type ItemsGridOptions<T> = {
     columns: Array<GridColumn>;
 };
 
-const ItemsGridComponent = function<T> ({ items, onChange, nextId, setNextId, columns }: ItemsGridOptions<T>) {
+const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, nextId, setNextId, columns }: ItemsGridOptions<T>) {
 
     // Обработчик добавления нового элемента
     const handleAddItem = () => {
@@ -30,7 +31,7 @@ const ItemsGridComponent = function<T> ({ items, onChange, nextId, setNextId, co
         // Инициализация полей по колонкам
         columns.forEach(column => {
             newItem[column.field] = column.type === 'select'
-                ? column.options?.at(0).value
+                ? column.options?.at(0)?.value
                 : '';
         });
 
