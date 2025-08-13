@@ -9,6 +9,7 @@ import {DataProvider} from "../../api/DataProvider";
 import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
 import {GridData, ResponseGridDto} from "../../types/Response";
+import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
@@ -39,7 +40,14 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
            <FieldComponent name='Дата' >
                <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
            </FieldComponent>
-
+           <ItemsGridComponent items={data?.incomeItems ?? []}
+                               onChange={(items) => {onChange({...data, incomeItems: items})}}
+                               nextId={nextId} setNextId={(id) => {setNextId(id)}}
+                               columns={[
+                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resource', options: optionsResource},
+                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unit', options: optionsUnit},
+                                   {id: 'quantity', type: 'number', title: 'Количество', field: 'quantity', options: []},
+                               ]} />
        </>
    )
 }

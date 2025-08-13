@@ -6,10 +6,12 @@ type PureTextInputProps = {
     name: string,
     placeholder?: string,
     disabled?: boolean,
-    maxLen?: number
+    maxLen?: number,
+    textSize?: 'large' | 'small',
+    type?: 'text' | 'number'
 }
 
-const PureTextInput = ({value, onChange, name, placeholder, disabled, maxLen} : PureTextInputProps) => {
+const PureTextInput = ({value, onChange, name, placeholder, disabled, maxLen, textSize = 'large', type = 'text'} : PureTextInputProps) => {
 
     return (
         <div>
@@ -23,10 +25,11 @@ const PureTextInput = ({value, onChange, name, placeholder, disabled, maxLen} : 
                         id={name}
                         value={value}
                         className={(value == null? "": value.length > (maxLen ?? 256) ?"text-danger":"")
-                            + " fs-5"}
+                            + ( textSize === 'large' ? " fs-5" : ' fs-6')}
                         onChange={e => {onChange(e.target.value);} }
                         placeholder={placeholder}
                         disabled={disabled}
+                        type={type}
                     />
 
                 </div>
