@@ -1,10 +1,12 @@
-import type {FilterOptions, SelectOption} from "../types/Filters";
+import type {FilterOptions, SelectFilterOptions, SelectOption} from "../types/Filters";
 import PureSelectMultiInput from "./pure/controls/PureSelectMultiInput";
 import {useEffect, useState} from "react";
+import {DataProvider} from "../api/DataProvider";
 
 
-const FilterComponent = ({fieldName, name, type, onChange}:FilterOptions) => {
+const FilterComponent = (props:FilterOptions) => {
 
+    const {fieldName, name, type, onChange} = props
     //console.log('filterComponent', type, fieldName, options, onChange)
 
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
@@ -16,7 +18,8 @@ const FilterComponent = ({fieldName, name, type, onChange}:FilterOptions) => {
             case "select":
             {
                 //load options ?
-                setOptions([{value:'1',title:'1'}]);
+                const dp = new DataProvider((props as SelectFilterOptions).apiPath)
+                dp.getData().then(data => setOptions(data.items))
                 break;
             }
             case "date":

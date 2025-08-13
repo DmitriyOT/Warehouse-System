@@ -9,12 +9,13 @@ interface BaseFilterOptions {
     onChange?: (value: ReturnFilter) => any,
 }
 
-interface SelectFilterOptions extends BaseFilterOptions{
+export interface SelectFilterOptions extends BaseFilterOptions{
     type: 'select',
-    options: Array<SelectOption>,
+    options?: Array<SelectOption>,
+    apiPath: string,
 }
 
-interface DateFilterOptions extends BaseFilterOptions{
+export interface DateFilterOptions extends BaseFilterOptions{
     type: 'date',
     startDate?: Date,
     endDate?: Date,
