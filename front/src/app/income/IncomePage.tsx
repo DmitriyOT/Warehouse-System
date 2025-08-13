@@ -3,7 +3,7 @@ import {INCOME_API_PATH, INCOME_PAGE_ROUTE, RESOURCE_API_PATH, UNIT_API_PATH} fr
 
 const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Поступления', 'Filters',
     [
-        {field: 'number', headerName: 'Номер', width: 150},
+        {field: 'number', headerName: 'Номер', width: 300},
         {field: 'date', headerName: 'Дата', width: 150},
     ], [
         {fieldName: 'Number', name: 'Номер', type:'select', apiPath: INCOME_API_PATH },

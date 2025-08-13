@@ -7,9 +7,9 @@ import {
     UNIT_PAGE_ROUTE
 } from "./consts";
 import BasePage from "../app/BasePage";
-import BalancePage from "../app/BalancePage";
+import BalancePage from "../app/balance/BalancePage";
 import IncomePage from "../app/income/IncomePage";
-import ShipmentPage from "../app/ShipmentPage";
+import ShipmentPage from "../app/shipment/ShipmentPage";
 import ClientPage from "../app/client/ClientPage";
 import UnitPage from "../app/unit/UnitPage";
 import ResourcePage from "../app/resource/ResourcePage";
@@ -17,6 +17,7 @@ import ResourceItemPage from "../app/resource/ResourceItemPage";
 import ClientItemPage from "../app/client/ClientItemPage";
 import UnitItemPage from "../app/unit/UnitItemPage";
 import IncomeItemPage from "../app/income/IncomeItemPage";
+import ShipmentItemPage from "../app/shipment/ShipmentItemPage";
 
 export const routes: Array<{path: string, Component: any}> = [
     {
@@ -42,6 +43,10 @@ export const routes: Array<{path: string, Component: any}> = [
     {
         path: SHIPMENT_PAGE_ROUTE,
         Component: ShipmentPage,
+    },
+    {
+        path: SHIPMENT_PAGE_ROUTE + '/:id',
+        Component: ShipmentItemPage,
     },
     {
         path: CLIENT_PAGE_ROUTE,

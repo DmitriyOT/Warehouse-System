@@ -3,7 +3,7 @@
 const BasePage = () => {
     return (
         <>
-            base page
+
         </>
     )
 }
