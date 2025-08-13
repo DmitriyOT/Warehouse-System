@@ -2,20 +2,21 @@ import type {ItemComponentProps, IncomeEntity, ResourceEntity, UnitEntity} from 
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
-import {Button} from "react-bootstrap";
-import PureSelectInput from "../../components/pure/controls/PureSelectInput";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../../api/DataProvider";
 import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
-import {GridData, ResponseGridDto} from "../../types/Response";
+import {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
+import {ModalContext} from "../../App";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
 
-    const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH);
-    const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH);
+    const mContext = useContext(ModalContext)
+
+    const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
+    const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH, mContext);
     const [nextId, setNextId] = useState<number>(-1)
 
     const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])

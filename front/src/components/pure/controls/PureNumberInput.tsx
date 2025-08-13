@@ -1,14 +1,15 @@
 import {Form} from "react-bootstrap";
 
-type PureTextInputProps = {
+type PureNumberInputProps = {
     value: number,
     onChange: (value: number) => void,
     id: string,
+    placeholder?: string,
     disabled?: boolean,
     textSize?: 'large' | 'small',
 }
 
-const PureNumberInput = ({value, onChange, id, placeholder, disabled, textSize = 'large'} : PureTextInputProps) => {
+const PureNumberInput = ({value, onChange, id, placeholder, disabled, textSize = 'large'} : PureNumberInputProps) => {
 
     return (
         <div className="w-100">
