@@ -10,7 +10,7 @@ const ShipmentPage = createGridPage(SHIPMENT_API_PATH, SHIPMENT_PAGE_ROUTE, 'О�
         {field: 'client', headerName: 'Клиент', width: 150},
         {field: 'state', headerName: 'Статус', width: 150},
     ], [
-        {fieldName: 'Date', name: 'Период', type:'date', apiPath: '' },
+        {fieldName: 'Date', name: 'Период', type:'date' },
         {fieldName: 'Number', name: 'Номер', type:'select', apiPath: SHIPMENT_API_PATH },
         {fieldName: 'Client', name: 'Клиент', type:'select', apiPath: CLIENT_API_PATH },
         {fieldName: 'Resource', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },

@@ -1,32 +1,34 @@
 import type {
     ItemComponentProps,
-    IncomeEntity,
     ResourceEntity,
     UnitEntity,
-    IncomeItemEntity
+    ClientEntity, ShipmentEntity, ShipmentItemEntity
 } from "../../types/Entities";
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
 import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../../api/DataProvider";
-import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
+import {CLIENT_API_PATH, RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
 import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 import {ModalContext} from "../../App";
+import PureSelectInput from "../../components/pure/controls/PureSelectInput";
 
 
-const ShipmentItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
+const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
 
     const mContext = useContext(ModalContext)
 
     const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
     const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH, mContext);
+    const DpClient = new DataProvider<ClientEntity>(CLIENT_API_PATH, mContext);
     const [nextId, setNextId] = useState<number>(-1)
 
     const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
     const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
+    const [optionsClient, setOptionsClient] = useState<Array<SelectOption>>([])
 
     useEffect(() => {
         DpResource.getData().then(data => {
@@ -36,6 +38,10 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
         DpUnit.getData().then(data => {
             let dataT = data as GridData<UnitEntity>;
             setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
+        })
+        DpClient.getData().then(data => {
+            let dataT = data as GridData<ClientEntity>;
+            setOptionsClient( dataT.items.map(e => ({value: e.id.toString(), title: e.name})))
         })
 
     }, [])
@@ -49,8 +55,13 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
            <FieldComponent name='Дата' >
                <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
            </FieldComponent>
-           <ItemsGridComponent<IncomeItemEntity> items={data?.incomeItems ?? []}
-                               onChange={(items) => {onChange({...data!, incomeItems: items})}}
+           <FieldComponent name='Дата' >
+               <PureSelectInput options={optionsClient} onChange={(e) => { onChange({...data!, clientId: +e})} }
+                                selected={data?.clientId?.toString()}
+               />
+           </FieldComponent>
+           <ItemsGridComponent<ShipmentItemEntity> items={data?.shipmentItems ?? []}
+                               onChange={(items) => {onChange({...data!, shipmentItems: items})}}
                                nextId={nextId} setNextId={(id) => {setNextId(id)}}
                                columns={[
                                    {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', options: optionsResource},
