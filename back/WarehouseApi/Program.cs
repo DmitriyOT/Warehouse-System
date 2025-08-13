@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using Warehouse.Contracts.Api.Response;
-using Warehouse.Infrastructure.Db;
-using Warehouse.Contracts.Application;
-using Warehouse.Application.Services;
-using Warehouse.Contracts.Infrastracture;
-using Warehouse.Infrastructure.Db.Repository;
-using Warehouse.Domain.Models.Base;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
+using Warehouse.Application.Services;
+using Warehouse.Application.Services.Base;
+using Warehouse.Contracts.Api.Response;
+using Warehouse.Contracts.Application;
+using Warehouse.Contracts.Infrastracture;
+using Warehouse.Domain.Models;
+using Warehouse.Domain.Models.Base;
+using Warehouse.Infrastructure.Db;
+using Warehouse.Infrastructure.Db.Repository;
+using Warehouse.Infrastructure.Db.Repository.Base;
 
 namespace Warehouse.Api;
 
@@ -72,6 +75,9 @@ public class Program
         builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
         builder.Services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
         builder.Services.AddScoped(typeof(IArchiveCrudRepository<>), typeof(ArchiveCrudRepository<>));
+
+        builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
+        builder.Services.AddScoped<IncomeService>();
 
         builder.Services.AddCors(options =>
          {

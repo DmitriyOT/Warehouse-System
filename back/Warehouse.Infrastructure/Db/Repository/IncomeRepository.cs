@@ -1,0 +1,105 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Infrastracture;
+using Warehouse.Domain.Models;
+using Warehouse.Infrastructure.Db.Repository.Base;
+
+namespace Warehouse.Infrastructure.Db.Repository;
+
+public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
+{
+    public IncomeRepository(PostgresDbContext db) : base(db)
+    {
+    }
+
+    /// <summary>
+    /// Получить элемент без отслеживания изменений
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public override async Task<IncomeEntity> GetItem(long id)
+    {
+        var item = await entities.AsNoTracking()
+            .Include(x => x.IncomeItems)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        if (item == null)
+        {
+            throw new Exception($"Error. Item with this Id={id} not found in Database.");
+        }
+        else
+        {
+            return item;
+        }
+    }
+
+    public override async Task<long> EditItem(IncomeEntity item)
+    {
+        var itemDb = await entities
+            .AsNoTracking()
+            .Include(x => x.IncomeItems)
+            .FirstOrDefaultAsync(x => x.Id == item.Id);
+
+        if (itemDb == null)
+        {//Create New
+            if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
+                item.Id = 0;
+
+            entities.Add(item);
+
+            if (item.IncomeItems != null)
+            {
+                foreach (var incomeItem in item.IncomeItems)
+                {
+                    incomeItem.Id = 0;
+                    incomeItem.Income = item;
+                }
+                DB.incomeItems.AddRange(item.IncomeItems);
+            }
+        }
+        else
+        {//edit exist
+            entities.Attach(item);
+            DB.Entry(item).State = EntityState.Modified;
+            if (item.IncomeItems != null)
+            {
+                HashSet<long> itemsMap = new HashSet<long>();
+                foreach (var incomeItem in item.IncomeItems)
+                {
+                    incomeItem.Income = item;
+                    if (incomeItem.Id < 0)
+                    {//add new items
+                        incomeItem.Id = 0;
+                        DB.incomeItems.Add(incomeItem);
+                    }
+                    else
+                    {//add to set exist items
+                        itemsMap.Add(incomeItem.Id);
+                        //edit items
+                        DB.incomeItems.Attach(incomeItem);
+                        DB.Entry(incomeItem).State = EntityState.Modified;
+                    }
+                }
+
+                if (itemDb.IncomeItems != null)
+                {//delete removed items
+                    foreach (var incomeItem in itemDb.IncomeItems)
+                    {
+                        if(!itemsMap.Contains(incomeItem.Id))
+                        {
+                            DB.incomeItems.Remove(incomeItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        await DB.SaveChangesAsync();
+        DB.Entry(item).State = EntityState.Detached;
+        return item.Id;
+    }
+}

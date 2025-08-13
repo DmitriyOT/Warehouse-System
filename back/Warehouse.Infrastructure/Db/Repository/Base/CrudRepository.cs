@@ -9,7 +9,7 @@ using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Infrastructure.Db.Repository;
+namespace Warehouse.Infrastructure.Db.Repository.Base;
 
 /// <summary>
 /// Базовый репозиторий поддерживающий CRUD операции
@@ -40,7 +40,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public async Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options)
+    public virtual async Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options)
     {
         var query = GetQuery(options);
         return Tuple.Create(
@@ -51,7 +51,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
             );
     }
 
-    private IQueryable<Entity> GetQuery(GridOptionsDto options)
+    protected IQueryable<Entity> GetQuery(GridOptionsDto options)
     {
         var query = entities.AsQueryable();//Sorting base on ID
         if (options.Filters != null)
@@ -126,7 +126,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<Entity> GetItem(long id)
+    public virtual async Task<Entity> GetItem(long id)
     {
         var item = await entities.AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -145,7 +145,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    public async Task<long> EditItem(Entity item)
+    public virtual async Task<long> EditItem(Entity item)
     {
         var itemDb = await entities
             .AsNoTracking()
@@ -176,7 +176,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task DeleteItem(long id)
+    public virtual async Task DeleteItem(long id)
     {
         var item = await entities
             .FirstAsync(x => x.Id == id);

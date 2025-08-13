@@ -2,7 +2,7 @@
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Infrastructure.Db.Repository;
+namespace Warehouse.Infrastructure.Db.Repository.Base;
 
 /// <summary>
 /// Репозиторий для удобной работы с объектами, поддерживающими архив

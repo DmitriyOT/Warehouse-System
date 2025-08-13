@@ -3,7 +3,7 @@ using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Application.Services;
+namespace Warehouse.Application.Services.Base;
 
 /// <summary>
 /// CRUD сервис плюс поддержа состояния архива
