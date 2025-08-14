@@ -1,7 +1,5 @@
 # WarehouseExampleNetReact
-Test task for a vacancy and an example of my skills in developing a web application on .Net and ReactJS.
-
-Тестовое задание на одну вакансию.
+Пример системы по управлению складом (упрощённо).
 
 ## Архитектура
 back - папка с серверной частью, написан на ASP.NET Core.
