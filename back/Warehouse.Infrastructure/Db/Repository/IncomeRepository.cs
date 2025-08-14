@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Infrastructure.Db.Repository.Base;
@@ -29,7 +30,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
-            throw new Exception($"Error. Item with this Id={id} not found in Database.");
+            throw new UserException($"Ошибка. Объект не найден в базе данных.");
         }
         else
         {

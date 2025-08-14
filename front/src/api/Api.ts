@@ -12,12 +12,25 @@ const $host = axios.create({
 
 const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
 
+    const showError = (text: string) => {
+        modalC?.setModal({header:'Ошибка', content: text, buttonText: 'Ок', onClose:
+                () => {modalC?.setModal(null)} })
+    }
+
     const errorHandle = async (script: any) => {
         try {
-            return await script();
+            const result = await script();
+            if(result?.hasError)
+            {
+                showError( result.errorMessage )
+            }
+            else
+            {
+                return result?.response;
+            }
         }
         catch (e) {
-            modalC?.setModal({header:'Ошибка', content: (e as unknown as Error).message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
+            showError( (e as unknown as Error).message );
         }
     }
 
@@ -26,7 +39,7 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
             return await errorHandle( async () => {
                 if (itemId !== 0) {
                     const data = await $host.get<ResponseDto<T>>(itemPath + '/getItem?id=' + itemId);
-                    return data.data.response;
+                    return data.data;
                 } else {
                     return undefined;
                 }
@@ -35,13 +48,13 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
         save: async (item: T) => {
             return await errorHandle( async () => {
                 const {data} = await $host.post<ResponseDto<number>>(itemPath + '/EditItem', item);
-                return data.response;
+                return data;
             } )
         },
         deleteItems: async (itemId: number ) => {
             return await errorHandle( async () => {
                 const {data} = await $host.post<ResponseDto<T>>(itemPath + '/DeleteItems?id=' + itemId);
-                return data.response;
+                return data;
             })
         },
         archive: async (itemId: number, newState: boolean) => {
