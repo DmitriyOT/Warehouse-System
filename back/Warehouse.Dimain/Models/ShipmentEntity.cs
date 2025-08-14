@@ -1,4 +1,6 @@
-﻿using Warehouse.Domain.Models.Base;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Domain.Models;
 
@@ -25,7 +27,19 @@ public class ShipmentEntity : BaseEntityWithId
     /// <summary>
     /// Клиент отгрузки
     /// </summary>
+    [JsonIgnore]
     public virtual ClientEntity? Client { get; set; }
+
+    /// <summary>
+    /// Имя клиента
+    /// </summary>
+    [NotMapped]
+    public string? ClientName { get; set; }
+
+    /// <summary>
+    /// Подписана ли отгрузка
+    /// </summary>
+    public bool IsApprove { get; set; }
 
     /// <summary>
     /// Ресурсы отгрузки

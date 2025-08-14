@@ -7,6 +7,7 @@ using Warehouse.Application.Services;
 using Warehouse.Application.Services.Base;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
+using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Domain.Models.Base;
@@ -135,9 +136,19 @@ public class Program
                 Console.WriteLine(exHandler?.Error?.ToString() ?? "Internal Error");
                 logger.LogError(exHandler?.Error?.ToString() ?? "Internal Error");
 
-                await context.Response.WriteAsJsonAsync(
-                    new ErrorResponseDto(exHandler?.Error ?? new Exception("Internal not handled exception") )
-                    );
+                if (exHandler?.Error.GetType() == typeof(UserException))
+                {
+                    await context.Response.WriteAsJsonAsync(
+                                        new ErrorResponseDto(exHandler?.Error ?? new Exception("Ошибка системы."))
+                                        );
+                }
+                else
+                {
+                    await context.Response.WriteAsJsonAsync(
+                                        new ErrorResponseDto(new Exception("Ошибка системы."))
+                                        );
+                }
+
             });
         });
 

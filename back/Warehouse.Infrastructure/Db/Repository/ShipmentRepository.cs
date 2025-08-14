@@ -37,6 +37,25 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
         }
     }
 
+    public override async Task<Tuple<List<ShipmentEntity>, long>> GetAll(GridOptionsDto options)
+    {
+        var query = GetQuery(options);
+        return Tuple.Create(
+            await query.OrderBy(x => x.Id)
+                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+                .Select(x => new ShipmentEntity
+                {
+                    Id = x.Id,
+                    Number = x.Number,
+                    ClientName = x.Client.Name,
+                    Date = x.Date,
+                    IsApprove = x.IsApprove,
+                })
+                .AsNoTracking().ToListAsync(),//To array (List)
+            await query.LongCountAsync()
+            );
+    }
+
     public override async Task<long> EditItem(ShipmentEntity item)
     {
         var itemDb = await entities

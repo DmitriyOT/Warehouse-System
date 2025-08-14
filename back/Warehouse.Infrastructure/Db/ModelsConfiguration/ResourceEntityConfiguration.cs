@@ -9,5 +9,8 @@ public class ResourceEntityConfiguration : IEntityTypeConfiguration<ResourceEnti
     public void Configure(EntityTypeBuilder<ResourceEntity> builder)
     {
         builder.HasIndex(e => e.Name).IsUnique();
+
+        builder.HasMany(x => x.IncomeItems).WithOne(x => x.Resource);
+        builder.HasMany(x => x.ShipmentItems).WithOne(x => x.Resource);
     }
 }

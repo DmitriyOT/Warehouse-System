@@ -1,4 +1,5 @@
-﻿using Warehouse.Domain.Models.Base;
+﻿using System.Text.Json.Serialization;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Domain.Models;
 
@@ -11,4 +12,16 @@ public class ResourceEntity : BaseEntityWithIdArchive
     /// Наименование
     /// </summary>
     public required string Name { get; set; }
+
+    /// <summary>
+    /// Навигационное свойство поступлений
+    /// </summary>
+    [JsonIgnore]
+    public virtual ICollection<IncomeItemEntity>? IncomeItems { get; set; }
+
+    /// <summary>
+    /// Навигационное свойство отгрузок
+    /// </summary>
+    [JsonIgnore]
+    public virtual ICollection<ShipmentItemEntity>? ShipmentItems { get; set; }
 }
