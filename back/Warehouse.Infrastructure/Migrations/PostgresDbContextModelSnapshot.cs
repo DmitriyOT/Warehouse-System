@@ -45,7 +45,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("balances");
+                    b.ToTable("balances", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ClientEntity", b =>
@@ -72,7 +72,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("clients");
+                    b.ToTable("clients", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.IncomeEntity", b =>
@@ -92,7 +92,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("incomes");
+                    b.ToTable("incomes", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.IncomeItemEntity", b =>
@@ -123,7 +123,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("incomeItems");
+                    b.ToTable("incomeItems", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ResourceEntity", b =>
@@ -146,7 +146,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("resources");
+                    b.ToTable("resources", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentEntity", b =>
@@ -174,7 +174,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("shipments");
+                    b.ToTable("shipments", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentItemEntity", b =>
@@ -205,7 +205,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("shipmetItems");
+                    b.ToTable("shipmetItems", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.UnitEntity", b =>
@@ -228,7 +228,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("units");
+                    b.ToTable("units", (string)null);
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.BalanceEntity", b =>

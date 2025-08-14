@@ -17,7 +17,7 @@ public class BalanceController : BaseCrudController<BalanceEntity>
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="crudService"></param>
-    public BalanceController(ILogger<BalanceController> logger, ICrudService<BalanceEntity> crudService)
+    public BalanceController(ILogger<BalanceController> logger, IBalanceService crudService)
         : base(logger, crudService)
     {
     }

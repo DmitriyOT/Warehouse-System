@@ -52,7 +52,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
             );
     }
 
-    protected IQueryable<Entity> GetQuery(GridOptionsDto options)
+    protected virtual IQueryable<Entity> GetQuery(GridOptionsDto options)
     {
         var query = entities.AsQueryable();//Sorting base on ID
         if (options.Filters != null)
@@ -79,24 +79,17 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
                         {
                             if (filter.Type == "equal")
                             {
-                                
-                                if(filter.Argument.Contains(','))
+                                foreach(var item in filter.Argument.Split(','))
                                 {
-                                    foreach(var item in filter.Argument.Split(','))
+                                    var constExp = Expression.Constant(item);
+                                    if (exp == null)
                                     {
-                                        if(exp == null)
-                                        {
-                                            exp = Expression.Equal(propertyAccess, Expression.Constant(item));
-                                        }
-                                        else
-                                        {
-                                            exp = Expression.Or(exp, Expression.Equal(propertyAccess, Expression.Constant(item)));
-                                        }
+                                        exp = Expression.Equal(propertyAccess, constExp);
                                     }
-                                }
-                                else
-                                {
-                                    exp = Expression.Equal(propertyAccess, Expression.Constant(filter.Argument));
+                                    else
+                                    {
+                                        exp = Expression.Or(exp, Expression.Equal(propertyAccess, constExp));
+                                    }
                                 }
                             }
                             else
@@ -105,8 +98,29 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
                             }
                             break;
                         }
-                    case "Long":
-                        continue;
+                    case "Int64":
+                        {
+                            if (filter.Type == "equal")
+                            {
+                                foreach (var item in filter.Argument.Split(','))
+                                {
+                                    var constExp = Expression.Constant(long.Parse(item));
+                                    if (exp == null)
+                                    {
+                                        exp = Expression.Equal(propertyAccess, constExp);
+                                    }
+                                    else
+                                    {
+                                        exp = Expression.Or(exp, Expression.Equal(propertyAccess, constExp));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                            break;
+                        }
                 }
                 if (whereExp == null)
                     whereExp = exp;

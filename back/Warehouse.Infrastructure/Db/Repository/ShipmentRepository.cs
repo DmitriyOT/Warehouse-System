@@ -24,8 +24,9 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
     /// <returns></returns>
     public override async Task<ShipmentEntity> GetItem(long id)
     {
-        var item = await entities.AsNoTracking()
+        var item = await entities
             .Include(x => x.ShipmentItems)
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
@@ -59,8 +60,8 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
     public override async Task<long> EditItem(ShipmentEntity item)
     {
         var itemDb = await entities
-            .AsNoTracking()
             .Include(x => x.ShipmentItems)
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == item.Id);
 
         if (itemDb == null)
@@ -110,6 +111,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
                     {
                         if(!itemsMap.Contains(incomeItem.Id))
                         {
+                            incomeItem.Shipment = null;
                             DB.shipmetItems.Remove(incomeItem);
                         }
                     }

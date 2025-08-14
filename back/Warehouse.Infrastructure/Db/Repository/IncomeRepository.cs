@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
@@ -14,8 +15,11 @@ namespace Warehouse.Infrastructure.Db.Repository;
 
 public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
 {
-    public IncomeRepository(PostgresDbContext db) : base(db)
+    protected IBalanceService _balanceService { get; set; }
+
+    public IncomeRepository(PostgresDbContext db, IBalanceService balanceService) : base(db)
     {
+        _balanceService = balanceService;
     }
 
     /// <summary>
@@ -41,8 +45,8 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
     public override async Task<long> EditItem(IncomeEntity item)
     {
         var itemDb = await entities
-            .AsNoTracking()
             .Include(x => x.IncomeItems)
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == item.Id);
 
         if (itemDb == null)
@@ -60,6 +64,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                     incomeItem.Income = item;
                 }
                 DB.incomeItems.AddRange(item.IncomeItems);
+                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
             }
         }
         else
@@ -68,7 +73,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             DB.Entry(item).State = EntityState.Modified;
             if (item.IncomeItems != null)
             {
-                HashSet<long> itemsMap = new HashSet<long>();
+                Dictionary<long, long> itemsMap = new Dictionary<long, long>();
                 foreach (var incomeItem in item.IncomeItems)
                 {
                     incomeItem.Income = item;
@@ -76,10 +81,11 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                     {//add new items
                         incomeItem.Id = 0;
                         DB.incomeItems.Add(incomeItem);
+                        await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
                     }
                     else
                     {//add to set exist items
-                        itemsMap.Add(incomeItem.Id);
+                        itemsMap.Add(incomeItem.Id, incomeItem.Quantity);
                         //edit items
                         DB.incomeItems.Attach(incomeItem);
                         DB.Entry(incomeItem).State = EntityState.Modified;
@@ -90,9 +96,17 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                 {//delete removed items
                     foreach (var incomeItem in itemDb.IncomeItems)
                     {
-                        if(!itemsMap.Contains(incomeItem.Id))
+                        if(!itemsMap.ContainsKey(incomeItem.Id))
                         {
+                            incomeItem.Income = null;
                             DB.incomeItems.Remove(incomeItem);
+                            incomeItem.Quantity = -incomeItem.Quantity;
+                            await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
+                        }
+                        else
+                        {
+                            incomeItem.Quantity = itemsMap[incomeItem.Id] - incomeItem.Quantity;
+                            await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
                         }
                     }
                 }

@@ -25,6 +25,6 @@ export interface DateFilterOptions extends BaseFilterOptions{
 export type FilterOptions = SelectFilterOptions | DateFilterOptions
 
 export type ReturnFilter = {
-    options: SelectOption[],
+    argument: string,
     fieldName: string
 }

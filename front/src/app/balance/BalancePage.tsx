@@ -6,8 +6,8 @@ import {
 
 const BalancePage = createGridPage(BALANCE_API_PATH, BALANCE_PAGE_ROUTE, 'Баланс', 'Filters',
     [
-        {field: 'resource', headerName: 'Ресурс', width: 300},
-        {field: 'unit', headerName: 'Единица измерения', width: 150},
+        {field: 'resource', headerName: 'Ресурс', width: 300, renderCell: (params: any) => (params.value.name) },
+        {field: 'unit', headerName: 'Единица измерения', width: 150, renderCell: (params: any) => (params.value.name) },
         {field: 'quantity', headerName: 'Количество', width: 150},
     ], [
         {fieldName: 'Resource', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },

@@ -7,15 +7,19 @@ namespace Warehouse.Domain.Models;
 /// </summary>
 public class BalanceEntity : BaseEntityWithId
 {
+    public long ResourceId { get; set; }
+
+    public long UnitId { get; set; }
+
     /// <summary>
     /// Ресурс
     /// </summary>
-    public virtual required ResourceEntity Resource { get; set; }
+    public virtual ResourceEntity? Resource { get; set; }
 
     /// <summary>
     /// Единица измерения
     /// </summary>
-    public virtual required UnitEntity Unit { get; set; }
+    public virtual UnitEntity? Unit { get; set; }
 
     /// <summary>
     /// Количество
