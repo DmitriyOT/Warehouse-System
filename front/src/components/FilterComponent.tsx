@@ -14,6 +14,9 @@ const FilterComponent = (props:FilterOptions) => {
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
     const [options, setOptions] = useState<Array<SelectOption>>([])
 
+    const [startDate, setStartDate] = useState<string | undefined>(undefined);
+    const [endDate, setEndDate] = useState<string | undefined>(undefined);
+
     const mContext = useContext(ModalContext)
 
     useEffect(() => {
@@ -41,7 +44,9 @@ const FilterComponent = (props:FilterOptions) => {
                                              selectedOptions={selectedOptions}
                                         onChange={(value) => {setSelectedOptions(value); onChange!({options: value, fieldName: fieldName}); } }/>
             case "date":
-                return <PureDateIntervalInput valueStart={undefined} valueEnd={undefined} onChange={() => {} } />
+                return <PureDateIntervalInput valueStart={startDate} valueEnd={endDate}
+                                              onChange={([start, end]) =>
+                                                {setStartDate(start); setEndDate(end)} } />
         }
     }
 

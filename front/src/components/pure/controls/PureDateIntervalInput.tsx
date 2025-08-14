@@ -5,7 +5,7 @@ import "../../style/DateInput.css"
 type PureDateIntervalInputProps = {
     valueStart: string | undefined,
     valueEnd: string | undefined,
-    onChange: (value: string) => void,
+    onChange: (values: Array<string|undefined>) => void,
 }
 
 const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateIntervalInputProps) => {
@@ -14,15 +14,27 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
         return date.toISOString().split('T')[0];
     }
 
-  return (
-      <div className='w-100'>
-          <DatePicker selected={ valueStart !== undefined ? new Date(valueStart) : undefined as unknown as Date }
-                      onChange={(e) => {let date = e as Date;onChange(processResult(date))} }
-                      showYearDropdown />
+    const processValue = (value: string | undefined) => {
+        return value !== undefined ? new Date(value) : undefined as unknown as Date;
+    }
 
-          <DatePicker selected={ valueEnd !== undefined ? new Date(valueEnd) : undefined as unknown as Date }
-                      onChange={(e) => {let date = e as Date;onChange(processResult(date))} }
-                      showYearDropdown />
+  return (
+      <div className='w-100 d-flex'>
+          <DatePicker selected={ processValue(valueStart) }
+                      onChange={(e) => {let date = e as Date;onChange([processResult(date), valueEnd])} }
+                      showYearDropdown
+                      startDate={ processValue(valueStart) }
+                      endDate={ processValue(valueEnd) }
+                      selectsStart
+          />
+
+          <DatePicker selected={ processValue(valueEnd) }
+                      onChange={(e) => {let date = e as Date;onChange([valueStart, processResult(date)])} }
+                      showYearDropdown
+                      startDate={ processValue(valueStart) }
+                      endDate={ processValue(valueEnd) }
+                      selectsEnd
+          />
       </div>
   )
 }
