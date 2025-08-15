@@ -26,8 +26,9 @@ const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageCha
                                 params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                             }
                             onRowDoubleClick={(params) => onItemOpen(+(params.row.hrefId ?? params.row.id)) }
-                            
-
+                            disableColumnFilter
+                            disableColumnSorting
+                            sortingMode={'server'}
                   />
               </Box>
           </ThemeProvider>
