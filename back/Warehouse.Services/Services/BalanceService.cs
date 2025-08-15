@@ -36,6 +36,76 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         await ApplyDiff(arr);
     }
 
+    public async Task CalculateAndApplyDifference(ICollection<IncomeItemEntity> itemsOld, ICollection<IncomeItemEntity> itemsNow)
+    {
+        var arrOld = itemsOld.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        var arrNow = itemsOld.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        await ApplyDiff(CalculateDiff(arrOld, arrNow));
+    }
+
+    public async Task CalculateAndApplyDifference(ICollection<ShipmentItemEntity> itemsOld, ICollection<ShipmentItemEntity> itemsNow)
+    {
+        var arrOld = itemsOld.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        var arrNow = itemsOld.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        await ApplyDiff(CalculateDiff(arrOld, arrNow));
+    }
+
+    private ICollection<BalanceItem> CalculateDiff(Dictionary<long, BalanceDiffItem> oldItems, Dictionary<long, BalanceDiffItem> nowItems)
+    {
+        var result = new List<BalanceItem>();
+
+        foreach(var item in nowItems.Values)
+        {
+            if(oldItems.ContainsKey(item.Id))
+            {
+                //diff
+            }
+            else
+            {
+                result.Add(item);
+            }
+        }
+
+        foreach (var item in oldItems.Values)
+        {
+            if (!nowItems.ContainsKey(item.Id))
+            {
+                item.Delta = -item.Delta;
+                result.Add(item);
+            }
+        }
+
+        return result;
+    }
+
     private async Task ApplyDiff(ICollection<BalanceItem> items)
     {
         foreach (var item in items)
@@ -71,13 +141,18 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
                 await (_repository as IBalanceRepository)!.DeleteItem(balance.Id);
         }
     }
-}
 
-internal class BalanceItem
-{
-    public long ResourceId { get; set; }
+    private class BalanceItem
+    {
+        public long ResourceId { get; set; }
 
-    public long UnitId { get; set; }
+        public long UnitId { get; set; }
 
-    public long Delta { get; set; }
+        public long Delta { get; set; }
+    }
+
+    private class BalanceDiffItem : BalanceItem
+    {
+        public long Id { get; set; }
+    }
 }

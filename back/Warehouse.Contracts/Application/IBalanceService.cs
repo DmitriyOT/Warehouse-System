@@ -8,14 +8,29 @@ namespace Warehouse.Contracts.Application;
 public interface IBalanceService : ICrudService<BalanceEntity>
 {
     /// <summary>
-    /// Применить положительные изменения для баланса
+    /// Применить изменения для баланса
     /// </summary>
     /// <returns></returns>
     public Task ApplyIncomeDifference(ICollection<IncomeItemEntity> items);
 
     /// <summary>
-    /// Применить отрицательные изменения для баланса
+    /// Применить изменения для баланса
     /// </summary>
     /// <returns></returns>
     public Task ApplyShipmentDifference(ICollection<ShipmentItemEntity> items);
+
+    /// <summary>
+    /// Посчитать и применить изменения баланса
+    /// </summary>
+    /// <param name="itemsOld"></param>
+    /// <param name="itemsNow"></param>
+    /// <returns></returns>
+    public Task CalculateAndApplyDifference(ICollection<IncomeItemEntity> itemsOld, ICollection<IncomeItemEntity> itemsNow);
+    /// <summary>
+    /// Посчитать и применить изменения баланса
+    /// </summary>
+    /// <param name="itemsOld"></param>
+    /// <param name="itemsNow"></param>
+    /// <returns></returns>
+    public Task CalculateAndApplyDifference(ICollection<ShipmentItemEntity> itemsOld, ICollection<ShipmentItemEntity> itemsNow);
 }

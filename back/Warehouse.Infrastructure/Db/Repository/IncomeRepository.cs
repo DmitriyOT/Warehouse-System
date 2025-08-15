@@ -73,7 +73,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             DB.Entry(item).State = EntityState.Modified;
             if (item.IncomeItems != null)
             {
-                Dictionary<long, long> itemsMap = new Dictionary<long, long>();
+                HashSet<long> itemsMap = new HashSet<long>();
                 foreach (var incomeItem in item.IncomeItems)
                 {
                     incomeItem.Income = item;
@@ -81,11 +81,10 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                     {//add new items
                         incomeItem.Id = 0;
                         DB.incomeItems.Add(incomeItem);
-                        await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
                     }
                     else
                     {//add to set exist items
-                        itemsMap.Add(incomeItem.Id, incomeItem.Quantity);
+                        itemsMap.Add(incomeItem.Id);
                         //edit items
                         DB.incomeItems.Attach(incomeItem);
                         DB.Entry(incomeItem).State = EntityState.Modified;
@@ -96,20 +95,15 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                 {//delete removed items
                     foreach (var incomeItem in itemDb.IncomeItems)
                     {
-                        if(!itemsMap.ContainsKey(incomeItem.Id))
+                        if(!itemsMap.Contains(incomeItem.Id))
                         {
                             incomeItem.Income = null;
                             DB.incomeItems.Remove(incomeItem);
-                            incomeItem.Quantity = -incomeItem.Quantity;
-                            await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
-                        }
-                        else
-                        {
-                            incomeItem.Quantity = itemsMap[incomeItem.Id] - incomeItem.Quantity;
-                            await _balanceService.ApplyIncomeDifference(new[] { incomeItem });
                         }
                     }
                 }
+                await _balanceService.CalculateAndApplyDifference(
+                    itemDb.IncomeItems ?? new List<IncomeItemEntity>(), item.IncomeItems);
             }
         }
 
