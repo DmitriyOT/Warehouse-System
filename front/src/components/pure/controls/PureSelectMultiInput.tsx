@@ -26,11 +26,11 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
     return(
         <Dropdown className='w-100'>
             <Dropdown.Toggle variant="outline-dark" className='w-100 d-flex align-items-center'>
-                <div className='d-flex flex-row me-auto'>
+                <div className='d-flex gap-1 flex-wrap me-auto '>
                     {
                         selectedOptions.length > 0 ?
                         selectedOptions.map(e =>
-                            <div key={e.value} className='SelectedItem me-1 ps-1 pe-1 rounded-1'><span>{e.title}</span></div>
+                            <span key={e.value} className='SelectedItem ps-1 pe-1 rounded-1'>{e.title}</span>
                         )
                             :
                             <span>Выберите</span>

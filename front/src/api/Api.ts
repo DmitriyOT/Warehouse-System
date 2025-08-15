@@ -69,13 +69,10 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
 const createGridApi = function<T> (itemPath: string, modalC: ModalContextType) {
     return {
         load: async (gridOptions: GridOptions) => {
-            try {
-                let data = await $host.post<ResponseGridDto<T>>(itemPath + '/getAll', gridOptions);
-                return data.data.response;
-            }
-            catch (e) {
-                modalC?.setModal({header:'Ошибка', content: (e as unknown as Error).message, buttonText: 'Ок', onClose: () => {modalC?.setModal(null)} })
-            }
+            return await errorHandle( async () => {
+                let {data} = await $host.post<ResponseGridDto<T>>(itemPath + '/getAll', gridOptions);
+                return data;
+            }, modalC)
         }
     }
 }

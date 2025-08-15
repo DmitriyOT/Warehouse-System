@@ -13,10 +13,10 @@ const ShipmentPage = createGridPage(SHIPMENT_API_PATH, SHIPMENT_PAGE_ROUTE, 'О�
                     + ' p-1 ps-2 pe-2 rounded-2 text-white'}>{params.value ? 'Подписан' : 'Не подписан'}</span>)},
     ], [
         {fieldName: 'Date', name: 'Период', type:'date' },
-        {fieldName: 'Number', name: 'Номер', type:'select', apiPath: SHIPMENT_API_PATH },
-        {fieldName: 'Client', name: 'Клиент', type:'select', apiPath: CLIENT_API_PATH },
-        {fieldName: 'Resource', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
-        {fieldName: 'Unit', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
+        {fieldName: 'Id', name: 'Номер', type:'select', apiPath: SHIPMENT_API_PATH },
+        {fieldName: 'Client.Id', name: 'Клиент', type:'select', apiPath: CLIENT_API_PATH },
+        {fieldName: 'ShipmentItems.Resource.Id', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
+        {fieldName: 'ShipmentItems.Unit.Id', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
     ])
 
 export default ShipmentPage
