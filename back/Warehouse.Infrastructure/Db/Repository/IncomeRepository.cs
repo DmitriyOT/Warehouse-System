@@ -30,7 +30,8 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
     public override async Task<IncomeEntity> GetItem(long id)
     {
         var item = await entities.AsNoTracking()
-            .Include(x => x.IncomeItems)
+            .Include(x => x.IncomeItems).ThenInclude(x => x.Resource)
+            .Include(x => x.IncomeItems).ThenInclude(x => x.Unit)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
@@ -48,6 +49,15 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             .Include(x => x.IncomeItems)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == item.Id);
+
+        if (item.IncomeItems != null)
+        {
+            foreach (var incomeI in item.IncomeItems)
+            {
+                incomeI.Resource = null;
+                incomeI.Unit = null;
+            }
+        }
 
         if (itemDb == null)
         {//Create New

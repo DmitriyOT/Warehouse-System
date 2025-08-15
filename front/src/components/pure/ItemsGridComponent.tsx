@@ -11,6 +11,7 @@ type GridColumn = {
     title: string;
     type: 'select' | 'text' | 'number';
     field: string;
+    source?: string;
     options?: Array<SelectOption>; // Обязательно для типа 'select'
 };
 
@@ -29,11 +30,11 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
         const newItem: any = { id: nextId };
 
         // Инициализация полей по колонкам
-        columns.forEach(column => {
+        /*columns.forEach(column => {
             newItem[column.field] = column.type === 'select'
                 ? column.options?.at(0)?.value
                 : '';
-        });
+        });*/
 
         setNextId(nextId - 1);
         const newItems = [...items, newItem];
@@ -48,7 +49,11 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
     // Функция получения компонента ввода
     const getInput = (column: GridColumn, item: any) => {
         const handleFieldChange = (newValue: any) => {
-            const updatedItem = { ...item, [column.field]: newValue };
+            let updatedItem;
+            if(item[column.source] !== undefined)
+                updatedItem = { ...item, [column.field]: newValue, [column.source]: {...item[column.source], id: newValue} };
+            else
+                updatedItem = { ...item, [column.field]: newValue };
             const newItems = items.map(i =>
                 i.id === item.id ? updatedItem : i
             );
@@ -59,14 +64,11 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
             case 'select':
                 if (!column.options) return null;
 
-                const currentValue = item[column.field];
-                const selectedOption = column.options.find(opt =>
-                    opt.value === currentValue.toString()
-                );
+                const currentValue = item[column.source];
 
                 return (
                     <PureSelectInput
-                        selected={selectedOption?.value}
+                        selected={{value:currentValue?.id.toString() ?? item[column.field], title: currentValue?.name ?? currentValue?.number}}
                         options={column.options}
                         onChange={(selected) =>
                             handleFieldChange(selected)

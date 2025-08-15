@@ -53,8 +53,8 @@ const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
                                onChange={(items) => {onChange({...data!, incomeItems: items})}}
                                nextId={nextId} setNextId={(id) => {setNextId(id)}}
                                columns={[
-                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', options: optionsResource},
-                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unitId', options: optionsUnit},
+                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', source: 'resource', options: optionsResource},
+                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unitId', source: 'unit', options: optionsUnit},
                                    {id: 'quantity', type: 'number', title: 'Количество', field: 'quantity', options: []},
                                ]} />
        </>
