@@ -24,7 +24,7 @@ const FilterComponent = (props:FilterOptions) => {
         {
             case "select":
             {
-                const dp = new DataProvider<any>((props as SelectFilterOptions).apiPath, mContext)
+                const dp = new DataProvider<any>((props as SelectFilterOptions).apiPath, mContext, true)
                 dp.getData().then(data => {
                     let dataOp: Array<SelectOption> = []
                     data.items.forEach((e: any) => dataOp.push({value: e.id, title: e.name ?? e.number}))
