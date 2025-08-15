@@ -10,7 +10,8 @@ type PureDateIntervalInputProps = {
 
 const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateIntervalInputProps) => {
 
-    const processResult = (date: Date) => {
+    const processResult = (date: Date | null) => {
+        if(date === null) return undefined;
         return date.toISOString().split('T')[0];
     }
 
@@ -26,14 +27,18 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
                       startDate={ processValue(valueStart) }
                       endDate={ processValue(valueEnd) }
                       selectsStart
+                      isClearable={valueStart !== undefined}
+                      dateFormat='yyyy.MM.dd'
           />
-
+          <div className='me-1'></div>
           <DatePicker selected={ processValue(valueEnd) }
                       onChange={(e) => {let date = e as Date;onChange([valueStart, processResult(date)])} }
                       showYearDropdown
                       startDate={ processValue(valueStart) }
                       endDate={ processValue(valueEnd) }
                       selectsEnd
+                      isClearable={valueEnd !== undefined}
+                      dateFormat='yyyy.MM.dd'
           />
       </div>
   )
