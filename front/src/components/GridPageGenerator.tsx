@@ -14,10 +14,12 @@ type GridPageVariant = 'Archive' | 'Filters';
 
 const createGridPage = function<T> (apiPath: string, navPath: string, title: string, variant: GridPageVariant,
                                     columns: Array<{field: string, headerName: string, width: number}>,
-                                    filters: Array<FilterOptions> = [], itemOpenCreate: boolean = true) {
+                                    filters: Array<FilterOptions> = [],
+                                    itemOpenCreate: boolean = true,
+                                    rowsProcess?: (items: any[]) => any[]) {
     const GridPage = () => {
 
-        const [data, setData] = useState<GridData<T> | undefined>(undefined);
+        const [data, setData] = useState<Array<T> | undefined>(undefined);
         const [pageView, setPageView] = useState<PageView>(DEFAULT_PAGE_VIEW);
         const [archive, setArchive] = useState<boolean>(false);
         const [filter, setFilter] = useState<Array<FilterDto>>(
@@ -32,7 +34,16 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
         const LoadData = async (pageN: {page?:number, size?: number}) => {
             load({"page":pageN.page ?? pageView.page, "pageSize":pageN.size ?? pageView.size, filters: filter})
                 .then(data =>
-                { setData(data); setPageView(data?.page ?? DEFAULT_PAGE_VIEW) })
+                {
+                    if(rowsProcess !== undefined)
+                    {
+                        setData(rowsProcess(data.items))
+                    }
+                    else {
+                        setData(data.items);
+                    }
+                    setPageView(data?.page ?? DEFAULT_PAGE_VIEW)
+                })
         }
 
         useEffect(() => {
@@ -86,7 +97,7 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
                         [{id: "applyFilter", onClick: () => {LoadData({});} }]
                     )
                 }
-                                     columns={columns} rows={data?.items ?? []}
+                                     columns={columns} rows={data ?? []}
                                      pageView={ pageView }
                                      onPageChange={(page) => LoadData({page:page})}
                                      onPageSizeChange={(size) => LoadData({size:size})}

@@ -43,6 +43,19 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
         }
     }
 
+    public override async Task<Tuple<List<IncomeEntity>, long>> GetAll(GridOptionsDto options)
+    {
+        var query = GetQuery(options);
+        return Tuple.Create(
+            await query.OrderBy(x => x.Id)
+                .Include(x => x.IncomeItems).ThenInclude(x => x.Resource)
+                .Include(x => x.IncomeItems).ThenInclude(x => x.Unit)
+                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+                .AsNoTracking().ToListAsync(),//To array (List)
+            await query.LongCountAsync()
+            );
+    }
+
     public override async Task<long> EditItem(IncomeEntity item)
     {
         var itemDb = await entities

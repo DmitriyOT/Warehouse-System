@@ -55,9 +55,9 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
            <FieldComponent name='Дата' >
                <PureDateInput value={data?.date} onChange={ (e) => { onChange({...data!, date: e}) } } />
            </FieldComponent>
-           <FieldComponent name='Дата' >
+           <FieldComponent name='Клиент' >
                <PureSelectInput options={optionsClient} onChange={(e) => { onChange({...data!, clientId: +e})} }
-                                selected={data?.clientId?.toString()}
+                                selected={{value:data?.clientId?.toString(), title: data?.client?.name}}
                />
            </FieldComponent>
            <ItemsGridComponent<ShipmentItemEntity> items={data?.shipmentItems ?? []}

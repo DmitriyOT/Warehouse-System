@@ -20,12 +20,14 @@ const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageCha
           <ThemeProvider theme={GridTheme}>
               <Box className='d-flex' sx={{ height: '100%', width: '100%' }} >
                   <DataGrid rows={rows} columns={columns}
-                             style={{backgroundColor: "rgba(0,0,0,0)"}}  hideFooter rowHeight={40}
+                             style={{backgroundColor: "rgba(0,0,0,0)"}}  hideFooter rowHeight={36}
                             //onRowSelectionModelChange={(ids) =>{SetSelectionIds( Array.from(ids.ids) )}}
                             getRowClassName={(params) =>
                                 params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                             }
-                            onRowDoubleClick={(params) => onItemOpen(+params.id) }
+                            onRowDoubleClick={(params) => onItemOpen(+(params.row.hrefId ?? params.row.id)) }
+                            
+
                   />
               </Box>
           </ThemeProvider>

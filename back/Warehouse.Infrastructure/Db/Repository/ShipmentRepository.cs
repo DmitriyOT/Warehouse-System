@@ -44,6 +44,8 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
         return Tuple.Create(
             await query.OrderBy(x => x.Id)
                 .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+                .Include(x => x.ShipmentItems).ThenInclude(x => x.Resource)
+                .Include(x => x.ShipmentItems).ThenInclude(x => x.Unit)
                 .Select(x => new ShipmentEntity
                 {
                     Id = x.Id,
@@ -51,6 +53,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
                     ClientName = x.Client.Name,
                     Date = x.Date,
                     IsApprove = x.IsApprove,
+                    ShipmentItems = x.ShipmentItems
                 })
                 .AsNoTracking().ToListAsync(),//To array (List)
             await query.LongCountAsync()
