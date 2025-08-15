@@ -10,8 +10,8 @@ const BalancePage = createGridPage(BALANCE_API_PATH, BALANCE_PAGE_ROUTE, 'Бал
         {field: 'unit', headerName: 'Единица измерения', width: 150, renderCell: (params: any) => (params.value.name) },
         {field: 'quantity', headerName: 'Количество', width: 150},
     ], [
-        {fieldName: 'Resource', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
-        {fieldName: 'Unit', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
+        {fieldName: 'Resource.Id', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
+        {fieldName: 'Unit.Id', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
     ],
     false)
 

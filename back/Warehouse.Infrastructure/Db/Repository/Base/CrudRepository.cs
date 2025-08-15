@@ -1,14 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
+using Warehouse.Infrastructure.Extentions;
 
 namespace Warehouse.Infrastructure.Db.Repository.Base;
 
@@ -54,84 +57,10 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
 
     protected virtual IQueryable<Entity> GetQuery(GridOptionsDto options)
     {
-        var query = entities.AsQueryable();//Sorting base on ID
+        var query = entities.AsQueryable();
         if (options.Filters != null)
         {
-            var restrictionParameter = Expression.Parameter(typeof(Entity), "p");
-            Expression? whereExp = null;
-            foreach (var filter in options.Filters)
-            {
-                var property = typeof(Entity).GetProperty(filter.PropertyName);
-                if(property == null)
-                {
-                    continue; //exception ?
-                }
-                var propertyAccess = Expression.MakeMemberAccess(restrictionParameter, property);
-                BinaryExpression? exp = null;
-                switch (property.PropertyType.Name)
-                {
-                    case "Boolean":
-                        {
-                            exp = Expression.Equal(propertyAccess, Expression.Constant(bool.Parse(filter.Argument)));
-                            break;
-                        }
-                    case "String":
-                        {
-                            if (filter.Type == "equal")
-                            {
-                                foreach(var item in filter.Argument.Split(','))
-                                {
-                                    var constExp = Expression.Constant(item);
-                                    if (exp == null)
-                                    {
-                                        exp = Expression.Equal(propertyAccess, constExp);
-                                    }
-                                    else
-                                    {
-                                        exp = Expression.Or(exp, Expression.Equal(propertyAccess, constExp));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                            break;
-                        }
-                    case "Int64":
-                        {
-                            if (filter.Type == "equal")
-                            {
-                                foreach (var item in filter.Argument.Split(','))
-                                {
-                                    var constExp = Expression.Constant(long.Parse(item));
-                                    if (exp == null)
-                                    {
-                                        exp = Expression.Equal(propertyAccess, constExp);
-                                    }
-                                    else
-                                    {
-                                        exp = Expression.Or(exp, Expression.Equal(propertyAccess, constExp));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                            break;
-                        }
-                }
-                if (whereExp == null)
-                    whereExp = exp;
-                else
-                    whereExp = Expression.Add(whereExp, exp);
-            }
-            if(whereExp != null)
-            {
-                var lambdaExp = Expression.Lambda<Func<Entity, bool>>(whereExp, restrictionParameter);
-                query = query.Where(lambdaExp);
-            }
+            query = query.ApplyFilters(options.Filters);
         }
         return query;
     }

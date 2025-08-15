@@ -7,8 +7,8 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
         {field: 'date', headerName: 'Дата', width: 150},
     ], [
         {fieldName: 'Id', name: 'Номер', type:'select', apiPath: INCOME_API_PATH },
-        {fieldName: 'Resource', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
-        {fieldName: 'Unit', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
+        {fieldName: 'IncomeItems.Resource.Id', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
+        {fieldName: 'IncomeItems.Unit.Id', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
     ])
 
 export default IncomePage
