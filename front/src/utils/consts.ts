@@ -24,3 +24,4 @@ export const SHIPMENT_API_PATH: string = '/Shipment'
 
 
 export const DEFAULT_PAGE_VIEW: PageView = {page: 1, size: 10, totalPages: 0}
+export const DATE_FORMAT: string = 'yyyy-MM-dd'

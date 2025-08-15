@@ -1,6 +1,7 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DateInput.css"
+import {DATE_FORMAT} from "../../../utils/consts";
 
 type PureDateIntervalInputProps = {
     valueStart: string | undefined,
@@ -28,7 +29,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
                       endDate={ processValue(valueEnd) }
                       selectsStart
                       isClearable={valueStart !== undefined}
-                      dateFormat='yyyy.MM.dd'
+                      dateFormat={DATE_FORMAT}
           />
           <div className='me-1'></div>
           <DatePicker selected={ processValue(valueEnd) }
@@ -38,7 +39,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
                       endDate={ processValue(valueEnd) }
                       selectsEnd
                       isClearable={valueEnd !== undefined}
-                      dateFormat='yyyy.MM.dd'
+                      dateFormat={DATE_FORMAT}
           />
       </div>
   )
