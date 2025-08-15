@@ -73,6 +73,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
                         onChange={(selected) =>
                             handleFieldChange(selected)
                         }
+                        size={'medium'}
                     />
                 );
 

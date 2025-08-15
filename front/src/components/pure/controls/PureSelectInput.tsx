@@ -4,14 +4,15 @@ import type {SelectOption} from "../../../types/Filters";
 type SelectInputOptions = {
     options: Array<SelectOption>,
     onChange: (value: string) => void,
-    selected?: SelectOption | undefined
+    selected?: SelectOption | undefined,
+    size?: 'large' | 'medium'
 }
 
-const PureSelectInput = ({options = [], onChange, selected} : SelectInputOptions) => {
+const PureSelectInput = ({options = [], onChange, selected, size = 'large'} : SelectInputOptions) => {
 
     return(
         <>
-            <Form.Select value={selected?.value ?? '-1'} onChange={(e) => {onChange(e.target.value);}}  >
+            <Form.Select className={ size === "large" ? 'fs-5' : 'fs-6'} value={selected?.value ?? '-1'} onChange={(e) => {onChange(e.target.value);}}  >
                 {
                     options.map(e =>
                         <option key={e.title} value={e.value}>{e.title}</option>
