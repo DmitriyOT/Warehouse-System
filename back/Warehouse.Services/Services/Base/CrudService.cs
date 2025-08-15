@@ -54,7 +54,7 @@ public class CrudService<Entity> : ICrudService<Entity> where Entity : BaseEntit
     /// </summary>
     /// <param name="item"></param>
     /// <returns></returns>
-    public async Task<long> EditItem(Entity item)
+    public virtual async Task<long> EditItem(Entity item)
     {
         return await _repository.EditItem(item);
     }
