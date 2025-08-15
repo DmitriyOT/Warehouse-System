@@ -1,3 +1,5 @@
+import type {FilterType} from "./Request";
+
 export type SelectOption = {
     value: string,
     title: string
@@ -26,5 +28,6 @@ export type FilterOptions = SelectFilterOptions | DateFilterOptions
 
 export type ReturnFilter = {
     argument: string,
-    fieldName: string
+    fieldName: string,
+    type: FilterType
 }

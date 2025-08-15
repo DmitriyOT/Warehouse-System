@@ -42,11 +42,11 @@ const FilterComponent = (props:FilterOptions) => {
             case "select":
                 return <PureSelectMultiInput options={options}
                                              selectedOptions={selectedOptions}
-                                        onChange={(value) => {setSelectedOptions(value); onChange!({argument: value.map(e => e.value).join(','), fieldName: fieldName}); } }/>
+                                        onChange={(value) => {setSelectedOptions(value); onChange!({argument: value.map(e => e.value).join(','), fieldName: fieldName, type: 'equal'}); } }/>
             case "date":
                 return <PureDateIntervalInput valueStart={startDate} valueEnd={endDate}
                                               onChange={([start, end]) =>
-                                                {setStartDate(start); setEndDate(end); onChange!({}) } } />
+                                                {setStartDate(start); setEndDate(end); onChange!({argument: start + ',' + end, fieldName: fieldName, type: 'dateRange'}) } } />
         }
     }
 

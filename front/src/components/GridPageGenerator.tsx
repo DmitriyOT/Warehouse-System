@@ -55,7 +55,7 @@ const createGridPage = function<T> (apiPath: string, navPath: string, title: str
                 let f = fil.find(f => f.propertyName === value.fieldName);
                 let argument = value.argument;
                 if (f === undefined) {
-                    fil.push({propertyName: value.fieldName, type: 'equal', argument: argument})
+                    fil.push({propertyName: value.fieldName, type: value.type, argument: argument})
                 } else {
                     if (argument !== '')
                         f.argument = argument;

@@ -1,6 +1,8 @@
+export type FilterType = 'equal' | 'dateRange'
+
 export interface FilterDto{
     propertyName: string,
-    type: 'equal' | 'above' | 'low',
+    type: FilterType,
     argument: number | string
 }
 

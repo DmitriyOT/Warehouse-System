@@ -105,6 +105,33 @@ internal static class IQueryableExtensions
                 }
             }
         }
+        else if (type == "dateRange")
+        {
+            var args = argument.Split(',');
+            Expression? startExp = null;
+            Expression? endExp = null;
+            if (args[0] != "undefined")
+            {
+                DateOnly start = DateOnly.Parse(args[0]);
+                startExp = Expression.GreaterThanOrEqual(propertyAccess, Expression.Constant(start));
+            }
+            if (args[1] != "undefined")
+            {
+                DateOnly end = DateOnly.Parse(args[1]);
+                endExp = Expression.LessThanOrEqual(propertyAccess, Expression.Constant(end));
+            }
+            
+            if(startExp != null && endExp != null)
+            exp = Expression.And( startExp, endExp );
+            else if (startExp != null)
+            {
+                exp = startExp;
+            }
+            else if(endExp != null)
+            {
+                exp = endExp;
+            }
+        }
         return exp;
     }
 }
