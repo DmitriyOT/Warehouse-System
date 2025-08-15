@@ -15,7 +15,9 @@ import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 import {ModalContext} from "../../App";
 import PureSelectInput from "../../components/pure/controls/PureSelectInput";
+import {Button} from "react-bootstrap";
 
+type ShipmentButtonsCode = 'save' | 'approve' | 'disApprove' | 'delete';
 
 const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
 
@@ -29,6 +31,8 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
     const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
     const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
     const [optionsClient, setOptionsClient] = useState<Array<SelectOption>>([])
+
+    const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>(['save', 'approve']);
 
     useEffect(() => {
         DpResource.getData().then(data => {
@@ -46,8 +50,27 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
 
     }, [])
 
+    const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, onClick: () => void}> = [
+        {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {} },
+        {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {} },
+        {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {} },
+        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {}},
+    ]
+
    return (
        <>
+           <div className='d-flex flex-wrap mt-3 mb-3'>
+               <span className='me-2 mt-1 fs-5'>Действия: </span>
+               {buttonsTemplate?.map(b => {
+                       let button = buttons.find(x => x === b.code);
+                       if (button)
+                           return <Button key={b.code} className={b.className} variant={b.variant}
+                                          onClick={() => b.onClick()}>{b.text}</Button>
+                       else
+                           return null;
+                   }
+               )}
+           </div>
            <FieldComponent name='Номер' >
                <PureTextInput value={data?.number ?? ''} onChange={ (e) => onChange({...data!, number: e}) }
                           id={'Номер'} placeholder={'Введите номер'} />

@@ -7,7 +7,7 @@ import type {BaseEntityId, BaseEntityIdArchive} from "../types/Entities";
 import {ModalContext} from "../App";
 
 const createItemPage = function<T extends BaseEntityId>
-    (apiPath: string, navPath: string, title: string, Component: any, isArchive: boolean = false){
+    (apiPath: string, navPath: string, title: string, Component: any, isArchive: boolean = false, hideButtons: boolean = false){
     const ItemPage = () => {
 
         const {id} = useParams()
@@ -50,7 +50,7 @@ const createItemPage = function<T extends BaseEntityId>
                                          )
                                          :
                                          [{code:'save', onClick: () => { save(data!).then(res => { if(res !== +(id ?? '0') ) navigate(navPath + '/' + res) } )} }]
-                                     }
+                                     } hideButtons={hideButtons}
                 />
             </>
         )
