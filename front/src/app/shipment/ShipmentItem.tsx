@@ -9,17 +9,25 @@ import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
 import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../../api/DataProvider";
-import {CLIENT_API_PATH, RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
+import {
+    CLIENT_API_PATH,
+    RESOURCE_API_PATH,
+    SHIPMENT_API_PATH,
+    SHIPMENT_PAGE_ROUTE,
+    UNIT_API_PATH
+} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
 import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 import {ModalContext} from "../../App";
 import PureSelectInput from "../../components/pure/controls/PureSelectInput";
 import {Button} from "react-bootstrap";
+import {createItemApi} from "../../api/Api";
+import {useNavigate} from "react-router-dom";
 
 type ShipmentButtonsCode = 'save' | 'approve' | 'disApprove' | 'delete';
 
-const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
+const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) => {
 
     const mContext = useContext(ModalContext)
 
@@ -33,6 +41,9 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
     const [optionsClient, setOptionsClient] = useState<Array<SelectOption>>([])
 
     const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>(['save', 'approve']);
+
+    const {deleteItems, save, archive} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
+    const navigate = useNavigate()
 
     useEffect(() => {
         DpResource.getData().then(data => {
@@ -51,7 +62,13 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
     }, [])
 
     const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, onClick: () => void}> = [
-        {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {} },
+        {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {
+                save(data!).then(res => { 
+                    if(res !== (id ?? 0) && res !== undefined )
+                        navigate(SHIPMENT_PAGE_ROUTE + '/' + res);
+                    else if(res !== undefined) navigate(SHIPMENT_PAGE_ROUTE)
+                } )
+            } },
         {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {} },
         {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {} },
         {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {}},
@@ -80,7 +97,7 @@ const ShipmentItem = ({data, onChange}: ItemComponentProps<ShipmentEntity>) => {
            </FieldComponent>
            <FieldComponent name='Клиент' >
                <PureSelectInput options={optionsClient} onChange={(e) => { onChange({...data!, clientId: +e})} }
-                                selected={{value:data?.clientId?.toString(), title: data?.client?.name}}
+                                selected={{value:data?.clientId?.toString(), title: data?.clientName ?? ''}}
                />
            </FieldComponent>
            <ItemsGridComponent<ShipmentItemEntity> items={data?.shipmentItems ?? []}

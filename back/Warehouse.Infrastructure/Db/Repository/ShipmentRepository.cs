@@ -27,6 +27,16 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
         var item = await entities
             .Include(x => x.ShipmentItems)
             .AsNoTracking()
+            .Select(x => new ShipmentEntity 
+            {
+                Id = x.Id,
+                Number = x.Number,
+                ClientName = x.Client.Name,
+                Date = x.Date,
+                IsApprove = x.IsApprove,
+                ShipmentItems = x.ShipmentItems,
+                ClientId = x.ClientId
+            })
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
