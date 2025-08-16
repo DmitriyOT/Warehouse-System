@@ -25,6 +25,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
           <DatePicker selected={ processValue(valueStart) }
                       onChange={(e) => {let date = e as Date;onChange([processResult(date), valueEnd])} }
                       showYearDropdown
+                      placeholderText={'От (включая)'}
                       startDate={ processValue(valueStart) }
                       endDate={ processValue(valueEnd) }
                       selectsStart
@@ -35,6 +36,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
           <DatePicker selected={ processValue(valueEnd) }
                       onChange={(e) => {let date = e as Date;onChange([valueStart, processResult(date)])} }
                       showYearDropdown
+                      placeholderText={'До (включая)'}
                       startDate={ processValue(valueStart) }
                       endDate={ processValue(valueEnd) }
                       selectsEnd
