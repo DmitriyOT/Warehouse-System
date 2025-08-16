@@ -9,7 +9,7 @@ namespace Warehouse.Application.Services.Base;
 /// CRUD сервис плюс поддержа состояния архива
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public class ArchiveCrudService<Entity> : CrudService<Entity>, IArchiveCrudService<Entity> where Entity : BaseEntityWithIdArchive
+public class ArchiveCrudService<Entity> : CrudService<Entity>, IArchiveCrudService<Entity> where Entity : BaseEntityWithIdArchiveName
 {
     /// <summary>
     /// Конструктор

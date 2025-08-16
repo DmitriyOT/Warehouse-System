@@ -5,12 +5,8 @@ namespace Warehouse.Domain.Models;
 /// <summary>
 /// Клиент склада
 /// </summary>
-public class ClientEntity : BaseEntityWithIdArchive
+public class ClientEntity : BaseEntityWithIdArchiveName
 {
-    /// <summary>
-    /// Наименование
-    /// </summary>
-    public required string Name { get; set; }
     /// <summary>
     /// Адресс клиента
     /// </summary>

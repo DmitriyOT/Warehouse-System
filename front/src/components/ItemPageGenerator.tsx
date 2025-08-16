@@ -49,7 +49,7 @@ const createItemPage = function<T extends BaseEntityId>
                                             [saveB, deleteB]
                                          )
                                          :
-                                         [{code:'save', onClick: () => { save(data!).then(res => { if(res !== +(id ?? '0') ) navigate(navPath + '/' + res) } )} }]
+                                         [saveB]
                                      } hideButtons={hideButtons}
                 />
             </>

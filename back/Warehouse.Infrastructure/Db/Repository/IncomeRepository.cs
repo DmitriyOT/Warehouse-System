@@ -78,6 +78,12 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                 }
             }
 
+            var numberEqual = await entities.Where(x => x.Number == item.Number).AsNoTracking().FirstOrDefaultAsync();
+            if (numberEqual != null && numberEqual.Id != item.Id)
+            {
+                throw new UserException($"Ошибка. Документ поступления с номером <{item.Number}> уже есть в системе.");
+            }
+
             if (itemDb == null)
             {//Create New
                 if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id

@@ -95,6 +95,8 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == item.Id);
 
+        await PreCreateEditCheck(item, itemDb);
+
         if (itemDb == null)
         {//Create New
             if(item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
@@ -113,6 +115,16 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
         DB.Entry(item).State = EntityState.Detached;
 
         return item.Id;
+    }
+
+    /// <summary>
+    /// Функция для проверки, что условия создания соблюдены
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns>Ничего не возвращает, викидывает exception при ошибке</returns>
+    protected virtual Task PreCreateEditCheck(Entity item, Entity? oldItem)
+    {
+        return Task.CompletedTask;
     }
 
     /// <summary>

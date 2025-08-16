@@ -6,7 +6,7 @@ namespace Warehouse.Contracts.Application;
 /// Сервис для работы с репозиторием архива и CRUD
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public interface IArchiveCrudService<Entity> : ICrudService<Entity> where Entity : BaseEntityWithIdArchive
+public interface IArchiveCrudService<Entity> : ICrudService<Entity> where Entity : BaseEntityWithIdArchiveName
 {
     /// <summary>
     /// Изменить статус архива у объекта

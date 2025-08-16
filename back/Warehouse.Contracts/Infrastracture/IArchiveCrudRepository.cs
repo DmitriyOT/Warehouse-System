@@ -9,7 +9,7 @@ namespace Warehouse.Contracts.Infrastracture;
 /// Интерфейс для обощённого CRUD репозитория с дополнительным методов архива
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public interface IArchiveCrudRepository<Entity> : ICrudRepository<Entity> where Entity : BaseEntityWithIdArchive
+public interface IArchiveCrudRepository<Entity> : ICrudRepository<Entity> where Entity : BaseEntityWithIdArchiveName
 {
     /// <summary>
     /// Изменить статус архива у объекта

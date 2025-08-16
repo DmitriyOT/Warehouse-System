@@ -93,16 +93,16 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             }
         }
 
+        var numberEqual = await entities.AsNoTracking().FirstOrDefaultAsync(x => x.Number == item.Number);
+        if (numberEqual != null && numberEqual.Id != item.Id)
+        {
+            throw new UserException($"Ошибка. Документ отгрузки с номером {item.Number} уже есть в системе.");
+        }
+
         if (itemDb == null)
         {//Create New
             if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
                 item.Id = 0;
-
-            var numberEqual = await entities.AsNoTracking().FirstOrDefaultAsync(x => x.Number == item.Number);
-            if(numberEqual != null)
-            {
-                throw new UserException($"Ошибка. Документ отгрузки с номером {item.Number} уже создан в системе.");
-            }
 
             entities.Add(item);
 

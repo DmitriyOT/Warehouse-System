@@ -13,7 +13,7 @@ namespace Warehouse.Api.Controllers.Base;
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
 public abstract class BaseArchiveCrudController<Entity> 
-    : BaseCrudController<Entity> where Entity : BaseEntityWithIdArchive
+    : BaseCrudController<Entity> where Entity : BaseEntityWithIdArchiveName
 {
 
     /// <summary>

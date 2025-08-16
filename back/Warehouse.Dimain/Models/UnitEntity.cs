@@ -5,10 +5,6 @@ namespace Warehouse.Domain.Models;
 /// <summary>
 /// Единица измерения, шт. кг. и тп.
 /// </summary>
-public class UnitEntity : BaseEntityWithIdArchive
+public class UnitEntity : BaseEntityWithIdArchiveName
 {
-    /// <summary>
-    /// Наименование
-    /// </summary>
-    public required string Name { get; set; }
 }

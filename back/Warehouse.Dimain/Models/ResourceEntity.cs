@@ -6,12 +6,8 @@ namespace Warehouse.Domain.Models;
 /// <summary>
 /// Ресурс на складе
 /// </summary>
-public class ResourceEntity : BaseEntityWithIdArchive
+public class ResourceEntity : BaseEntityWithIdArchiveName
 {
-    /// <summary>
-    /// Наименование
-    /// </summary>
-    public required string Name { get; set; }
 
     /// <summary>
     /// Навигационное свойство поступлений
