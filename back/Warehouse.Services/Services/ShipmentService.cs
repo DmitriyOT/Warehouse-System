@@ -18,7 +18,7 @@ public class ShipmentService : CrudService<ShipmentEntity>
 
     public override Task<long> EditItem(ShipmentEntity item)
     {
-        if (item.ShipmentItems != null)
+        if (item.ShipmentItems != null && item.ShipmentItems.Count > 0)
         {
             foreach (var elem in item.ShipmentItems)
             {
@@ -27,6 +27,10 @@ public class ShipmentService : CrudService<ShipmentEntity>
                     throw new UserException("Ошибка. Количество ресурса должно быть положительным в документе отгрузки.");
                 }
             }
+        }
+        else
+        {
+            throw new UserException("Ошибка. Документе отгрузки должен содержать хотя бы 1 ресурс.");
         }
 
         return base.EditItem(item);

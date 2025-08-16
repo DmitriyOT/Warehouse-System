@@ -9,6 +9,7 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
         {field: 'unit', headerName: 'Единица измерения', width: 150},
         {field: 'quantity', headerName: 'Количество', width: 150},
     ], [
+        {fieldName: 'Date', name: 'Период', type:'date' },
         {fieldName: 'Id', name: 'Номер', type:'select', apiPath: INCOME_API_PATH },
         {fieldName: 'IncomeItems.Resource.Id', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
         {fieldName: 'IncomeItems.Unit.Id', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },

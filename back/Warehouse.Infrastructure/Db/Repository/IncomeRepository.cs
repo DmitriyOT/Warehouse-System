@@ -173,6 +173,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
     {
         var item = await entities
             .Include(x => x.IncomeItems)
+            .AsNoTracking()
             .FirstAsync(x => x.Id == id);
 
         try

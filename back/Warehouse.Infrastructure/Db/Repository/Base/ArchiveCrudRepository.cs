@@ -31,7 +31,7 @@ public class ArchiveCrudRepository<Entity> : CrudRepository<Entity>, IArchiveCru
 
         if (itemDb == null)
         {
-            throw new InvalidOperationException("Error. Item not found.");
+            throw new UserException("Ошибка. Объект не найден.");
         }
 
         itemDb.IsArchive = newState;
