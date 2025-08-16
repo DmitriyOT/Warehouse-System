@@ -46,7 +46,7 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
             Delta = x.Quantity
         }).ToDictionary(x => x.Id);
 
-        var arrNow = itemsOld.Select(x => new BalanceDiffItem
+        var arrNow = itemsNow.Select(x => new BalanceDiffItem
         {
             Id = x.Id,
             ResourceId = x.ResourceId,
@@ -67,7 +67,7 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
             Delta = x.Quantity
         }).ToDictionary(x => x.Id);
 
-        var arrNow = itemsOld.Select(x => new BalanceDiffItem
+        var arrNow = itemsNow.Select(x => new BalanceDiffItem
         {
             Id = x.Id,
             ResourceId = x.ResourceId,
@@ -78,29 +78,67 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         await ApplyDiff(CalculateDiff(arrOld, arrNow));
     }
 
+    //Функция для вычисления и суммирования разницы по товарам
     private ICollection<BalanceItem> CalculateDiff(Dictionary<long, BalanceDiffItem> oldItems, Dictionary<long, BalanceDiffItem> nowItems)
     {
-        var result = new List<BalanceItem>();
+        //Работает с накоплениями, неважно как они представлены в old и now items
+        var dic = new Dictionary<Tuple<long, long>, long>(); //resourceId, unitId, count
 
-        foreach(var item in nowItems.Values)
+        //Вспомогательная функция для словаря
+        var addDic = (BalanceItem item) =>
         {
-            if(oldItems.ContainsKey(item.Id))
+            var key = Tuple.Create(item.ResourceId, item.UnitId);
+            if (dic.TryGetValue(key, out long oldValue))
             {
-                //diff
+                dic[key] = item.Delta + oldValue;
             }
             else
             {
-                result.Add(item);
+                dic.Add(key, item.Delta);
+            }
+        };
+
+        foreach(var item in nowItems.Values)
+        {
+            if(oldItems.TryGetValue(item.Id, out var oldValue))
+            {//Изменённые значения
+                if(item.ResourceId == oldValue.ResourceId && item.UnitId == oldValue.UnitId)
+                {//Разница только по количеству
+                    item.Delta -= oldValue.Delta;
+                    addDic(item);
+                }
+                else
+                {//Изменился тип ресурса + ЕИ, старое уменьшить, новое добавить
+                    oldValue.Delta = -oldValue.Delta;
+                    addDic(oldValue);
+                    addDic(item);
+                }
+            }
+            else
+            {//Добавленные значения
+                addDic(item);
             }
         }
 
         foreach (var item in oldItems.Values)
-        {
+        {//Раньше было а сейчас нет, удалённые
             if (!nowItems.ContainsKey(item.Id))
             {
                 item.Delta = -item.Delta;
-                result.Add(item);
+                addDic(item);
             }
+        }
+
+        var result = new List<BalanceItem>();
+
+        foreach(var item in dic)
+        {
+            result.Add(new BalanceItem
+            {
+                ResourceId = item.Key.Item1,
+                UnitId = item.Key.Item2,
+                Delta = item.Value
+            });
         }
 
         return result;
@@ -111,11 +149,16 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         foreach (var item in items)
         {
             var balance = await (_repository as IBalanceRepository)!.GetBalanceAsync(item.ResourceId, item.UnitId);
-            if(balance == null)
+            if (balance == null)
             {
-                if(item.Delta < 0)
+                if (item.Delta < 0)
                 {
                     throw new UserException("Ошибка. Недостаточно ресурсов на балансе.");
+                }
+
+                if (item.Delta == 0)
+                {
+                    continue;
                 }
 
                 balance = new BalanceEntity
@@ -135,6 +178,7 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
 
                 balance.Quantity += item.Delta;
             }
+            
             if (balance.Quantity != 0)
                 await (_repository as IBalanceRepository)!.EditItem(balance);
             else

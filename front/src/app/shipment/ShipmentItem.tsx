@@ -40,9 +40,9 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
     const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
     const [optionsClient, setOptionsClient] = useState<Array<SelectOption>>([])
 
-    const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>(['save', 'approve']);
+    const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>([]);
 
-    const {deleteItems, save, archive} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
+    const {deleteItems, save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -61,17 +61,46 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
 
     }, [])
 
+    useEffect(() => {
+        if(id === 0) {
+            setButtons(['save', 'approve']);
+        }
+        else if (data?.isApprove)
+        {
+            setButtons(['disApprove'])
+        }
+        else if (data !== undefined)
+        {
+            setButtons(['save', 'approve', 'delete'])
+        }
+        else
+        {
+            setButtons([])
+        }
+    }, [data?.isApprove])
+
     const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, onClick: () => void}> = [
         {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {
-                save(data!).then(res => { 
+                save(data!).then(res => {
                     if(res !== (id ?? 0) && res !== undefined )
                         navigate(SHIPMENT_PAGE_ROUTE + '/' + res);
                     else if(res !== undefined) navigate(SHIPMENT_PAGE_ROUTE)
                 } )
             } },
-        {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {} },
-        {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {} },
-        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {}},
+        {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {
+                save(data!).then(res => {
+                        if (res !== undefined) changeState(id, 'approve')
+                            .then(res2 => onChange({...data!, isApprove: true}))
+                    }
+                )
+            } },
+        {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {
+                changeState(id, 'disApprove')
+                    .then(res2 => onChange({...data!, isApprove: false}) )
+            } },
+        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {
+
+            }},
     ]
 
    return (
@@ -97,15 +126,15 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
            </FieldComponent>
            <FieldComponent name='Клиент' >
                <PureSelectInput options={optionsClient} onChange={(e) => { onChange({...data!, clientId: +e})} }
-                                selected={{value:data?.clientId?.toString(), title: data?.clientName ?? ''}}
+                                selected={{value:data?.clientId?.toString(), title: data?.clientName ?? 'Не выбрано'}}
                />
            </FieldComponent>
            <ItemsGridComponent<ShipmentItemEntity> items={data?.shipmentItems ?? []}
                                onChange={(items) => {onChange({...data!, shipmentItems: items})}}
                                nextId={nextId} setNextId={(id) => {setNextId(id)}}
                                columns={[
-                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', options: optionsResource},
-                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unitId', options: optionsUnit},
+                                   {id: 'resource', type: 'select', title: 'Ресурс', field: 'resourceId', source: 'resource', options: optionsResource},
+                                   {id: 'unit', type: 'select', title: 'Единица измерения', field: 'unitId', source: 'unit', options: optionsUnit},
                                    {id: 'quantity', type: 'number', title: 'Количество', field: 'quantity', options: []},
                                ]} />
        </>

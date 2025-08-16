@@ -58,80 +58,134 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
 
     public override async Task<long> EditItem(IncomeEntity item)
     {
-        var itemDb = await entities
-            .Include(x => x.IncomeItems)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == item.Id);
+        var transaction = await DB.Database.BeginTransactionAsync();
 
-        if (item.IncomeItems != null)
+        try
         {
-            foreach (var incomeI in item.IncomeItems)
-            {
-                incomeI.Resource = null;
-                incomeI.Unit = null;
-            }
-        }
+            transaction.CreateSavepoint("start");
 
-        if (itemDb == null)
-        {//Create New
-            if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
-                item.Id = 0;
-
-            entities.Add(item);
+            var itemDb = await entities
+                .Include(x => x.IncomeItems)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == item.Id);
 
             if (item.IncomeItems != null)
             {
-                foreach (var incomeItem in item.IncomeItems)
+                foreach (var incomeI in item.IncomeItems)
                 {
-                    incomeItem.Id = 0;
-                    incomeItem.Income = item;
+                    incomeI.Resource = null;
+                    incomeI.Unit = null;
                 }
-                DB.incomeItems.AddRange(item.IncomeItems);
-                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
             }
-        }
-        else
-        {//edit exist
-            entities.Attach(item);
-            DB.Entry(item).State = EntityState.Modified;
-            if (item.IncomeItems != null)
-            {
-                HashSet<long> itemsMap = new HashSet<long>();
-                foreach (var incomeItem in item.IncomeItems)
-                {
-                    incomeItem.Income = item;
-                    if (incomeItem.Id < 0)
-                    {//add new items
-                        incomeItem.Id = 0;
-                        DB.incomeItems.Add(incomeItem);
-                    }
-                    else
-                    {//add to set exist items
-                        itemsMap.Add(incomeItem.Id);
-                        //edit items
-                        DB.incomeItems.Attach(incomeItem);
-                        DB.Entry(incomeItem).State = EntityState.Modified;
-                    }
-                }
 
-                if (itemDb.IncomeItems != null)
-                {//delete removed items
-                    foreach (var incomeItem in itemDb.IncomeItems)
+            if (itemDb == null)
+            {//Create New
+                if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
+                    item.Id = 0;
+
+                entities.Add(item);
+
+                if (item.IncomeItems != null)
+                {
+                    foreach (var incomeItem in item.IncomeItems)
                     {
-                        if(!itemsMap.Contains(incomeItem.Id))
+                        incomeItem.Id = 0;
+                        incomeItem.Income = item;
+                    }
+                    DB.incomeItems.AddRange(item.IncomeItems);
+                }
+            }
+            else
+            {//edit exist
+                entities.Attach(item);
+                DB.Entry(item).State = EntityState.Modified;
+                if (item.IncomeItems != null)
+                {
+                    HashSet<long> itemsMap = new HashSet<long>();
+                    foreach (var incomeItem in item.IncomeItems)
+                    {
+                        incomeItem.Income = item;
+                        if (incomeItem.Id < 0)
+                        {//add new items
+                            incomeItem.Id = 0;
+                            DB.incomeItems.Add(incomeItem);
+                        }
+                        else
+                        {//add to set exist items
+                            itemsMap.Add(incomeItem.Id);
+                            //edit items
+                            DB.incomeItems.Attach(incomeItem);
+                            DB.Entry(incomeItem).State = EntityState.Modified;
+                        }
+                    }
+
+                    if (itemDb.IncomeItems != null)
+                    {//delete removed items
+                        foreach (var incomeItem in itemDb.IncomeItems)
                         {
-                            incomeItem.Income = null;
-                            DB.incomeItems.Remove(incomeItem);
+                            if (!itemsMap.Contains(incomeItem.Id))
+                            {
+                                incomeItem.Income = null;
+                                DB.incomeItems.Remove(incomeItem);
+                            }
                         }
                     }
                 }
-                await _balanceService.CalculateAndApplyDifference(
-                    itemDb.IncomeItems ?? new List<IncomeItemEntity>(), item.IncomeItems);
             }
+
+            await DB.SaveChangesAsync();
+            //await transaction.CommitAsync();
+            DB.Entry(item).State = EntityState.Detached;
+
+            if (itemDb != null && item.IncomeItems != null)
+            {
+                await _balanceService.CalculateAndApplyDifference(
+                        itemDb.IncomeItems ?? new List<IncomeItemEntity>(), item.IncomeItems);
+            }
+            else if (itemDb == null && item.IncomeItems != null)
+            {
+                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch (UserException ex)
+        {
+            await transaction.RollbackToSavepointAsync("start");
+            throw new UserException($"Ошибка обработки документа поступления. {ex.Message}");
         }
 
-        await DB.SaveChangesAsync();
-        DB.Entry(item).State = EntityState.Detached;
         return item.Id;
+    }
+
+    /// <summary>
+    /// Удалить элемент
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public override async Task DeleteItem(long id)
+    {
+        var item = await entities
+            .Include(x => x.IncomeItems)
+            .FirstAsync(x => x.Id == id);
+
+        try
+        {
+            if (item.IncomeItems != null)
+            {
+                foreach (var i in item.IncomeItems)
+                {
+                    i.Quantity = -i.Quantity;
+                }
+                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
+            }
+
+            entities.Remove(item);
+            await DB.SaveChangesAsync();
+        }
+        catch (UserException ex)
+        {
+            throw new UserException($"Ошибка удаления поступления. {ex.Message}");
+        }
     }
 }

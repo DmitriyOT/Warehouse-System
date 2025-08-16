@@ -59,8 +59,14 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
         },
         archive: async (itemId: number, newState: boolean) => {
             return await errorHandle( async () => {
-                await $host.put<ResponseDto<void>>(itemPath + '/EditArchiveItem?id='+itemId+'&newState='+newState);
-                return undefined;
+                const {data} = await $host.put<ResponseDto<void>>(itemPath + '/EditArchiveItem?id='+itemId+'&newState='+newState);
+                return data;
+            }, modalC)
+        },
+        changeState: async (itemId: number, newStateCode: string) => {
+            return await errorHandle(async () => {
+                const {data} = await $host.put<ResponseDto<void>>(itemPath + '/ChangeState?id=' + itemId+'&newStateCode='+newStateCode);
+                return data;
             }, modalC)
         }
     }

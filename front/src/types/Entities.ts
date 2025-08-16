@@ -38,7 +38,7 @@ export interface ShipmentEntity extends BaseEntityId {
     date: string,
     clientId: number,
     clientName?: string,
-    IsApprove: boolean,
+    isApprove: boolean,
     shipmentItems: Array<ShipmentItemEntity>
 }
 

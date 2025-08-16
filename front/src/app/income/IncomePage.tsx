@@ -17,7 +17,7 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
         {
             const rows = [];
             items.forEach(i => {
-                if(i.incomeItems !== null) {
+                if(i.incomeItems.length > 0) {
                     let isFirst = true
                     i.incomeItems.forEach(item => {
                         if(isFirst) {
@@ -43,8 +43,9 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
                         }
                     })
                 }
-                else
+                else {
                     rows.push({...i, hrefId: i.id});
+                }
             })
             return rows;
         })

@@ -14,7 +14,7 @@ public class BalanceRepository : CrudRepository<BalanceEntity>, IBalanceReposito
 
     public async Task<BalanceEntity?> GetBalanceAsync(long resourceId, long unitId)
     {
-        return await entities.FirstOrDefaultAsync(x => x.ResourceId == resourceId && x.UnitId == unitId);
+        return await entities.AsNoTracking().FirstOrDefaultAsync(x => x.ResourceId == resourceId && x.UnitId == unitId);
     }
 
     /// <summary>

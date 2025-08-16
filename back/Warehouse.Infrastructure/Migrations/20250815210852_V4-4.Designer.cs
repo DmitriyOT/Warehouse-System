@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Warehouse.Infrastructure.Db;
@@ -11,9 +12,11 @@ using Warehouse.Infrastructure.Db;
 namespace Warehouse.Infrastructure.Migrations
 {
     [DbContext(typeof(PostgresDbContext))]
-    partial class PostgresDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250815210852_V4-4")]
+    partial class V44
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,10 +136,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Id", "ResourceId", "UnitId")
                         .IsUnique();
 
-                    b.ToTable("incomeItems", t =>
-                        {
-                            t.HasCheckConstraint("ValidQuantity", "\"Quantity\" > 0");
-                        });
+                    b.ToTable("incomeItems");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ResourceEntity", b =>
@@ -224,10 +224,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Id", "ResourceId", "UnitId")
                         .IsUnique();
 
-                    b.ToTable("shipmetItems", t =>
-                        {
-                            t.HasCheckConstraint("ValidQuantity", "\"Quantity\" > 0");
-                        });
+                    b.ToTable("shipmetItems");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.UnitEntity", b =>

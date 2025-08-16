@@ -31,4 +31,9 @@ public class ShipmentService : CrudService<ShipmentEntity>
 
         return base.EditItem(item);
     }
+
+    public async Task ChangeStateAsync(long id, string newStateCode)
+    {
+        await (_repository as IShipmentRepository)!.ChangeStateAsync(id, newStateCode);
+    }
 }
