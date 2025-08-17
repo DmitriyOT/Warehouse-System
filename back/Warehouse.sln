@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36121.58
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Api", "WarehouseApi\Warehouse.Api.csproj", "{492245F9-3900-4595-AE25-67C37545BEF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Api", "Warehouse.Api\Warehouse.Api.csproj", "{492245F9-3900-4595-AE25-67C37545BEF8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0F15B361-2F1B-406C-AD76-5D158AB5EA14} = {0F15B361-2F1B-406C-AD76-5D158AB5EA14}
 		{617CB55B-1D27-4FE1-A304-D32ADBCA70B0} = {617CB55B-1D27-4FE1-A304-D32ADBCA70B0}
@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Api", "WarehouseA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Tests", "Warehouse.Tests\Warehouse.Tests.csproj", "{04E68755-2756-4306-A5E2-9BC229B7A4EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Domain", "Warehouse.Dimain\Warehouse.Domain.csproj", "{27F9664E-1A82-4B51-BC47-C4CEAD37F210}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Domain", "Warehouse.Domain\Warehouse.Domain.csproj", "{27F9664E-1A82-4B51-BC47-C4CEAD37F210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Application", "Warehouse.Services\Warehouse.Application.csproj", "{0F15B361-2F1B-406C-AD76-5D158AB5EA14}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Application", "Warehouse.Application\Warehouse.Application.csproj", "{0F15B361-2F1B-406C-AD76-5D158AB5EA14}"
 	ProjectSection(ProjectDependencies) = postProject
 		{27F9664E-1A82-4B51-BC47-C4CEAD37F210} = {27F9664E-1A82-4B51-BC47-C4CEAD37F210}
 		{617CB55B-1D27-4FE1-A304-D32ADBCA70B0} = {617CB55B-1D27-4FE1-A304-D32ADBCA70B0}
