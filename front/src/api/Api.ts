@@ -3,6 +3,7 @@ import type {ResponseDto} from "../types/Response";
 import type {ResponseGridDto} from "../types/Response";
 import type {GridOptions} from "../types/Request";
 import type {ModalContextType} from "../types/Modal";
+import {LoadStringToDate, UploadDateToString} from "../utils/functions";
 
 const baseUrlApi = import.meta.env.VITE_APP_API_URL
 
@@ -38,8 +39,10 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
         load: async (itemId: number) => {
             return await errorHandle( async () => {
                 if (itemId !== 0) {
-                    const data = await $host.get<ResponseDto<T>>(itemPath + '/getItem?id=' + itemId);
-                    return data.data;
+                    const {data} = await $host.get<ResponseDto<T>>(itemPath + '/getItem?id=' + itemId);
+                    LoadStringToDate(data);
+                    console.log('load',data);
+                    return data;
                 } else {
                     return undefined;
                 }
@@ -47,7 +50,8 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
         },
         save: async (item: T) => {
             return await errorHandle( async () => {
-                const {data} = await $host.post<ResponseDto<number>>(itemPath + '/EditItem', item);
+                const fixItem = UploadDateToString({...item});
+                const {data} = await $host.post<ResponseDto<number>>(itemPath + '/EditItem', fixItem);
                 return data;
             }, modalC )
         },

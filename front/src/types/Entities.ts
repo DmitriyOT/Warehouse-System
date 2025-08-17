@@ -21,7 +21,7 @@ export interface ClientEntity extends BaseEntityIdArchive{
 
 export interface IncomeEntity extends BaseEntityId {
     number: string,
-    date: string,
+    date: Date,
     incomeItems: Array<IncomeItemEntity>
 }
 
@@ -35,7 +35,7 @@ export interface IncomeItemEntity extends BaseEntityId {
 
 export interface ShipmentEntity extends BaseEntityId {
     number: string,
-    date: string,
+    date: Date,
     clientId: number,
     clientName?: string,
     isApprove: boolean,

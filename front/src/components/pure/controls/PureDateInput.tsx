@@ -4,20 +4,17 @@ import "../../style/DateInput.css"
 import {DATE_FORMAT} from "../../../utils/consts";
 
 type PureDateInputProps = {
-    value: string | undefined,
-    onChange: (value: string) => void,
+    value: Date | undefined,
+    onChange: (value: Date) => void,
 }
 
 const PureDateInput = ({value, onChange}: PureDateInputProps) => {
 
-    const processResult = (date: Date) => {
-        return date.toISOString().split('T')[0];
-    }
-
   return (
       <div className='w-100'>
-          <DatePicker selected={ value !== undefined ? new Date(value) : undefined as unknown as Date } onChange={(e) =>
-            {let date = e as Date;onChange(processResult(date))} } showYearDropdown
+          <DatePicker selected={ value as unknown as Date }
+                      onChange={(e) => {let date = e as Date;onChange(date)} }
+                      showYearDropdown
                       dateFormat={DATE_FORMAT}
           />
       </div>

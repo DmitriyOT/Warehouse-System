@@ -4,20 +4,20 @@ import "../../style/DateInput.css"
 import {DATE_FORMAT} from "../../../utils/consts";
 
 type PureDateIntervalInputProps = {
-    valueStart: string | undefined,
-    valueEnd: string | undefined,
-    onChange: (values: Array<string|undefined>) => void,
+    valueStart: Date | undefined,
+    valueEnd: Date | undefined,
+    onChange: (values: Array<Date|undefined>) => void,
 }
 
 const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateIntervalInputProps) => {
 
     const processResult = (date: Date | null) => {
         if(date === null) return undefined;
-        return date.toISOString().split('T')[0];
+        return date;
     }
 
-    const processValue = (value: string | undefined) => {
-        return value !== undefined ? new Date(value) : undefined as unknown as Date;
+    const processValue = (value: Date | undefined) => {
+        return value as unknown as Date;
     }
 
   return (

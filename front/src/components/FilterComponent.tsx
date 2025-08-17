@@ -4,6 +4,7 @@ import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../api/DataProvider";
 import {ModalContext} from "../App";
 import PureDateIntervalInput from "./pure/controls/PureDateIntervalInput";
+import {DateToStringFormat} from "../utils/functions";
 
 
 const FilterComponent = (props:FilterOptions) => {
@@ -14,8 +15,8 @@ const FilterComponent = (props:FilterOptions) => {
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
     const [options, setOptions] = useState<Array<SelectOption>>([])
 
-    const [startDate, setStartDate] = useState<string | undefined>(undefined);
-    const [endDate, setEndDate] = useState<string | undefined>(undefined);
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
     const mContext = useContext(ModalContext)
 
@@ -42,11 +43,18 @@ const FilterComponent = (props:FilterOptions) => {
             case "select":
                 return <PureSelectMultiInput options={options}
                                              selectedOptions={selectedOptions}
-                                        onChange={(value) => {setSelectedOptions(value); onChange!({argument: value.map(e => e.value).join(','), fieldName: fieldName, type: 'equal'}); } }/>
+                                        onChange={(value) => {setSelectedOptions(value);
+                                            onChange!({argument: value.map(e => e.value).join(','),
+                                                fieldName: fieldName, type: 'equal'});
+                                        } }/>
             case "date":
                 return <PureDateIntervalInput valueStart={startDate} valueEnd={endDate}
                                               onChange={([start, end]) =>
-                                                {setStartDate(start); setEndDate(end); onChange!({argument: start + ',' + end, fieldName: fieldName, type: 'dateRange'}) } } />
+                                                {setStartDate(start); setEndDate(end); onChange!(
+                                                    {argument: (start ? DateToStringFormat(start) : start) + ','
+                                                        + (end ? DateToStringFormat(end) : end),
+                                                        fieldName: fieldName, type: 'dateRange'})
+                                                } } />
         }
     }
 
