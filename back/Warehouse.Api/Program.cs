@@ -38,6 +38,7 @@ public class Program
 
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
+            // Обработка ошибки модели чтобы они тоже приходили в едином для всего ResponseDto формате
             options.InvalidModelStateResponseFactory = context =>
             {
                 var state = context.ModelState;
@@ -57,6 +58,9 @@ public class Program
             });
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+
+            // Так как несколько проектов из которых нужно вытащить информация в swagger, то все их нужно подключить
             var xmlFileDomain = $"{Assembly.GetAssembly(typeof(BaseEntityWithId))?.GetName().Name}.xml";
             string locationDomain = Path.GetDirectoryName( Assembly.GetAssembly(typeof(BaseEntityWithId))?.Location ) ?? "";
             if (locationDomain != null)
@@ -64,7 +68,7 @@ public class Program
                 var xmlPathDomain = Path.Combine(locationDomain, xmlFileDomain);
                 c.IncludeXmlComments(xmlPathDomain);
             }
-            c.IncludeXmlComments(xmlPath);
+            
             var contractAssembly = Assembly.GetAssembly(typeof(ResponseDto<>));
             if(contractAssembly != null)
             {
@@ -74,18 +78,21 @@ public class Program
             }
         });
 
+        // Закладываем запас производительности чтобы не исчерпать подключения к БД, если много запросов в секунду
         builder.Services.AddDbContextPool<PostgresDbContext>((service, options) =>
         {
             var _configuration = service.GetRequiredService<IConfiguration>();
             var connectionString = _configuration.GetSection("ConnectionString");
             options.UseNpgsql(connectionString.Value);
-        });
+        }, poolSize: 100); // по умолчанию у postgresql 100 подключений, поэтому здесь ставим 100
 
+        //Универсальные сервисы и репозитории
         builder.Services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
         builder.Services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
         builder.Services.AddScoped(typeof(IArchiveCrudRepository<>), typeof(ArchiveCrudRepository<>));
 
+        //Специализированные сервисы и репозитории
         builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
         builder.Services.AddScoped<IncomeService>();
 
@@ -95,6 +102,7 @@ public class Program
         builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
         builder.Services.AddScoped<IBalanceService, BalanceService>();
 
+        // CORS добавляем
         builder.Services.AddCors(options =>
          {
              options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -115,14 +123,14 @@ public class Program
             logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         }
 
-        //Configure DB
+        //Configure DB и автоматическая миграция БД
         using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
         {
             var context = serviceScope.ServiceProvider.GetRequiredService<PostgresDbContext>();
             context.Database.Migrate();
         }
 
-        // Configure the HTTP request pipeline.
+        // Только в режиме отладки включаем сваггер, так как сваггер дырявый
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -137,6 +145,7 @@ public class Program
 
         app.MapControllers();
 
+        //Обработка ошибок глобальная по всей системе
         app.UseExceptionHandler(handle =>
         {
             handle.Run(async context =>
@@ -148,6 +157,7 @@ public class Program
                 Console.WriteLine(exHandler?.Error?.ToString() ?? "Internal Error");
                 logger.LogError(exHandler?.Error?.ToString() ?? "Internal Error");
 
+                //Возвращаем пользователю только специальные ошибки предназначенные для пользователя
                 if (exHandler?.Error.GetType() == typeof(UserException))
                 {
                     await context.Response.WriteAsJsonAsync(

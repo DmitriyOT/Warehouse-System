@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Warehouse.Api.Controllers.Interfaces;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
@@ -11,7 +10,7 @@ namespace Warehouse.Api.Controllers.Base;
 /// Базовый класс контроллера для реализации CRUD операций в нём
 /// </summary>
 /// <typeparam name="Entity"></typeparam>
-public abstract class BaseCrudController<Entity> : ControllerBase, ICrudController where Entity : BaseEntityWithId
+public abstract class BaseCrudController<Entity> : ControllerBase where Entity : BaseEntityWithId
 {
     /// <summary>
     /// Логирование

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Warehouse.Api.Controllers.Interfaces;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
