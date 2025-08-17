@@ -20,4 +20,10 @@ public class ResourceEntity : BaseEntityWithIdArchiveName
     /// </summary>
     [JsonIgnore]
     public virtual ICollection<ShipmentItemEntity>? ShipmentItems { get; set; }
+
+    /// <summary>
+    /// Навигационное свойство баланса
+    /// </summary>
+    [JsonIgnore]
+    public virtual ICollection<BalanceEntity>? BalanceItems { get; set; }
 }
