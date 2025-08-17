@@ -25,7 +25,7 @@ public class PageView
     public long TotalPages { get; set; }
 
     /// <summary>
-    /// 
+    /// Конструктор
     /// </summary>
     public PageView(int pageNumber, int pageSize, long totalCount)
     {

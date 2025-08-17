@@ -7,8 +7,14 @@ namespace Warehouse.Domain.Models;
 /// </summary>
 public class BalanceEntity : BaseEntityWithId
 {
+    /// <summary>
+    /// Навигационное поле ресурса
+    /// </summary>
     public long ResourceId { get; set; }
 
+    /// <summary>
+    /// Навигационное поле единица измерения
+    /// </summary>
     public long UnitId { get; set; }
 
     /// <summary>
