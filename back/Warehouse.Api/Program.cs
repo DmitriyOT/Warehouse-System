@@ -137,14 +137,6 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.UseCors(MyAllowSpecificOrigins);
-
-        app.UseHttpsRedirection();
-
-        app.UseAuthorization();
-
-        app.MapControllers();
-
         //Обработка ошибок глобальная по всей системе
         app.UseExceptionHandler(handle =>
         {
@@ -173,6 +165,14 @@ public class Program
 
             });
         });
+
+        app.UseCors(MyAllowSpecificOrigins);
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
 
         app.Run();
     }
