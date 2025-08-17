@@ -53,7 +53,7 @@ public class Program
             {
                 Version = "v1",
                 Title = "Warehouse API",
-                Description = "Реализация api для склада в рамках тестового задания."
+                Description = "Реализация api для склада."
             });
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

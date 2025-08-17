@@ -30,7 +30,7 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
                     {
                         selectedOptions.length > 0 ?
                         selectedOptions.map(e =>
-                            <span key={e.value} className='SelectedItem ps-1 pe-1 rounded-1'>{e.title}</span>
+                            <span key={e.value} style={{maxWidth: '50vw'}} className='SelectedItem ps-1 pe-1 rounded-1 overflow-auto'>{e.title}</span>
                         )
                             :
                             <span>Выберите</span>
@@ -39,7 +39,7 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
 
             </Dropdown.Toggle>
 
-            <Dropdown.Menu className="p-2">
+            <Dropdown.Menu className="p-2 overflow-auto" style={{maxHeight: '50vh'}}>
                 {options.map(option => {
                     const isSelected = selectedOptions.some(
                         selected => selected.value === option.value
@@ -49,7 +49,8 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
                         <Dropdown.Item
                             key={option.value}
                             as="div"
-                            className={"px-2 " + (isSelected? "bg-secondary bg-opacity-50":"")}
+                            style={{maxWidth: '50vw'}}
+                            className={"px-2 overflow-auto " + (isSelected? "bg-secondary bg-opacity-50":"")}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
