@@ -1,5 +1,4 @@
 import {useContext, useEffect, useState} from "react";
-import type {GridData} from "../types/Response";
 import type {PageView} from "../types/PageView";
 import {DEFAULT_PAGE_VIEW} from "../utils/consts";
 import type {FilterDto} from "../types/Request";
@@ -9,11 +8,12 @@ import {useNavigate} from "react-router-dom";
 import type {FilterOptions, ReturnFilter} from "../types/Filters";
 import type {ModalContextType} from "../types/Modal";
 import {ModalContext} from "../App";
+import type {GridColumnType} from "../types/Grid";
 
 type GridPageVariant = 'Archive' | 'Filters';
 
 const createGridPage = function<T> (apiPath: string, navPath: string, title: string, variant: GridPageVariant,
-                                    columns: Array<{field: string, headerName: string, width: number}>,
+                                    columns: Array<GridColumnType>,
                                     filters: Array<FilterOptions> = [],
                                     itemOpenCreate: boolean = true,
                                     rowsProcess?: (items: any[]) => any[]) {

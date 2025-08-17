@@ -16,11 +16,11 @@ const IncomePage = createGridPage(INCOME_API_PATH, INCOME_PAGE_ROUTE, 'Пост�
     ], true,
         items =>
         {
-            const rows = [];
+            const rows: any[] = [];
             items.forEach(i => {
                 if(i.incomeItems.length > 0) {
                     let isFirst = true
-                    i.incomeItems.forEach(item => {
+                    i.incomeItems.forEach((item: any) => {
                         if(isFirst) {
                             rows.push({
                                 id: i.id + 'ID' + item.id,

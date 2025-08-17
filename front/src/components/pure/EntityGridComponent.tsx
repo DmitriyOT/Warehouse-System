@@ -3,6 +3,7 @@ import DataGridComponent from "./DataGridComponent";
 import type {PageView} from "../../types/PageView";
 import type {FilterOptions} from "../../types/Filters";
 import FilterComponent from "../FilterComponent";
+import type {GridColumnType} from "../../types/Grid";
 
 type GridButtonsId = 'create' | 'toArchive' | 'fromArchive' | 'applyFilter'
 
@@ -10,7 +11,7 @@ type EntityGridProps<T> = {
     title: string,
     buttons: Array<{id: GridButtonsId, onClick: () => void}>
     rows: Array<T>,
-    columns: Array<{field: string, headerName: string, width: number}>,
+    columns: Array<GridColumnType>,
     pageView: PageView,
     onPageChange: (page: number) => void,
     onPageSizeChange: (size: number) => void,

@@ -21,11 +21,11 @@ const ShipmentPage = createGridPage(SHIPMENT_API_PATH, SHIPMENT_PAGE_ROUTE, 'О�
         {fieldName: 'ShipmentItems.Resource.Id', name: 'Ресурс', type:'select', apiPath: RESOURCE_API_PATH },
         {fieldName: 'ShipmentItems.Unit.Id', name: 'Единица измерения', type:'select', apiPath: UNIT_API_PATH },
     ], true, items => {
-        const rows = [];
+        const rows: any[] = [];
         items.forEach(i => {
             if(i.shipmentItems !== null) {
                 let isFirst = true
-                i.shipmentItems.forEach(item => {
+                i.shipmentItems.forEach((item: any) => {
                     if(isFirst) {
                         rows.push({
                             id: i.id + 'ID' + item.id,

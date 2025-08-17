@@ -42,7 +42,7 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
 
     const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>([]);
 
-    const {deleteItems, save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
+    const {save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -90,13 +90,13 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
         {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {
                 save(data!).then(res => {
                         if (res !== undefined) changeState(id, 'approve')
-                            .then(res2 => onChange({...data!, isApprove: true}))
+                            .then(() => onChange({...data!, isApprove: true}))
                     }
                 )
             } },
         {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {
                 changeState(id, 'disApprove')
-                    .then(res2 => onChange({...data!, isApprove: false}) )
+                    .then(() => onChange({...data!, isApprove: false}) )
             } },
         {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {
 
@@ -126,7 +126,7 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
            </FieldComponent>
            <FieldComponent name='Клиент' >
                <PureSelectInput options={optionsClient} onChange={(e) => { onChange({...data!, clientId: +e})} }
-                                selected={{value:data?.clientId?.toString(), title: data?.clientName ?? 'Не выбрано'}}
+                                selected={{value:data?.clientId?.toString() ?? '', title: data?.clientName ?? 'Не выбрано'}}
                />
            </FieldComponent>
            <ItemsGridComponent<ShipmentItemEntity> items={data?.shipmentItems ?? []}

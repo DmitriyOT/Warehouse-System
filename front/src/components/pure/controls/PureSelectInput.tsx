@@ -12,7 +12,10 @@ const PureSelectInput = ({options = [], onChange, selected, size = 'large'} : Se
 
     return(
         <>
-            <Form.Select className={ size === "large" ? 'fs-5' : 'fs-6'} value={selected?.value ?? '-1'} onChange={(e) => {onChange(e.target.value);}}  >
+            <Form.Select className={ size === "large" ? 'fs-5' : 'fs-6'}
+                         value={selected?.value ?? '-1'}
+                         onChange={(e) => {onChange(e.target.value);}}
+            >
                 {
                     options.map(e =>
                         <option key={e.title} value={e.value}>{e.title}</option>

@@ -50,7 +50,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
     const getInput = (column: GridColumn, item: any) => {
         const handleFieldChange = (newValue: any) => {
             let updatedItem;
-            if(item[column.source] !== undefined)
+            if( column.source !== undefined && item[column.source] !== undefined)
                 updatedItem = { ...item, [column.field]: newValue, [column.source]: {...item[column.source], id: newValue} };
             else
                 updatedItem = { ...item, [column.field]: newValue };
@@ -64,6 +64,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
             case 'select':
                 if (!column.options) return null;
 
+                if(column.source === undefined) return <>Ошибка</>;
                 const currentValue = item[column.source];
 
                 return (
