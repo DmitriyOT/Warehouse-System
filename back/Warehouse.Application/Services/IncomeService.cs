@@ -10,14 +10,19 @@ using Warehouse.Domain.Models;
 
 namespace Warehouse.Application.Services;
 
+/// <summary>
+/// Сервис для поступлений
+/// </summary>
 public class IncomeService : CrudService<IncomeEntity>
 {
     public IncomeService(IIncomeRepository repository) : base(repository)
     {
     }
 
+    //Редактирование элемента
     public override Task<long> EditItem(IncomeEntity item)
     {
+        //Проверка на ресурсы
         if (item.IncomeItems != null)
         {
             foreach (var elem in item.IncomeItems)

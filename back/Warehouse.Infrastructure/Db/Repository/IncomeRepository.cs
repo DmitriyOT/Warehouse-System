@@ -176,8 +176,11 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             .AsNoTracking()
             .FirstAsync(x => x.Id == id);
 
+        var transaction = await DB.Database.BeginTransactionAsync();
+
         try
         {
+            await transaction.CreateSavepointAsync("start");
             if (item.IncomeItems != null)
             {
                 foreach (var i in item.IncomeItems)
@@ -188,11 +191,15 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             }
 
             entities.Remove(item);
-            await DB.SaveChangesAsync();
+            transaction.Commit();
         }
         catch (UserException ex)
         {
             throw new UserException($"Ошибка удаления поступления. {ex.Message}");
+        }
+        finally
+        {
+            await transaction.RollbackToSavepointAsync("start");
         }
     }
 }

@@ -10,6 +10,9 @@ using Warehouse.Domain.Models;
 
 namespace Warehouse.Application.Services;
 
+/// <summary>
+/// Сервис для отгрузок
+/// </summary>
 public class ShipmentService : CrudService<ShipmentEntity>
 {
     public ShipmentService(IShipmentRepository repository) : base(repository)
@@ -18,6 +21,7 @@ public class ShipmentService : CrudService<ShipmentEntity>
 
     public override Task<long> EditItem(ShipmentEntity item)
     {
+        //Проверяем бизнес логику ресурсов отгрузки
         if (item.ShipmentItems != null && item.ShipmentItems.Count > 0)
         {
             foreach (var elem in item.ShipmentItems)
@@ -36,6 +40,7 @@ public class ShipmentService : CrudService<ShipmentEntity>
         return base.EditItem(item);
     }
 
+    //Изменение состояния, подписание отгрузки
     public async Task ChangeStateAsync(long id, string newStateCode)
     {
         await (_repository as IShipmentRepository)!.ChangeStateAsync(id, newStateCode);

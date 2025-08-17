@@ -5,6 +5,10 @@ using Warehouse.Contracts.Exceptions;
 using Warehouse.Application.Services.Base;
 
 namespace Warehouse.Application.Services;
+
+/// <summary>
+/// Сервис для работы с балансом (остатками склада)
+/// </summary>
 public class BalanceService : CrudService<BalanceEntity>, IBalanceService
 {
 
@@ -12,6 +16,11 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
     {
     }
 
+    /// <summary>
+    /// Применить изменения поступления
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public async Task ApplyIncomeDifference(ICollection<IncomeItemEntity> items)
     {
         var arr = items.Select(x => new BalanceItem 
@@ -24,6 +33,11 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         await ApplyDiff(arr);
     }
 
+    /// <summary>
+    /// Применить изменения отгрузки
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public async Task ApplyShipmentDifference(ICollection<ShipmentItemEntity> items)
     {
         var arr = items.Select(x => new BalanceItem
@@ -36,28 +50,13 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         await ApplyDiff(arr);
     }
 
+    /// <summary>
+    /// Вычислить разницу и применить её к балансу
+    /// </summary>
+    /// <param name="itemsOld"></param>
+    /// <param name="itemsNow"></param>
+    /// <returns></returns>
     public async Task CalculateAndApplyDifference(ICollection<IncomeItemEntity> itemsOld, ICollection<IncomeItemEntity> itemsNow)
-    {
-        var arrOld = itemsOld.Select(x => new BalanceDiffItem
-        {
-            Id = x.Id,
-            ResourceId = x.ResourceId,
-            UnitId = x.UnitId,
-            Delta = x.Quantity
-        }).ToDictionary(x => x.Id);
-
-        var arrNow = itemsNow.Select(x => new BalanceDiffItem
-        {
-            Id = x.Id,
-            ResourceId = x.ResourceId,
-            UnitId = x.UnitId,
-            Delta = x.Quantity
-        }).ToDictionary(x => x.Id);
-
-        await ApplyDiff(CalculateDiff(arrOld, arrNow));
-    }
-
-    public async Task CalculateAndApplyDifference(ICollection<ShipmentItemEntity> itemsOld, ICollection<ShipmentItemEntity> itemsNow)
     {
         var arrOld = itemsOld.Select(x => new BalanceDiffItem
         {
@@ -144,6 +143,7 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         return result;
     }
 
+    //Применяем разницу к балансу
     private async Task ApplyDiff(ICollection<BalanceItem> items)
     {
         foreach (var item in items)
