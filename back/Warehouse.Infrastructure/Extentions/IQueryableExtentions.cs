@@ -33,7 +33,7 @@ internal static class IQueryableExtensions
             {
                 continue;
             }
-            
+
             if (whereExp == null)
                 whereExp = propertyExpression;
             else
@@ -71,7 +71,7 @@ internal static class IQueryableExtensions
                 ParameterExpression elementParam = Expression.Parameter(genericArgument, "e");
                 int nextDot = propertyPath.IndexOf('.', propertyPath.IndexOf(propertyName) + 1);
                 var result = MakePropertyExpression<TEntity>(propertyPath.Substring(nextDot + 1), elementParam, genericArgument, filter);
-                if(result.Item1 == null)
+                if (result.Item1 == null)
                 {
                     return Tuple.Create<Expression?, PropertyInfo?>(null, null);
                 }
@@ -87,7 +87,7 @@ internal static class IQueryableExtensions
         return Tuple.Create(exp, property);
     }
 
-    private static Expression? MakeEndExpression (string argument, string type, Expression propertyAccess, PropertyInfo? property)
+    private static Expression? MakeEndExpression(string argument, string type, Expression propertyAccess, PropertyInfo? property)
     {
         Expression? exp = null;
         if (type == "equal")
@@ -120,14 +120,14 @@ internal static class IQueryableExtensions
                 DateOnly end = DateOnly.Parse(args[1]);
                 endExp = Expression.LessThanOrEqual(propertyAccess, Expression.Constant(end));
             }
-            
-            if(startExp != null && endExp != null)
-            exp = Expression.And( startExp, endExp );
+
+            if (startExp != null && endExp != null)
+                exp = Expression.And(startExp, endExp);
             else if (startExp != null)
             {
                 exp = startExp;
             }
-            else if(endExp != null)
+            else if (endExp != null)
             {
                 exp = endExp;
             }

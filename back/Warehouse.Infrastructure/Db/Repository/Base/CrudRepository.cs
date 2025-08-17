@@ -134,8 +134,36 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// <returns></returns>
     public virtual async Task DeleteItem(long id)
     {
-        var item = await entities
+        var props = typeof(Entity).GetProperties();
+        var collections = props.Where(
+            x => x.PropertyType.GetInterface(nameof(IEnumerable)) != null 
+                && x.PropertyType != typeof(string))
+            .ToList();
+
+        var query = entities.AsQueryable();
+
+        foreach ( var collection in collections)
+        {
+            query = query.Include(collection.Name);
+        }
+
+        var item = await query
+            .AsNoTracking()
             .FirstAsync(x => x.Id == id);
+
+        foreach (var collection in collections)
+        {
+            var collectionValue = collection.GetValue(item);
+            if(collectionValue != null && collectionValue is IEnumerable<object> enumerable)
+            {
+                var count = enumerable.Count();
+                if(count > 0)
+                {
+                    throw new UserException("Ошибка. Невозможно удалить объект, он используется в других объектах.");
+                }
+            }
+        }
+
         entities.Remove(item);
         await DB.SaveChangesAsync();
     }
