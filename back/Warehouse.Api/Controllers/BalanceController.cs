@@ -6,14 +6,14 @@ using Warehouse.Domain.Models;
 namespace Warehouse.Api.Controllers;
 
 /// <summary>
-/// Баланс
+/// Р‘Р°Р»Р°РЅСЃ
 /// </summary>
 [ApiController]
 [Route("[controller]")]
 public class BalanceController : BaseCrudController<BalanceEntity>
 {
     /// <summary>
-    /// Конструктор
+    /// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="crudService"></param>

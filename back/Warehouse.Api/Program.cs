@@ -20,12 +20,12 @@ using Warehouse.Infrastructure.Db.Repository.Base;
 namespace Warehouse.Api;
 
 /// <summary>
-/// Главный класс программы
+/// Р“Р»Р°РІРЅС‹Р№ РєР»Р°СЃСЃ РїСЂРѕРіСЂР°РјРјС‹
 /// </summary>
 public class Program
 {
     /// <summary>
-    /// Точка входа в программу
+    /// РўРѕС‡РєР° РІС…РѕРґР° РІ РїСЂРѕРіСЂР°РјРјСѓ
     /// </summary>
     /// <param name="args"></param>
     public static void Main(string[] args)
@@ -38,11 +38,11 @@ public class Program
 
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
-            // Обработка ошибки модели чтобы они тоже приходили в едином для всего ResponseDto формате
+            // РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РєРё РјРѕРґРµР»Рё С‡С‚РѕР±С‹ РѕРЅРё С‚РѕР¶Рµ РїСЂРёС…РѕРґРёР»Рё РІ РµРґРёРЅРѕРј РґР»СЏ РІСЃРµРіРѕ ResponseDto С„РѕСЂРјР°С‚Рµ
             options.InvalidModelStateResponseFactory = context =>
             {
                 var state = context.ModelState;
-                return new JsonResult(new ErrorResponseDto(new Exception("Заполнены не все поля.")));
+                return new JsonResult(new ErrorResponseDto(new Exception("Р—Р°РїРѕР»РЅРµРЅС‹ РЅРµ РІСЃРµ РїРѕР»СЏ.")));
             };
         });
 
@@ -54,13 +54,13 @@ public class Program
             {
                 Version = "v1",
                 Title = "Warehouse API",
-                Description = "Реализация api для склада."
+                Description = "Р РµР°Р»РёР·Р°С†РёСЏ api РґР»СЏ СЃРєР»Р°РґР°."
             });
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
 
-            // Так как несколько проектов из которых нужно вытащить информация в swagger, то все их нужно подключить
+            // РўР°Рє РєР°Рє РЅРµСЃРєРѕР»СЊРєРѕ РїСЂРѕРµРєС‚РѕРІ РёР· РєРѕС‚РѕСЂС‹С… РЅСѓР¶РЅРѕ РІС‹С‚Р°С‰РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЏ РІ swagger, С‚Рѕ РІСЃРµ РёС… РЅСѓР¶РЅРѕ РїРѕРґРєР»СЋС‡РёС‚СЊ
             var xmlFileDomain = $"{Assembly.GetAssembly(typeof(BaseEntityWithId))?.GetName().Name}.xml";
             string locationDomain = Path.GetDirectoryName( Assembly.GetAssembly(typeof(BaseEntityWithId))?.Location ) ?? "";
             if (locationDomain != null)
@@ -78,21 +78,21 @@ public class Program
             }
         });
 
-        // Закладываем запас производительности чтобы не исчерпать подключения к БД, если много запросов в секунду
+        // Р—Р°РєР»Р°РґС‹РІР°РµРј Р·Р°РїР°СЃ РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё С‡С‚РѕР±С‹ РЅРµ РёСЃС‡РµСЂРїР°С‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”, РµСЃР»Рё РјРЅРѕРіРѕ Р·Р°РїСЂРѕСЃРѕРІ РІ СЃРµРєСѓРЅРґСѓ
         builder.Services.AddDbContextPool<PostgresDbContext>((service, options) =>
         {
             var _configuration = service.GetRequiredService<IConfiguration>();
             var connectionString = _configuration.GetSection("ConnectionString");
             options.UseNpgsql(connectionString.Value);
-        }, poolSize: 100); // по умолчанию у postgresql 100 подключений, поэтому здесь ставим 100
+        }, poolSize: 100); // РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Сѓ postgresql 100 РїРѕРґРєР»СЋС‡РµРЅРёР№, РїРѕСЌС‚РѕРјСѓ Р·РґРµСЃСЊ СЃС‚Р°РІРёРј 100
 
-        //Универсальные сервисы и репозитории
+        //РЈРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Рµ СЃРµСЂРІРёСЃС‹ Рё СЂРµРїРѕР·РёС‚РѕСЂРёРё
         builder.Services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
         builder.Services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
         builder.Services.AddScoped(typeof(IArchiveCrudRepository<>), typeof(ArchiveCrudRepository<>));
 
-        //Специализированные сервисы и репозитории
+        //РЎРїРµС†РёР°Р»РёР·РёСЂРѕРІР°РЅРЅС‹Рµ СЃРµСЂРІРёСЃС‹ Рё СЂРµРїРѕР·РёС‚РѕСЂРёРё
         builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
         builder.Services.AddScoped<IncomeService>();
 
@@ -102,7 +102,7 @@ public class Program
         builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
         builder.Services.AddScoped<IBalanceService, BalanceService>();
 
-        // CORS добавляем
+        // CORS РґРѕР±Р°РІР»СЏРµРј
         builder.Services.AddCors(options =>
          {
              options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -123,21 +123,21 @@ public class Program
             logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         }
 
-        //Configure DB и автоматическая миграция БД
+        //Configure DB Рё Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РјРёРіСЂР°С†РёСЏ Р‘Р”
         using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
         {
             var context = serviceScope.ServiceProvider.GetRequiredService<PostgresDbContext>();
             context.Database.Migrate();
         }
 
-        // Только в режиме отладки включаем сваггер, так как сваггер дырявый
+        // РўРѕР»СЊРєРѕ РІ СЂРµР¶РёРјРµ РѕС‚Р»Р°РґРєРё РІРєР»СЋС‡Р°РµРј СЃРІР°РіРіРµСЂ, С‚Р°Рє РєР°Рє СЃРІР°РіРіРµСЂ РґС‹СЂСЏРІС‹Р№
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
-        //Обработка ошибок глобальная по всей системе
+        //РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє РіР»РѕР±Р°Р»СЊРЅР°СЏ РїРѕ РІСЃРµР№ СЃРёСЃС‚РµРјРµ
         app.UseExceptionHandler(handle =>
         {
             handle.Run(async context =>
@@ -149,17 +149,17 @@ public class Program
                 Console.WriteLine(exHandler?.Error?.ToString() ?? "Internal Error");
                 logger.LogError(exHandler?.Error?.ToString() ?? "Internal Error");
 
-                //Возвращаем пользователю только специальные ошибки предназначенные для пользователя
+                //Р’РѕР·РІСЂР°С‰Р°РµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ С‚РѕР»СЊРєРѕ СЃРїРµС†РёР°Р»СЊРЅС‹Рµ РѕС€РёР±РєРё РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅРЅС‹Рµ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
                 if (exHandler?.Error.GetType() == typeof(UserException))
                 {
                     await context.Response.WriteAsJsonAsync(
-                                        new ErrorResponseDto(exHandler?.Error ?? new Exception("Ошибка системы."))
+                                        new ErrorResponseDto(exHandler?.Error ?? new Exception("РћС€РёР±РєР° СЃРёСЃС‚РµРјС‹."))
                                         );
                 }
                 else
                 {
                     await context.Response.WriteAsJsonAsync(
-                                        new ErrorResponseDto(new Exception("Ошибка системы."))
+                                        new ErrorResponseDto(new Exception("РћС€РёР±РєР° СЃРёСЃС‚РµРјС‹."))
                                         );
                 }
 

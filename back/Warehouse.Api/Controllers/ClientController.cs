@@ -6,14 +6,14 @@ using Warehouse.Domain.Models;
 namespace Warehouse.Api.Controllers;
 
 /// <summary>
-/// Контроллер для клиентов
+/// РљРѕРЅС‚СЂРѕР»Р»РµСЂ РґР»СЏ РєР»РёРµРЅС‚РѕРІ
 /// </summary>
 [ApiController]
 [Route("[controller]")]
 public class ClientController : BaseArchiveCrudController<ClientEntity>
 {
     /// <summary>
-    /// Конструктор
+    /// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="crudService"></param>

@@ -8,14 +8,14 @@ using Warehouse.Domain.Models;
 namespace Warehouse.Api.Controllers;
 
 /// <summary>
-/// Отгрузки
+/// РћС‚РіСЂСѓР·РєРё
 /// </summary>
 [ApiController]
 [Route("[controller]")]
 public class ShipmentController : BaseCrudController<ShipmentEntity>
 {
     /// <summary>
-    /// Конструктор
+    /// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="crudService"></param>
@@ -25,10 +25,10 @@ public class ShipmentController : BaseCrudController<ShipmentEntity>
     }
 
     /// <summary>
-    /// Изменить состояние на подписана или не подписана
+    /// РР·РјРµРЅРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РЅР° РїРѕРґРїРёСЃР°РЅР° РёР»Рё РЅРµ РїРѕРґРїРёСЃР°РЅР°
     /// </summary>
     /// <param name="id"></param>
-    /// <param name="newStateCode">approve или disApprove</param>
+    /// <param name="newStateCode">approve РёР»Рё disApprove</param>
     /// <returns></returns>
     [HttpPut("ChangeState")]
     public async Task<ActionResult> ChangeState(long id, string newStateCode)
