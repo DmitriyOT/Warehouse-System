@@ -1,0 +1,9 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionString": "Host=localhost;Port=5432;Database=warehouse;Username=postgres;Password=YOUR_PASSWORD_HERE;IncludeErrorDetail=true;"
+}
