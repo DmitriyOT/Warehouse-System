@@ -1,26 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.Api.Request;
-using Warehouse.Contracts.Application;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Exceptions;
+using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Infrastructure.Db.Repository.Base;
-using System.Net;
 
 namespace Warehouse.Infrastructure.Db.Repository;
 
 public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepository
 {
-    protected IBalanceService _balanceService { get; set; }
-
-    public ShipmentRepository(PostgresDbContext db, IBalanceService balanceService) : base(db)
+    public ShipmentRepository(PostgresDbContext db) : base(db)
     {
-        _balanceService = balanceService;
     }
 
     /// <summary>
@@ -34,7 +25,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             .Include(x => x.ShipmentItems).ThenInclude(x => x.Resource)
             .Include(x => x.ShipmentItems).ThenInclude(x => x.Unit)
             .AsNoTracking()
-            .Select(x => new ShipmentEntity 
+            .Select(x => new ShipmentEntity
             {
                 Id = x.Id,
                 Number = x.Number,
@@ -47,7 +38,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
-            throw new Exception($"Error. Item with this Id={id} not found in Database.");
+            throw new UserException($"Ошибка. Объект не найден в базе данных.");
         }
         else
         {
@@ -55,34 +46,34 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
         }
     }
 
-    public override async Task<Tuple<List<ShipmentEntity>, long>> GetAll(GridOptionsDto options)
+    public override async Task<PagedResult<ShipmentEntity>> GetAll(GridOptionsDto options)
     {
         var query = GetQuery(options);
-        return Tuple.Create(
-            await query.OrderBy(x => x.Id)
-                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
-                .Include(x => x.ShipmentItems).ThenInclude(x => x.Resource)
-                .Include(x => x.ShipmentItems).ThenInclude(x => x.Unit)
-                .Select(x => new ShipmentEntity
-                {
-                    Id = x.Id,
-                    Number = x.Number,
-                    ClientName = x.Client.Name,
-                    Date = x.Date,
-                    IsApprove = x.IsApprove,
-                    ShipmentItems = x.ShipmentItems
-                })
-                .AsNoTracking().ToListAsync(),//To array (List)
-            await query.LongCountAsync()
-            );
+        var items = await query.OrderBy(x => x.Id)
+            .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+            .Include(x => x.ShipmentItems).ThenInclude(x => x.Resource)
+            .Include(x => x.ShipmentItems).ThenInclude(x => x.Unit)
+            .Select(x => new ShipmentEntity
+            {
+                Id = x.Id,
+                Number = x.Number,
+                ClientName = x.Client.Name,
+                Date = x.Date,
+                IsApprove = x.IsApprove,
+                ShipmentItems = x.ShipmentItems
+            })
+            .AsNoTracking().ToListAsync();//To array (List)
+        var count = await query.LongCountAsync();
+        return new PagedResult<ShipmentEntity>(items, count);
     }
 
     public override async Task<long> EditItem(ShipmentEntity item)
     {
-        var itemDb = await entities
-            .Include(x => x.ShipmentItems)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == item.Id);
+        var numberEqual = await entities.AsNoTracking().FirstOrDefaultAsync(x => x.Number == item.Number);
+        if (numberEqual != null && numberEqual.Id != item.Id)
+        {
+            throw new UserException($"Ошибка. Документ отгрузки с номером {item.Number} уже есть в системе.");
+        }
 
         if (item.ShipmentItems != null)
         {
@@ -93,11 +84,10 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             }
         }
 
-        var numberEqual = await entities.AsNoTracking().FirstOrDefaultAsync(x => x.Number == item.Number);
-        if (numberEqual != null && numberEqual.Id != item.Id)
-        {
-            throw new UserException($"Ошибка. Документ отгрузки с номером {item.Number} уже есть в системе.");
-        }
+        var itemDb = await entities
+            .Include(x => x.ShipmentItems)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == item.Id);
 
         if (itemDb == null)
         {//Create New
@@ -144,7 +134,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
                 {//delete removed items
                     foreach (var incomeItem in itemDb.ShipmentItems)
                     {
-                        if(!itemsMap.Contains(incomeItem.Id))
+                        if (!itemsMap.Contains(incomeItem.Id))
                         {
                             incomeItem.Shipment = null;
                             DB.shipmetItems.Remove(incomeItem);
@@ -161,39 +151,10 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
 
     public async Task ChangeStateAsync(long id, string newStateCode)
     {
-        var transaction = DB.Database.BeginTransaction();
-        try
-        {
-            transaction.CreateSavepoint("start");
+        var item = await entities.Include(x => x.ShipmentItems).FirstAsync(x => x.Id == id);
+        item.IsApprove = newStateCode == "approve";
 
-            var item = await entities.Include(x => x.ShipmentItems).FirstAsync(x => x.Id == id);
-            item.IsApprove = newStateCode == "approve";
-
-            await DB.SaveChangesAsync();
-            DB.Entry(item).State = EntityState.Detached;
-
-            if (item.ShipmentItems != null)
-            {
-                if (item.IsApprove)
-                {
-                    foreach (var i in item.ShipmentItems)
-                    {
-                        i.Quantity = -i.Quantity;
-                        DB.Entry(i).State = EntityState.Detached;
-                    }
-                    await _balanceService.ApplyShipmentDifference(item.ShipmentItems);
-                }
-                else
-                {
-                    await _balanceService.ApplyShipmentDifference(item.ShipmentItems);
-                }
-            }
-            transaction.Commit();
-        }
-        catch (Exception ex)
-        {
-            transaction.RollbackToSavepoint("start");
-            throw new UserException("Ошибка подписания отгрузки.");
-        }
+        await DB.SaveChangesAsync();
+        DB.Entry(item).State = EntityState.Detached;
     }
 }

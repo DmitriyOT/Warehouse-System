@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
@@ -44,15 +42,14 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public virtual async Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options)
+    public virtual async Task<PagedResult<Entity>> GetAll(GridOptionsDto options)
     {
         var query = GetQuery(options);
-        return Tuple.Create(
-            await query.OrderBy(x => x.Id)
-                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
-                .AsNoTracking().ToListAsync(),//To array (List)
-            await query.LongCountAsync()
-            );
+        var items = await query.OrderBy(x => x.Id)
+            .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+            .AsNoTracking().ToListAsync();//To array (List)
+        var count = await query.LongCountAsync();
+        return new PagedResult<Entity>(items, count);
     }
 
     protected virtual IQueryable<Entity> GetQuery(GridOptionsDto options)

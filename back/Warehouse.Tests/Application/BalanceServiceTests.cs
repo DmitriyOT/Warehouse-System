@@ -1,4 +1,4 @@
-﻿using Warehouse.Application.Services;
+using Warehouse.Application.Services;
 using Warehouse.Domain.Models;
 using Warehouse.Tests.TestInfrastructure;
 
@@ -111,12 +111,12 @@ public class BalanceServiceTests
 
         var allItems = await balanceRepository.GetAll(null);
 
-        Assert.Equal(result.Count, allItems.Item1.Count);
+        Assert.Equal(result.Count, allItems.Items.Count);
 
         for(int i = 0; i < result.Count; i++)
         {
             var itemL = result[i];
-            var itemR = allItems.Item1[i];
+            var itemR = allItems.Items[i];
 
             Assert.Equal(itemL.Id, itemR.Id);
             Assert.Equal(itemL.ResourceId, itemR.ResourceId);

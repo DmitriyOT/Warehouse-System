@@ -1,4 +1,5 @@
-﻿using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Contracts.Application;
@@ -13,7 +14,7 @@ public interface ICrudService<TEntity> where TEntity : BaseEntityWithId
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public Task<Tuple<List<TEntity>, long>> GetAll(GridOptionsDto options);
+    public Task<PagedResult<TEntity>> GetAll(GridOptionsDto options);
 
     /// <summary>
     /// Получить один элемент для карточки

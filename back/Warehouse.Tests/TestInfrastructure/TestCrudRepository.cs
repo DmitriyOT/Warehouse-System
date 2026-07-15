@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
 
@@ -39,9 +35,9 @@ public class TestCrudRepository<TEntity> : ICrudRepository<TEntity> where TEntit
         return Task.FromResult(item.Id);    
     }
 
-    public Task<Tuple<List<TEntity>, long>> GetAll(GridOptionsDto options)
+    public Task<PagedResult<TEntity>> GetAll(GridOptionsDto options)
     {
-        return Task.FromResult(Tuple.Create<List<TEntity>, long>(_entities.Values.ToList(), _entities.Values.Count));
+        return Task.FromResult(new PagedResult<TEntity>(_entities.Values.ToList(), _entities.Values.Count));
     }
 
     public Task<TEntity> GetItem(long id)

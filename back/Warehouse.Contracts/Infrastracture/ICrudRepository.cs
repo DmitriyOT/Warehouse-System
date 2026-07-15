@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Contracts.Infrastracture;
@@ -16,7 +16,7 @@ public interface ICrudRepository<Entity> where Entity : BaseEntityWithId
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options);
+    public Task<PagedResult<Entity>> GetAll(GridOptionsDto options);
 
     /// <summary>
     /// Получить один элемент для карточки

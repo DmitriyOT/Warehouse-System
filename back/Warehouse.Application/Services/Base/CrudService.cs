@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models.Base;
@@ -44,7 +45,7 @@ public class CrudService<Entity> : ICrudService<Entity> where Entity : BaseEntit
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task DeleteItem(long id)
+    public virtual async Task DeleteItem(long id)
     {
         await _repository.DeleteItem(id);
     }
@@ -64,7 +65,7 @@ public class CrudService<Entity> : ICrudService<Entity> where Entity : BaseEntit
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public async Task<Tuple<List<Entity>, long>> GetAll(GridOptionsDto options)
+    public async Task<PagedResult<Entity>> GetAll(GridOptionsDto options)
     {
         return await _repository.GetAll(options);
     }

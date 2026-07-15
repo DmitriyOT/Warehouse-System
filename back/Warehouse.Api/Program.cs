@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Reflection;
 using Warehouse.Application.Services;
 using Warehouse.Application.Services.Base;
@@ -31,11 +31,19 @@ public class Program
     {
         var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        var builder = WebApplication.CreateBuilder(args);
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .CreateLogger();
 
-        // Add services to the container.
+        try
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+            builder.Host.UseSerilog();
+
+            // Add services to the container.
+
+            builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
             // Обработка ошибки модели: 400 Bad Request с перечнем ошибок валидации
             options.InvalidModelStateResponseFactory = context =>
@@ -109,6 +117,13 @@ public class Program
 
         builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
         builder.Services.AddScoped<IBalanceService, BalanceService>();
+        builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+
+        // Health checks
+        builder.Services.AddHealthChecks()
+            .AddNpgSql(sp => sp.GetRequiredService<IConfiguration>().GetSection("ConnectionString").Value!,
+                       name: "postgresql",
+                       failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy);
 
         // CORS добавляем
         builder.Services.AddCors(options =>
@@ -124,12 +139,6 @@ public class Program
          });
 
         var app = builder.Build();
-
-        ILogger<Program>? logger = null;
-        using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
-        {
-            logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        }
 
         //Configure DB и автоматическая миграция БД
         using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -153,7 +162,7 @@ public class Program
                 var exHandler = context.Features.Get<IExceptionHandlerPathFeature>();
                 var error = exHandler?.Error;
 
-                logger.LogError(error, "Unhandled exception occurred");
+                Log.Error(error, "Unhandled exception occurred");
 
                 if (error is UserException userEx)
                 {
@@ -175,8 +184,21 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseSerilogRequestLogging();
+
+        app.MapHealthChecks("/health");
+        app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("ready")
+        });
+
         app.MapControllers();
 
         app.Run();
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 }

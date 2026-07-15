@@ -1,4 +1,4 @@
-﻿using Warehouse.Contracts.Application;
+using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Contracts.Exceptions;
@@ -11,9 +11,11 @@ namespace Warehouse.Application.Services;
 /// </summary>
 public class BalanceService : CrudService<BalanceEntity>, IBalanceService
 {
+    private readonly IBalanceRepository _balanceRepository;
 
     public BalanceService(IBalanceRepository balanceRepository) : base(balanceRepository)
     {
+        _balanceRepository = balanceRepository;
     }
 
     /// <summary>
@@ -148,7 +150,7 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
     {
         foreach (var item in items)
         {
-            var balance = await (_repository as IBalanceRepository)!.GetBalanceAsync(item.ResourceId, item.UnitId);
+            var balance = await _balanceRepository.GetBalanceAsync(item.ResourceId, item.UnitId);
             if (balance == null)
             {
                 if (item.Delta < 0)
@@ -180,9 +182,9 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
             }
             
             if (balance.Quantity != 0)
-                await (_repository as IBalanceRepository)!.EditItem(balance);
+                await _balanceRepository.EditItem(balance);
             else
-                await (_repository as IBalanceRepository)!.DeleteItem(balance.Id);
+                await _balanceRepository.DeleteItem(balance.Id);
         }
     }
 

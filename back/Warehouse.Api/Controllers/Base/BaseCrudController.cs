@@ -52,10 +52,8 @@ public abstract class BaseCrudController<Entity> : ControllerBase where Entity :
     public async Task<ActionResult> GetAll(GridOptionsDto options)
     {
         var result = await _crudService.GetAll(options);
-        var response = result.Item1;
-        var count = result.Item2;
-        var page = new PageView(options.Page, options.PageSize, count);
-        return Ok(new ResponseDtoGrid<Entity>(response, page));
+        var page = new PageView(options.Page, options.PageSize, result.TotalCount);
+        return Ok(new ResponseDtoGrid<Entity>(result.Items, page));
     }
 
     /// <summary>

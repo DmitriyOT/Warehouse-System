@@ -1,11 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.Api.Request;
-using Warehouse.Contracts.Application;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
@@ -15,11 +10,8 @@ namespace Warehouse.Infrastructure.Db.Repository;
 
 public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
 {
-    protected IBalanceService _balanceService { get; set; }
-
-    public IncomeRepository(PostgresDbContext db, IBalanceService balanceService) : base(db)
+    public IncomeRepository(PostgresDbContext db) : base(db)
     {
-        _balanceService = balanceService;
     }
 
     /// <summary>
@@ -43,123 +35,97 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
         }
     }
 
-    public override async Task<Tuple<List<IncomeEntity>, long>> GetAll(GridOptionsDto options)
+    public override async Task<PagedResult<IncomeEntity>> GetAll(GridOptionsDto options)
     {
         var query = GetQuery(options);
-        return Tuple.Create(
-            await query.OrderBy(x => x.Id)
-                .Include(x => x.IncomeItems).ThenInclude(x => x.Resource)
-                .Include(x => x.IncomeItems).ThenInclude(x => x.Unit)
-                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
-                .AsNoTracking().ToListAsync(),//To array (List)
-            await query.LongCountAsync()
-            );
+        var items = await query.OrderBy(x => x.Id)
+            .Include(x => x.IncomeItems).ThenInclude(x => x.Resource)
+            .Include(x => x.IncomeItems).ThenInclude(x => x.Unit)
+            .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+            .AsNoTracking().ToListAsync();//To array (List)
+        var count = await query.LongCountAsync();
+        return new PagedResult<IncomeEntity>(items, count);
     }
 
     public override async Task<long> EditItem(IncomeEntity item)
     {
-        var transaction = await DB.Database.BeginTransactionAsync();
-
-        try
+        var numberEqual = await entities.Where(x => x.Number == item.Number).AsNoTracking().FirstOrDefaultAsync();
+        if (numberEqual != null && numberEqual.Id != item.Id)
         {
-            transaction.CreateSavepoint("start");
+            throw new UserException($"Ошибка. Документ поступления с номером <{item.Number}> уже есть в системе.");
+        }
 
-            var itemDb = await entities
-                .Include(x => x.IncomeItems)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == item.Id);
+        if (item.IncomeItems != null)
+        {
+            foreach (var incomeI in item.IncomeItems)
+            {
+                incomeI.Resource = null;
+                incomeI.Unit = null;
+            }
+        }
+
+        var itemDb = await entities
+            .Include(x => x.IncomeItems)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == item.Id);
+
+        if (itemDb == null)
+        {//Create New
+            if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
+                item.Id = 0;
+
+            entities.Add(item);
 
             if (item.IncomeItems != null)
             {
-                foreach (var incomeI in item.IncomeItems)
+                foreach (var incomeItem in item.IncomeItems)
                 {
-                    incomeI.Resource = null;
-                    incomeI.Unit = null;
+                    incomeItem.Id = 0;
+                    incomeItem.Income = item;
                 }
+                DB.incomeItems.AddRange(item.IncomeItems);
             }
-
-            var numberEqual = await entities.Where(x => x.Number == item.Number).AsNoTracking().FirstOrDefaultAsync();
-            if (numberEqual != null && numberEqual.Id != item.Id)
+        }
+        else
+        {//edit exist
+            entities.Attach(item);
+            DB.Entry(item).State = EntityState.Modified;
+            if (item.IncomeItems != null)
             {
-                throw new UserException($"Ошибка. Документ поступления с номером <{item.Number}> уже есть в системе.");
-            }
-
-            if (itemDb == null)
-            {//Create New
-                if (item.Id < 0)//Отрицательные id не используем, 0 тогда создастся корректный id
-                    item.Id = 0;
-
-                entities.Add(item);
-
-                if (item.IncomeItems != null)
+                HashSet<long> itemsMap = new HashSet<long>();
+                foreach (var incomeItem in item.IncomeItems)
                 {
-                    foreach (var incomeItem in item.IncomeItems)
-                    {
+                    incomeItem.Income = item;
+                    if (incomeItem.Id < 0)
+                    {//add new items
                         incomeItem.Id = 0;
-                        incomeItem.Income = item;
+                        DB.incomeItems.Add(incomeItem);
                     }
-                    DB.incomeItems.AddRange(item.IncomeItems);
+                    else
+                    {//add to set exist items
+                        itemsMap.Add(incomeItem.Id);
+                        //edit items
+                        DB.incomeItems.Attach(incomeItem);
+                        DB.Entry(incomeItem).State = EntityState.Modified;
+                    }
                 }
-            }
-            else
-            {//edit exist
-                entities.Attach(item);
-                DB.Entry(item).State = EntityState.Modified;
-                if (item.IncomeItems != null)
-                {
-                    HashSet<long> itemsMap = new HashSet<long>();
-                    foreach (var incomeItem in item.IncomeItems)
+
+                if (itemDb.IncomeItems != null)
+                {//delete removed items
+                    foreach (var incomeItem in itemDb.IncomeItems)
                     {
-                        incomeItem.Income = item;
-                        if (incomeItem.Id < 0)
-                        {//add new items
-                            incomeItem.Id = 0;
-                            DB.incomeItems.Add(incomeItem);
-                        }
-                        else
-                        {//add to set exist items
-                            itemsMap.Add(incomeItem.Id);
-                            //edit items
-                            DB.incomeItems.Attach(incomeItem);
-                            DB.Entry(incomeItem).State = EntityState.Modified;
-                        }
-                    }
-
-                    if (itemDb.IncomeItems != null)
-                    {//delete removed items
-                        foreach (var incomeItem in itemDb.IncomeItems)
+                        if (!itemsMap.Contains(incomeItem.Id))
                         {
-                            if (!itemsMap.Contains(incomeItem.Id))
-                            {
-                                incomeItem.Income = null;
-                                DB.incomeItems.Remove(incomeItem);
-                            }
+                            incomeItem.Income = null;
+                            DB.incomeItems.Remove(incomeItem);
                         }
                     }
                 }
             }
-
-            await DB.SaveChangesAsync();
-            //await transaction.CommitAsync();
-            DB.Entry(item).State = EntityState.Detached;
-
-            if (itemDb != null && item.IncomeItems != null)
-            {
-                await _balanceService.CalculateAndApplyDifference(
-                        itemDb.IncomeItems ?? new List<IncomeItemEntity>(), item.IncomeItems);
-            }
-            else if (itemDb == null && item.IncomeItems != null)
-            {
-                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
-            }
-
-            await transaction.CommitAsync();
         }
-        catch (UserException ex)
-        {
-            await transaction.RollbackToSavepointAsync("start");
-            throw new UserException($"Ошибка обработки документа поступления. {ex.Message}");
-        }
+
+        await DB.SaveChangesAsync();
+        DB.Entry(item).State = EntityState.Detached;
 
         return item.Id;
     }
@@ -176,30 +142,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             .AsNoTracking()
             .FirstAsync(x => x.Id == id);
 
-        var transaction = await DB.Database.BeginTransactionAsync();
-
-        try
-        {
-            await transaction.CreateSavepointAsync("start");
-            if (item.IncomeItems != null)
-            {
-                foreach (var i in item.IncomeItems)
-                {
-                    i.Quantity = -i.Quantity;
-                }
-                await _balanceService.ApplyIncomeDifference(item.IncomeItems);
-            }
-
-            entities.Remove(item);
-            transaction.Commit();
-        }
-        catch (UserException ex)
-        {
-            throw new UserException($"Ошибка удаления поступления. {ex.Message}");
-        }
-        finally
-        {
-            await transaction.RollbackToSavepointAsync("start");
-        }
+        entities.Remove(item);
+        await DB.SaveChangesAsync();
     }
 }

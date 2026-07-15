@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Infrastructure.Db.Repository.Base;
@@ -22,15 +23,14 @@ public class BalanceRepository : CrudRepository<BalanceEntity>, IBalanceReposito
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public override async Task<Tuple<List<BalanceEntity>, long>> GetAll(GridOptionsDto options)
+    public override async Task<PagedResult<BalanceEntity>> GetAll(GridOptionsDto options)
     {
         var query = GetQuery(options);
-        return Tuple.Create(
-            await query.OrderBy(x => x.Id)
-                .Include(x => x.Unit).Include(x => x.Resource)
-                .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
-                .AsNoTracking().ToListAsync(),//To array (List)
-            await query.LongCountAsync()
-            );
+        var items = await query.OrderBy(x => x.Id)
+            .Include(x => x.Unit).Include(x => x.Resource)
+            .Skip(options.GetSkip()).Take(options.GetTake())//Paginations
+            .AsNoTracking().ToListAsync();//To array (List)
+        var count = await query.LongCountAsync();
+        return new PagedResult<BalanceEntity>(items, count);
     }
 }
