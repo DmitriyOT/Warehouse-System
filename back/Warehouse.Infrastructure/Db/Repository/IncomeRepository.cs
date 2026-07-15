@@ -83,7 +83,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                     incomeItem.Id = 0;
                     incomeItem.Income = item;
                 }
-                DB.incomeItems.AddRange(item.IncomeItems);
+                DB.IncomeItems.AddRange(item.IncomeItems);
             }
         }
         else
@@ -99,13 +99,13 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                     if (incomeItem.Id < 0)
                     {//add new items
                         incomeItem.Id = 0;
-                        DB.incomeItems.Add(incomeItem);
+                        DB.IncomeItems.Add(incomeItem);
                     }
                     else
                     {//add to set exist items
                         itemsMap.Add(incomeItem.Id);
                         //edit items
-                        DB.incomeItems.Attach(incomeItem);
+                        DB.IncomeItems.Attach(incomeItem);
                         DB.Entry(incomeItem).State = EntityState.Modified;
                     }
                 }
@@ -117,7 +117,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
                         if (!itemsMap.Contains(incomeItem.Id))
                         {
                             incomeItem.Income = null;
-                            DB.incomeItems.Remove(incomeItem);
+                            DB.IncomeItems.Remove(incomeItem);
                         }
                     }
                 }

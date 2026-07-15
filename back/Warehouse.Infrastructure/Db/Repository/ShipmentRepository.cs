@@ -77,10 +77,10 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
 
         if (item.ShipmentItems != null)
         {
-            foreach (var incomeI in item.ShipmentItems)
+            foreach (var shipmentItem in item.ShipmentItems)
             {
-                incomeI.Resource = null;
-                incomeI.Unit = null;
+                shipmentItem.Resource = null;
+                shipmentItem.Unit = null;
             }
         }
 
@@ -98,12 +98,12 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
 
             if (item.ShipmentItems != null)
             {
-                foreach (var incomeItem in item.ShipmentItems)
+                foreach (var shipmentItem in item.ShipmentItems)
                 {
-                    incomeItem.Id = 0;
-                    incomeItem.Shipment = item;
+                    shipmentItem.Id = 0;
+                    shipmentItem.Shipment = item;
                 }
-                DB.shipmetItems.AddRange(item.ShipmentItems);
+                DB.ShipmentItems.AddRange(item.ShipmentItems);
             }
         }
         else
@@ -113,31 +113,31 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             if (item.ShipmentItems != null)
             {
                 HashSet<long> itemsMap = new HashSet<long>();
-                foreach (var incomeItem in item.ShipmentItems)
+                foreach (var shipmentItem in item.ShipmentItems)
                 {
-                    incomeItem.Shipment = item;
-                    if (incomeItem.Id < 0)
+                    shipmentItem.Shipment = item;
+                    if (shipmentItem.Id < 0)
                     {//add new items
-                        incomeItem.Id = 0;
-                        DB.shipmetItems.Add(incomeItem);
+                        shipmentItem.Id = 0;
+                        DB.ShipmentItems.Add(shipmentItem);
                     }
                     else
                     {//add to set exist items
-                        itemsMap.Add(incomeItem.Id);
+                        itemsMap.Add(shipmentItem.Id);
                         //edit items
-                        DB.shipmetItems.Attach(incomeItem);
-                        DB.Entry(incomeItem).State = EntityState.Modified;
+                        DB.ShipmentItems.Attach(shipmentItem);
+                        DB.Entry(shipmentItem).State = EntityState.Modified;
                     }
                 }
 
                 if (itemDb.ShipmentItems != null)
                 {//delete removed items
-                    foreach (var incomeItem in itemDb.ShipmentItems)
+                    foreach (var shipmentItem in itemDb.ShipmentItems)
                     {
-                        if (!itemsMap.Contains(incomeItem.Id))
+                        if (!itemsMap.Contains(shipmentItem.Id))
                         {
-                            incomeItem.Shipment = null;
-                            DB.shipmetItems.Remove(incomeItem);
+                            shipmentItem.Shipment = null;
+                            DB.ShipmentItems.Remove(shipmentItem);
                         }
                     }
                 }

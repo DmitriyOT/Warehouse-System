@@ -1,4 +1,5 @@
 using Warehouse.Application.Services;
+using Warehouse.Contracts.Exceptions;
 using Warehouse.Domain.Models;
 using Warehouse.Tests.TestInfrastructure;
 
@@ -123,5 +124,62 @@ public class BalanceServiceTests
             Assert.Equal(itemL.UnitId, itemR.UnitId);
             Assert.Equal(itemL.Quantity, itemR.Quantity);
         }
+    }
+
+    [Fact]
+    public async Task ApplyIncomeDifference_CreatesNewBalance()
+    {
+        var balanceRepository = new TestBalanceRepository();
+        var balanceService = new BalanceService(balanceRepository);
+
+        var items = new List<IncomeItemEntity>
+        {
+            new IncomeItemEntity { Id = 1, ResourceId = 1, UnitId = 1, Quantity = 5 }
+        };
+
+        await balanceService.ApplyIncomeDifference(items);
+
+        var allItems = await balanceRepository.GetAll(null);
+        Assert.Single(allItems.Items);
+        Assert.Equal(5, allItems.Items[0].Quantity);
+    }
+
+    [Fact]
+    public async Task ApplyShipmentDifference_ReducesAndDeletesBalance()
+    {
+        var balanceRepository = new TestBalanceRepository();
+        await balanceRepository.EditItem(new BalanceEntity
+        {
+            Id = 1,
+            ResourceId = 1,
+            UnitId = 1,
+            Quantity = 5
+        });
+
+        var balanceService = new BalanceService(balanceRepository);
+
+        var items = new List<ShipmentItemEntity>
+        {
+            new ShipmentItemEntity { Id = 1, ResourceId = 1, UnitId = 1, Quantity = -5 }
+        };
+
+        await balanceService.ApplyShipmentDifference(items);
+
+        var allItems = await balanceRepository.GetAll(null);
+        Assert.Empty(allItems.Items);
+    }
+
+    [Fact]
+    public async Task ApplyShipmentDifference_NotEnoughResources_Throws()
+    {
+        var balanceRepository = new TestBalanceRepository();
+        var balanceService = new BalanceService(balanceRepository);
+
+        var items = new List<ShipmentItemEntity>
+        {
+            new ShipmentItemEntity { Id = 1, ResourceId = 1, UnitId = 1, Quantity = -1 }
+        };
+
+        await Assert.ThrowsAsync<UserException>(() => balanceService.ApplyShipmentDifference(items));
     }
 }

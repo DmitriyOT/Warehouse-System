@@ -15,7 +15,7 @@ type GridColumn = {
     options?: Array<SelectOption>; // Обязательно для типа 'select'
 };
 
-type ItemsGridOptions<T> = {
+type ItemsGridOptions<T extends BaseEntityId> = {
     items: Array<T>;
     onChange: (items: Array<T>) => void;
     nextId: number;
@@ -23,53 +23,47 @@ type ItemsGridOptions<T> = {
     columns: Array<GridColumn>;
 };
 
+type ItemWithFields = BaseEntityId & Record<string, unknown>;
+
 const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, nextId, setNextId, columns }: ItemsGridOptions<T>) {
 
     // Обработчик добавления нового элемента
     const handleAddItem = () => {
-        const newItem: any = { id: nextId };
-
-        // Инициализация полей по колонкам
-        /*columns.forEach(column => {
-            newItem[column.field] = column.type === 'select'
-                ? column.options?.at(0)?.value
-                : '';
-        });*/
-
+        const newItem: ItemWithFields = { id: nextId };
         setNextId(nextId - 1);
-        const newItems = [...items, newItem];
+        const newItems = [...items, newItem as T];
         onChange(newItems);
     };
 
     // Обработчик удаления элемента
-    const handleDeleteItem = (item: any) => {
+    const handleDeleteItem = (item: T) => {
         onChange(items.filter(x => x.id !== item.id));
     };
 
     // Функция получения компонента ввода
-    const getInput = (column: GridColumn, item: any) => {
-        const handleFieldChange = (newValue: any) => {
-            let updatedItem;
+    const getInput = (column: GridColumn, item: ItemWithFields) => {
+        const handleFieldChange = (newValue: unknown) => {
+            let updatedItem: ItemWithFields;
             if( column.source !== undefined && item[column.source] !== undefined)
-                updatedItem = { ...item, [column.field]: newValue, [column.source]: {...item[column.source], id: newValue} };
+                updatedItem = { ...item, [column.field]: newValue, [column.source]: {...(item[column.source] as Record<string, unknown>), id: newValue} };
             else
                 updatedItem = { ...item, [column.field]: newValue };
             const newItems = items.map(i =>
-                i.id === item.id ? updatedItem : i
+                i.id === item.id ? updatedItem as T : i
             );
             onChange(newItems);
         };
 
         switch (column.type) {
-            case 'select':
+            case 'select': {
                 if (!column.options) return null;
 
                 if(column.source === undefined) return <>Ошибка</>;
-                const currentValue = item[column.source];
+                const currentValue = item[column.source] as { id?: number; name?: string; number?: string } | undefined;
 
                 return (
                     <PureSelectInput
-                        selected={{value:currentValue?.id.toString() ?? item[column.field], title: currentValue?.name ?? currentValue?.number}}
+                        selected={{value:currentValue?.id?.toString() ?? (item[column.field] as string | undefined) ?? '', title: currentValue?.name ?? currentValue?.number ?? ''} as SelectOption}
                         options={column.options}
                         onChange={(selected) =>
                             handleFieldChange(selected)
@@ -77,11 +71,12 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
                         size={'medium'}
                     />
                 );
+            }
 
             case 'text':
                 return (
                     <PureTextInput
-                        value={String(item[column.field])}
+                        value={String(item[column.field] ?? '')}
                         onChange={(value) =>
                             handleFieldChange(value)
                         }
@@ -92,7 +87,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
             case 'number':
                 return (
                     <PureNumberInput
-                        value={item[column.field]}
+                        value={Number(item[column.field] ?? 0)}
                         onChange={(value) =>
                             handleFieldChange(value)
                         }
@@ -136,7 +131,7 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
                     </td>
                     {columns.map(column => (
                         <td key={column.id}>
-                            {getInput(column, item)}
+                            {getInput(column, item as ItemWithFields)}
                         </td>
                     ))}
                 </tr>

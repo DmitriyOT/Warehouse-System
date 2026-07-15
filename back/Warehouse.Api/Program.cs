@@ -4,17 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
-using Warehouse.Application.Services;
-using Warehouse.Application.Services.Base;
+using Warehouse.Application;
 using Warehouse.Contracts.Api.Response;
-using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Exceptions;
-using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
 using Warehouse.Domain.Models.Base;
+using Warehouse.Infrastructure;
 using Warehouse.Infrastructure.Db;
-using Warehouse.Infrastructure.Db.Repository;
-using Warehouse.Infrastructure.Db.Repository.Base;
 
 namespace Warehouse.Api;
 
@@ -94,36 +90,11 @@ public class Program
             }
         });
 
-        // Закладываем запас производительности чтобы не исчерпать подключения к БД, если много запросов в секунду
-        builder.Services.AddDbContextPool<PostgresDbContext>((service, options) =>
-        {
-            var _configuration = service.GetRequiredService<IConfiguration>();
-            var connectionString = _configuration.GetSection("ConnectionString");
-            options.UseNpgsql(connectionString.Value);
-        }, poolSize: 100); // по умолчанию у postgresql 100 подключений, поэтому здесь ставим 100
+        // Инфраструктурные сервисы: БД, репозитории, единица работы, health checks
+        builder.Services.AddWarehouseInfrastructure(builder.Configuration);
 
-        //Универсальные сервисы и репозитории
-        builder.Services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
-        builder.Services.AddScoped(typeof(ICrudRepository<>), typeof(CrudRepository<>));
-        builder.Services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
-        builder.Services.AddScoped(typeof(IArchiveCrudRepository<>), typeof(ArchiveCrudRepository<>));
-
-        //Специализированные сервисы и репозитории
-        builder.Services.AddScoped<IIncomeRepository, IncomeRepository>();
-        builder.Services.AddScoped<IncomeService>();
-
-        builder.Services.AddScoped<IShipmentRepository, ShipmentRepository>();
-        builder.Services.AddScoped<ShipmentService>();
-
-        builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
-        builder.Services.AddScoped<IBalanceService, BalanceService>();
-        builder.Services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-
-        // Health checks
-        builder.Services.AddHealthChecks()
-            .AddNpgSql(sp => sp.GetRequiredService<IConfiguration>().GetSection("ConnectionString").Value!,
-                       name: "postgresql",
-                       failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy);
+        // Прикладные бизнес-сервисы
+        builder.Services.AddWarehouseApplication();
 
         // CORS добавляем
         builder.Services.AddCors(options =>

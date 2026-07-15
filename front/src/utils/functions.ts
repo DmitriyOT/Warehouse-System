@@ -1,9 +1,11 @@
-
-export const LoadStringToDate = (item: any) => {
+export const LoadStringToDate = (item: Record<string, unknown>) => {
     for (const key in item) {
-        const date = new Date(item[key])
-        if (typeof item[key] === 'string' && date !== undefined) {
-            item[key] = date;
+        const value = item[key];
+        if (typeof value === 'string') {
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) {
+                item[key] = date;
+            }
         }
     }
 }
@@ -20,11 +22,11 @@ export const DateToStringFormat = (d: Date) => {
     return [year, month, day].join('-');
 }
 
-export const UploadDateToString = (item: any) => {
+export const UploadDateToString = <T extends Record<string, unknown>>(item: T): T => {
     for (const key in item) {
-        if (item[key] instanceof Date) {
-            const d = item[key] as Date;
-            item[key] = DateToStringFormat(d);
+        const value = item[key];
+        if (value instanceof Date) {
+            item[key] = DateToStringFormat(value) as unknown as T[Extract<keyof T, string>];
         }
     }
     return item;

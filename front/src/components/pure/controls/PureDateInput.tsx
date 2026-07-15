@@ -13,7 +13,7 @@ const PureDateInput = ({value, onChange}: PureDateInputProps) => {
   return (
       <div className='w-100'>
           <DatePicker selected={ value as unknown as Date }
-                      onChange={(e) => {let date = e as Date;onChange(date)} }
+                      onChange={(e) => {const date = e as Date;onChange(date)} }
                       showYearDropdown
                       dateFormat={DATE_FORMAT}
           />

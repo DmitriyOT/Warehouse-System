@@ -1,11 +1,12 @@
 import {Button} from "react-bootstrap";
+import type {ReactNode} from "react";
 
 export type ItemButtonCode = 'save' | 'delete' | 'archiveToggle';
 
 type EntityCardProps = {
     title: string,
     buttons: Array<{ code: ItemButtonCode, onClick: () => void }>,
-    Component: any,
+    Component: ReactNode,
     isArchive: boolean | undefined,
     hideButtons: boolean
 }
@@ -27,7 +28,7 @@ const EntityCardComponent = ({title, buttons, Component, isArchive, hideButtons}
                   <div className='d-flex flex-wrap mt-3 mb-3'>
                       <span className='me-2 mt-1 fs-5'>Действия: </span>
                       {buttonsTemplate?.map(button => {
-                              let b = buttons.find(x => x.code === button.code);
+                              const b = buttons.find(x => x.code === button.code);
                               if (b)
                                   return <Button key={b.code} className={button.className} variant={button.variant}
                                                  onClick={() => b.onClick()}>{button.text}</Button>

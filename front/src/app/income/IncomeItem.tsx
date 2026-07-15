@@ -14,31 +14,32 @@ import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
 import type {SelectOption} from "../../types/Filters";
 import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
-import {ModalContext} from "../../App";
+import {ModalContext} from "../../context/ModalContext";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
 
     const mContext = useContext(ModalContext)
 
-    const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
-    const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH, mContext);
     const [nextId, setNextId] = useState<number>(-1)
 
     const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
     const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
 
     useEffect(() => {
-        DpResource.getData().then(data => {
-            let dataT = data as GridData<ResourceEntity>;
+        const dpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
+        const dpUnit = new DataProvider<UnitEntity>(UNIT_API_PATH, mContext);
+
+        dpResource.getData().then(data => {
+            const dataT = data as GridData<ResourceEntity>;
             setOptionsResource( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) );
         })
-        DpUnit.getData().then(data => {
-            let dataT = data as GridData<UnitEntity>;
+        dpUnit.getData().then(data => {
+            const dataT = data as GridData<UnitEntity>;
             setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
         })
 
-    }, [])
+    }, [mContext])
 
    return (
        <>

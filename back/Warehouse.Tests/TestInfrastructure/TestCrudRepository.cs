@@ -29,7 +29,7 @@ public class TestCrudRepository<TEntity> : ICrudRepository<TEntity> where TEntit
     {
         if(item.Id < 1)
         {
-            item.Id = _entities.Keys.Max() + 1;
+            item.Id = _entities.Count == 0 ? 1 : _entities.Keys.Max() + 1;
         }
         _entities[item.Id] = item;
         return Task.FromResult(item.Id);    

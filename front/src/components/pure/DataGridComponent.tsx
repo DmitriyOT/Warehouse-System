@@ -3,10 +3,11 @@ import GridTheme from "../style/GridTheme";
 import {DataGrid} from "@mui/x-data-grid";
 import PurePaginationComponent from "./PurePaginationComponent";
 import type {PageView} from "../../types/PageView";
+import type {GridColumnType} from "../../types/Grid";
 
 type DataGridProps = {
-    rows: any[],
-    columns: any[],
+    rows: Record<string, unknown>[],
+    columns: GridColumnType[],
     pageView: PageView,
     onPageChange: (page: number) => void,
     onPageSizeChange: (size: number) => void,
@@ -21,7 +22,6 @@ const DataGridComponent = ({rows, columns, pageView, onPageSizeChange, onPageCha
               <Box className='d-flex' sx={{ height: '100%', width: '100%' }} >
                   <DataGrid rows={rows} columns={columns}
                              style={{backgroundColor: "rgba(0,0,0,0)"}}  hideFooter rowHeight={36}
-                            //onRowSelectionModelChange={(ids) =>{SetSelectionIds( Array.from(ids.ids) )}}
                             getRowClassName={(params) =>
                                 params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
                             }

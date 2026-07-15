@@ -1,11 +1,12 @@
 import {createGridApi} from "./Api";
 import type {GridOptions} from "../types/Request";
 import type {ModalContextType} from "../types/Modal";
+import type {GridData} from "../types/Response";
 
 // Класс для доступа к данным в select выборах
 export class DataProvider<T> {
 
-    private readonly loadData: (options: GridOptions) => Promise<any>;
+    private readonly loadData: (options: GridOptions) => Promise<GridData<T> | undefined>;
 
     private readonly ignoreArchive: boolean;
 

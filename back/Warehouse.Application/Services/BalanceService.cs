@@ -83,12 +83,12 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
     private ICollection<BalanceItem> CalculateDiff(Dictionary<long, BalanceDiffItem> oldItems, Dictionary<long, BalanceDiffItem> nowItems)
     {
         //Работает с накоплениями, неважно как они представлены в old и now items
-        var dic = new Dictionary<Tuple<long, long>, long>(); //resourceId, unitId, count
+        var dic = new Dictionary<(long ResourceId, long UnitId), long>(); //resourceId, unitId, count
 
         //Вспомогательная функция для словаря
         var addDic = (BalanceItem item) =>
         {
-            var key = Tuple.Create(item.ResourceId, item.UnitId);
+            var key = (item.ResourceId, item.UnitId);
             if (dic.TryGetValue(key, out long oldValue))
             {
                 dic[key] = item.Delta + oldValue;
@@ -136,8 +136,8 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         {
             result.Add(new BalanceItem
             {
-                ResourceId = item.Key.Item1,
-                UnitId = item.Key.Item2,
+                ResourceId = item.Key.ResourceId,
+                UnitId = item.Key.UnitId,
                 Delta = item.Value
             });
         }

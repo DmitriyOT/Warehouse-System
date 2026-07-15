@@ -17,10 +17,16 @@ jobs:
           dotnet-version: '9.0.x'
       - name: Restore
         run: dotnet restore back/Warehouse.sln
+      - name: Restore .NET tools
+        run: dotnet tool restore
+        working-directory: back
       - name: Build
         run: dotnet build back/Warehouse.sln --no-restore --configuration Release
       - name: Test
         run: dotnet test back/Warehouse.sln --no-build --verbosity normal
+      - name: Verify EF Core migrations are up-to-date
+        run: dotnet ef migrations has-pending-model-changes --project Warehouse.Infrastructure --startup-project Warehouse.Api
+        working-directory: back
 
   frontend:
     runs-on: ubuntu-latest

@@ -1,3 +1,4 @@
+import type {ComponentType} from "react";
 import {
     BALANCE_PAGE_ROUTE,
     BASE_PAGE_ROUTE,
@@ -19,7 +20,7 @@ import UnitItemPage from "../app/unit/UnitItemPage";
 import IncomeItemPage from "../app/income/IncomeItemPage";
 import ShipmentItemPage from "../app/shipment/ShipmentItemPage";
 
-export const routes: Array<{path: string, Component: any}> = [
+export const routes: Array<{path: string, Component: ComponentType}> = [
     {
         path: BASE_PAGE_ROUTE,
         Component: BasePage

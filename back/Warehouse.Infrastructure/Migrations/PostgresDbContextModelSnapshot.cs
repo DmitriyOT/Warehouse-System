@@ -46,7 +46,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("ResourceId", "UnitId")
                         .IsUnique();
 
-                    b.ToTable("balances", t =>
+                    b.ToTable("Balances", t =>
                         {
                             t.HasCheckConstraint("ValidQuantity", "\"Quantity\" > 0");
                         });
@@ -62,21 +62,23 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsArchive")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("clients");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.IncomeEntity", b =>
@@ -92,14 +94,15 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Property<string>("Number")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Number")
                         .IsUnique();
 
-                    b.ToTable("incomes");
+                    b.ToTable("Incomes");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.IncomeItemEntity", b =>
@@ -133,7 +136,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Id", "ResourceId", "UnitId")
                         .IsUnique();
 
-                    b.ToTable("incomeItems", t =>
+                    b.ToTable("IncomeItems", t =>
                         {
                             t.HasCheckConstraint("ValidQuantity", "\"Quantity\" > 0");
                         });
@@ -152,14 +155,15 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("resources");
+                    b.ToTable("Resources");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentEntity", b =>
@@ -181,7 +185,8 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Property<string>("Number")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -190,7 +195,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Number")
                         .IsUnique();
 
-                    b.ToTable("shipments");
+                    b.ToTable("Shipments");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentItemEntity", b =>
@@ -224,7 +229,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.HasIndex("Id", "ResourceId", "UnitId")
                         .IsUnique();
 
-                    b.ToTable("shipmetItems", t =>
+                    b.ToTable("ShipmentItems", t =>
                         {
                             t.HasCheckConstraint("ValidQuantity", "\"Quantity\" > 0");
                         });
@@ -243,26 +248,27 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("units");
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Models.BalanceEntity", b =>
                 {
                     b.HasOne("Warehouse.Domain.Models.ResourceEntity", "Resource")
-                        .WithMany()
+                        .WithMany("BalanceItems")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Warehouse.Domain.Models.UnitEntity", "Unit")
-                        .WithMany()
+                        .WithMany("BalanceItems")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -285,7 +291,7 @@ namespace Warehouse.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Warehouse.Domain.Models.UnitEntity", "Unit")
-                        .WithMany()
+                        .WithMany("IncomeItems")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -300,7 +306,7 @@ namespace Warehouse.Infrastructure.Migrations
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentEntity", b =>
                 {
                     b.HasOne("Warehouse.Domain.Models.ClientEntity", "Client")
-                        .WithMany()
+                        .WithMany("Shipments")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -321,7 +327,7 @@ namespace Warehouse.Infrastructure.Migrations
                         .HasForeignKey("ShipmentId");
 
                     b.HasOne("Warehouse.Domain.Models.UnitEntity", "Unit")
-                        .WithMany()
+                        .WithMany("ShipmentItems")
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -333,6 +339,11 @@ namespace Warehouse.Infrastructure.Migrations
                     b.Navigation("Unit");
                 });
 
+            modelBuilder.Entity("Warehouse.Domain.Models.ClientEntity", b =>
+                {
+                    b.Navigation("Shipments");
+                });
+
             modelBuilder.Entity("Warehouse.Domain.Models.IncomeEntity", b =>
                 {
                     b.Navigation("IncomeItems");
@@ -340,6 +351,8 @@ namespace Warehouse.Infrastructure.Migrations
 
             modelBuilder.Entity("Warehouse.Domain.Models.ResourceEntity", b =>
                 {
+                    b.Navigation("BalanceItems");
+
                     b.Navigation("IncomeItems");
 
                     b.Navigation("ShipmentItems");
@@ -347,6 +360,15 @@ namespace Warehouse.Infrastructure.Migrations
 
             modelBuilder.Entity("Warehouse.Domain.Models.ShipmentEntity", b =>
                 {
+                    b.Navigation("ShipmentItems");
+                });
+
+            modelBuilder.Entity("Warehouse.Domain.Models.UnitEntity", b =>
+                {
+                    b.Navigation("BalanceItems");
+
+                    b.Navigation("IncomeItems");
+
                     b.Navigation("ShipmentItems");
                 });
 #pragma warning restore 612, 618

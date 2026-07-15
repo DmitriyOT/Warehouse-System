@@ -23,7 +23,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
   return (
       <div className='w-100 d-flex'>
           <DatePicker selected={ processValue(valueStart) }
-                      onChange={(e) => {let date = e as Date;onChange([processResult(date), valueEnd])} }
+                      onChange={(e) => {const date = e as Date;onChange([processResult(date), valueEnd])} }
                       showYearDropdown
                       placeholderText={'От (включая)'}
                       startDate={ processValue(valueStart) }
@@ -34,7 +34,7 @@ const PureDateIntervalInput = ({valueStart, valueEnd, onChange}: PureDateInterva
           />
           <div className='me-1'></div>
           <DatePicker selected={ processValue(valueEnd) }
-                      onChange={(e) => {let date = e as Date;onChange([valueStart, processResult(date)])} }
+                      onChange={(e) => {const date = e as Date;onChange([valueStart, processResult(date)])} }
                       showYearDropdown
                       placeholderText={'До (включая)'}
                       startDate={ processValue(valueStart) }

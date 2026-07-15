@@ -51,6 +51,14 @@ export interface ShipmentItemEntity extends BaseEntityId {
     clientId: number
 }
 
+export interface BalanceEntity extends BaseEntityId {
+    resourceId: number,
+    unitId: number,
+    resource?: ResourceEntity,
+    unit?: UnitEntity,
+    quantity: number
+}
+
 export interface ItemComponentProps<T> {
     id: number,
     data: T | undefined,

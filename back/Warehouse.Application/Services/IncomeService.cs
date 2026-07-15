@@ -23,13 +23,6 @@ public class IncomeService : CrudService<IncomeEntity>
         _unitOfWork = unitOfWork;
     }
 
-    //Редактирование элемента
-    public override Task<long> EditItem(IncomeEntity item)
-    {
-        Validate(item);
-        return base.EditItem(item);
-    }
-
     private static void Validate(IncomeEntity item)
     {
         //Проверка на ресурсы

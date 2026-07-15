@@ -2,15 +2,17 @@ import type {FilterOptions, SelectFilterOptions, SelectOption} from "../types/Fi
 import PureSelectMultiInput from "./pure/controls/PureSelectMultiInput";
 import {useContext, useEffect, useState} from "react";
 import {DataProvider} from "../api/DataProvider";
-import {ModalContext} from "../App";
+import {ModalContext} from "../context/ModalContext";
 import PureDateIntervalInput from "./pure/controls/PureDateIntervalInput";
 import {DateToStringFormat} from "../utils/functions";
+import type {BaseEntityId} from "../types/Entities";
+import type {GridData} from "../types/Response";
 
 
 const FilterComponent = (props:FilterOptions) => {
 
     const {fieldName, name, type, onChange} = props
-    //console.log('filterComponent', type, fieldName, options, onChange)
+    const apiPath = type === 'select' ? (props as SelectFilterOptions).apiPath : undefined;
 
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
     const [options, setOptions] = useState<Array<SelectOption>>([])
@@ -21,22 +23,17 @@ const FilterComponent = (props:FilterOptions) => {
     const mContext = useContext(ModalContext)
 
     useEffect(() => {
-        switch (type)
-        {
-            case "select":
-            {
-                const dp = new DataProvider<any>((props as SelectFilterOptions).apiPath, mContext, true)
-                dp.getData().then(data => {
-                    let dataOp: Array<SelectOption> = []
-                    data.items.forEach((e: any) => dataOp.push({value: e.id, title: e.name ?? e.number}))
-                    setOptions(dataOp)
-                })
-                break;
-            }
-            case "date":
-                break;
+        if (type !== 'select' || apiPath === undefined) {
+            return;
         }
-    }, [])
+
+        const dp = new DataProvider<BaseEntityId>(apiPath, mContext, true)
+        dp.getData().then(data => {
+            const dataT = data as GridData<BaseEntityId>;
+            const dataOp: Array<SelectOption> = dataT.items.map(e => ({value: e.id.toString(), title: (e as {name?: string, number?: string}).name ?? (e as {name?: string, number?: string}).number ?? ''}))
+            setOptions(dataOp)
+        })
+    }, [type, apiPath, mContext])
 
     const returnSelect = () => {
         switch (type) {
@@ -51,8 +48,8 @@ const FilterComponent = (props:FilterOptions) => {
                 return <PureDateIntervalInput valueStart={startDate} valueEnd={endDate}
                                               onChange={([start, end]) =>
                                                 {setStartDate(start); setEndDate(end); onChange!(
-                                                    {argument: (start ? DateToStringFormat(start) : start) + ','
-                                                        + (end ? DateToStringFormat(end) : end),
+                                                    {argument: (start ? DateToStringFormat(start) : '') + ','
+                                                        + (end ? DateToStringFormat(end) : ''),
                                                         fieldName: fieldName, type: 'dateRange'})
                                                 } } />
         }

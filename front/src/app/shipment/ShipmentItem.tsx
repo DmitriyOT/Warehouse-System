@@ -19,7 +19,7 @@ import {
 import type {SelectOption} from "../../types/Filters";
 import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
-import {ModalContext} from "../../App";
+import {ModalContext} from "../../context/ModalContext";
 import PureSelectInput from "../../components/pure/controls/PureSelectInput";
 import {Button} from "react-bootstrap";
 import {createItemApi} from "../../api/Api";
@@ -31,9 +31,6 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
 
     const mContext = useContext(ModalContext)
 
-    const DpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
-    const DpUnit = new DataProvider<ResourceEntity>(UNIT_API_PATH, mContext);
-    const DpClient = new DataProvider<ClientEntity>(CLIENT_API_PATH, mContext);
     const [nextId, setNextId] = useState<number>(-1)
 
     const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
@@ -46,20 +43,24 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
     const navigate = useNavigate()
 
     useEffect(() => {
-        DpResource.getData().then(data => {
-            let dataT = data as GridData<ResourceEntity>;
+        const dpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
+        const dpUnit = new DataProvider<UnitEntity>(UNIT_API_PATH, mContext);
+        const dpClient = new DataProvider<ClientEntity>(CLIENT_API_PATH, mContext);
+
+        dpResource.getData().then(data => {
+            const dataT = data as GridData<ResourceEntity>;
             setOptionsResource( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) );
         })
-        DpUnit.getData().then(data => {
-            let dataT = data as GridData<UnitEntity>;
+        dpUnit.getData().then(data => {
+            const dataT = data as GridData<UnitEntity>;
             setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
         })
-        DpClient.getData().then(data => {
-            let dataT = data as GridData<ClientEntity>;
+        dpClient.getData().then(data => {
+            const dataT = data as GridData<ClientEntity>;
             setOptionsClient( dataT.items.map(e => ({value: e.id.toString(), title: e.name})))
         })
 
-    }, [])
+    }, [mContext])
 
     useEffect(() => {
         if(id === 0) {
@@ -77,7 +78,7 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
         {
             setButtons([])
         }
-    }, [data?.isApprove])
+    }, [data, id])
 
     const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, onClick: () => void}> = [
         {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {
@@ -108,7 +109,7 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
            <div className='d-flex flex-wrap mt-3 mb-3'>
                <span className='me-2 mt-1 fs-5'>Действия: </span>
                {buttonsTemplate?.map(b => {
-                       let button = buttons.find(x => x === b.code);
+                       const button = buttons.find(x => x === b.code);
                        if (button)
                            return <Button key={b.code} className={b.className} variant={b.variant}
                                           onClick={() => b.onClick()}>{b.text}</Button>

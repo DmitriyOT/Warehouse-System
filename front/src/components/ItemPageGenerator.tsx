@@ -4,10 +4,12 @@ import {createItemApi} from "../api/Api";
 import EntityCardComponent from "./pure/EntityCardComponent";
 import type {ItemButtonCode} from "./pure/EntityCardComponent";
 import type {BaseEntityId, BaseEntityIdArchive} from "../types/Entities";
-import {ModalContext} from "../App";
+import {ModalContext} from "../context/ModalContext";
+import type {ItemComponentProps} from "../types/Entities";
+import type {ComponentType} from "react";
 
 const createItemPage = function<T extends BaseEntityId>
-    (apiPath: string, navPath: string, title: string, Component: any, isArchive: boolean = false, hideButtons: boolean = false, editPath: string = 'EditItem'){
+    (apiPath: string, navPath: string, title: string, Component: ComponentType<ItemComponentProps<T>>, isArchive: boolean = false, hideButtons: boolean = false, editPath: string = 'EditItem'){
     const ItemPage = () => {
 
         const {id} = useParams()
@@ -27,12 +29,13 @@ const createItemPage = function<T extends BaseEntityId>
 
         useEffect(() => {
             LoadData()
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [location])
 
-        let saveB: { code: ItemButtonCode, onClick: () => void } = {code:'save', onClick: () => {
+        const saveB: { code: ItemButtonCode, onClick: () => void } = {code:'save', onClick: () => {
             save(data!).then(res => { if(res !== +(id ?? '0') && res !== undefined ) navigate(navPath + '/' + res); else if(res !== undefined) navigate(navPath) } )} }
 
-        let deleteB: { code: ItemButtonCode, onClick: () => void } = {code:'delete',
+        const deleteB: { code: ItemButtonCode, onClick: () => void } = {code:'delete',
             onClick: () => { deleteItems(data!.id).then(() => navigate(navPath))} }
 
         return (
@@ -43,7 +46,7 @@ const createItemPage = function<T extends BaseEntityId>
                                              isArchive ?
                                             [ saveB, deleteB, {code:'archiveToggle',
                                                 onClick: () => {archive(data!.id, !(data! as unknown as BaseEntityIdArchive).isArchive)
-                                                    .then(() => {setData({...data!, isArchive:!(data! as unknown as BaseEntityIdArchive).isArchive})})} }
+                                                    .then(() => {setData({...data!, isArchive:!(data! as unknown as BaseEntityIdArchive).isArchive} as T)})} }
                                             ]
                                              :
                                             [saveB, deleteB]

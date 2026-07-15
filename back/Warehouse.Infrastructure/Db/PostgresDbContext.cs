@@ -1,25 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Domain.Models;
 
 namespace Warehouse.Infrastructure.Db;
 
 public class PostgresDbContext : DbContext
 {
-    DbSet<ResourceEntity> resources { get; set; }
+    public DbSet<ResourceEntity> Resources { get; set; } = null!;
 
-    DbSet<UnitEntity> units { get; set; }
+    public DbSet<UnitEntity> Units { get; set; } = null!;
 
-    DbSet<ClientEntity> clients { get; set; }
+    public DbSet<ClientEntity> Clients { get; set; } = null!;
 
-    DbSet<BalanceEntity> balances { get; set; }
+    public DbSet<BalanceEntity> Balances { get; set; } = null!;
 
-    DbSet<IncomeEntity> incomes { get; set; }
+    public DbSet<IncomeEntity> Incomes { get; set; } = null!;
 
-    public DbSet<IncomeItemEntity> incomeItems { get; set; }
+    public DbSet<IncomeItemEntity> IncomeItems { get; set; } = null!;
 
-    DbSet<ShipmentEntity> shipments { get; set; }
+    public DbSet<ShipmentEntity> Shipments { get; set; } = null!;
 
-    public DbSet<ShipmentItemEntity> shipmetItems { get; set; }
+    public DbSet<ShipmentItemEntity> ShipmentItems { get; set; } = null!;
 
     public PostgresDbContext(DbContextOptions<PostgresDbContext> options) : base(options)
     {

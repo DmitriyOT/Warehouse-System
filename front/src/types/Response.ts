@@ -11,5 +11,4 @@ export interface GridData<T> {
     page: PageView
 }
 
-export interface ResponseGridDto<T> extends ResponseDto<GridData<T>>
-{}
+export type ResponseGridDto<T> = ResponseDto<GridData<T>>;

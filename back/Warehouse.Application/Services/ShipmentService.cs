@@ -23,12 +23,6 @@ public class ShipmentService : CrudService<ShipmentEntity>
         _unitOfWork = unitOfWork;
     }
 
-    public override Task<long> EditItem(ShipmentEntity item)
-    {
-        Validate(item);
-        return base.EditItem(item);
-    }
-
     private static void Validate(ShipmentEntity item)
     {
         //Проверяем бизнес логику ресурсов отгрузки

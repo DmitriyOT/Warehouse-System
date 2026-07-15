@@ -1,11 +1,10 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {routes} from "./utils/routes";
 import LeftMenuComponent from "./components/menu/LeftMenuComponent";
-import {createContext, useState} from "react";
-import type {Modal, ModalContextType} from "./types/Modal";
+import {useState} from "react";
+import type {Modal} from "./types/Modal";
 import ModalComponent from "./components/menu/ModalComponent";
-
-export const ModalContext = createContext<ModalContextType>(null)
+import {ModalContext} from "./context/ModalContext";
 
 function App() {
 

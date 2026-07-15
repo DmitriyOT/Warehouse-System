@@ -8,7 +8,7 @@ export type SelectOption = {
 interface BaseFilterOptions {
     name: string,
     fieldName: string,
-    onChange?: (value: ReturnFilter) => any,
+    onChange?: (value: ReturnFilter) => void,
 }
 
 export interface SelectFilterOptions extends BaseFilterOptions{

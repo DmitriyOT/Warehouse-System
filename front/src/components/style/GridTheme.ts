@@ -1,4 +1,5 @@
 import {alpha, createTheme} from "@mui/material";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 const ODD_OPACITY = 0.2;
 
