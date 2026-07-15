@@ -1,17 +1,19 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Domain.Models;
+namespace Warehouse.Contracts.Api.Request.Dtos;
 
 /// <summary>
-/// Отгрузка со склада
+/// DTO для создания/редактирования документа отгрузки
 /// </summary>
-public class ShipmentEntity : BaseEntityWithId
+public class ShipmentEditDto
 {
     /// <summary>
-    /// Номер
+    /// Идентификатор документа (0 — новый документ)
+    /// </summary>
+    public long Id { get; set; }
+
+    /// <summary>
+    /// Номер документа
     /// </summary>
     [Required(ErrorMessage = "Не указан номер документа.")]
     [MaxLength(50, ErrorMessage = "Номер документа не может превышать 50 символов.")]
@@ -24,23 +26,11 @@ public class ShipmentEntity : BaseEntityWithId
     public DateOnly Date { get; set; }
 
     /// <summary>
-    /// Клиент отгрузки
+    /// Идентификатор клиента
     /// </summary>
     [Required(ErrorMessage = "Не выбран клиент.")]
     [Range(1, long.MaxValue, ErrorMessage = "Идентификатор клиента должен быть положительным.")]
     public long ClientId { get; set; }
-
-    /// <summary>
-    /// Клиент отгрузки
-    /// </summary>
-    [JsonIgnore]
-    public virtual ClientEntity? Client { get; set; }
-
-    /// <summary>
-    /// Имя клиента
-    /// </summary>
-    [NotMapped]
-    public string? ClientName { get; set; }
 
     /// <summary>
     /// Подписана ли отгрузка
@@ -48,7 +38,9 @@ public class ShipmentEntity : BaseEntityWithId
     public bool IsApprove { get; set; }
 
     /// <summary>
-    /// Ресурсы отгрузки
+    /// Строки отгрузки
     /// </summary>
-    public virtual ICollection<ShipmentItemEntity>? ShipmentItems { get; set; }
+    [Required(ErrorMessage = "Документ должен содержать хотя бы одну строку.")]
+    [MinLength(1, ErrorMessage = "Документ должен содержать хотя бы одну строку.")]
+    public required List<ShipmentItemEditDto> ShipmentItems { get; set; }
 }

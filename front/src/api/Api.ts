@@ -33,7 +33,7 @@ const errorHandle = async (script: any, modalC: ModalContextType) => {
     }
 }
 
-const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
+const createItemApi = function<T> (itemPath: string, modalC: ModalContextType, editPath: string = 'EditItem') {
 
     return {
         load: async (itemId: number) => {
@@ -51,7 +51,7 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType) {
         save: async (item: T) => {
             return await errorHandle( async () => {
                 const fixItem = UploadDateToString({...item});
-                const {data} = await $host.post<ResponseDto<number>>(itemPath + '/EditItem', fixItem);
+                const {data} = await $host.post<ResponseDto<number>>(itemPath + '/' + editPath, fixItem);
                 return data;
             }, modalC )
         },

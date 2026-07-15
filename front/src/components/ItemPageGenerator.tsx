@@ -7,7 +7,7 @@ import type {BaseEntityId, BaseEntityIdArchive} from "../types/Entities";
 import {ModalContext} from "../App";
 
 const createItemPage = function<T extends BaseEntityId>
-    (apiPath: string, navPath: string, title: string, Component: any, isArchive: boolean = false, hideButtons: boolean = false){
+    (apiPath: string, navPath: string, title: string, Component: any, isArchive: boolean = false, hideButtons: boolean = false, editPath: string = 'EditItem'){
     const ItemPage = () => {
 
         const {id} = useParams()
@@ -15,7 +15,7 @@ const createItemPage = function<T extends BaseEntityId>
 
         const mContext = useContext(ModalContext);
 
-        const {load, deleteItems, save, archive} = createItemApi<T>(apiPath, mContext);
+        const {load, deleteItems, save, archive} = createItemApi<T>(apiPath, mContext, editPath);
 
         const navigate = useNavigate();
         const location = useLocation();

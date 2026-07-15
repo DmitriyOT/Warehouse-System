@@ -42,7 +42,7 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
 
     const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>([]);
 
-    const {save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext);
+    const {save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext, 'Edit');
     const navigate = useNavigate()
 
     useEffect(() => {

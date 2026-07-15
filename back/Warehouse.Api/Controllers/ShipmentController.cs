@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Warehouse.Api.Controllers.Base;
 using Warehouse.Application.Services;
+using Warehouse.Contracts.Api.Request.Dtos;
 using Warehouse.Contracts.Api.Response;
-using Warehouse.Contracts.Application;
 using Warehouse.Domain.Models;
 
 namespace Warehouse.Api.Controllers;
@@ -14,6 +14,8 @@ namespace Warehouse.Api.Controllers;
 [Route("[controller]")]
 public class ShipmentController : BaseCrudController<ShipmentEntity>
 {
+    private readonly ShipmentService _shipmentService;
+
     /// <summary>
     /// Конструктор
     /// </summary>
@@ -22,6 +24,19 @@ public class ShipmentController : BaseCrudController<ShipmentEntity>
     public ShipmentController(ILogger<ShipmentController> logger, ShipmentService crudService)
         : base(logger, crudService)
     {
+        _shipmentService = crudService;
+    }
+
+    /// <summary>
+    /// Создать или отредактировать документ отгрузки
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    [HttpPost("Edit")]
+    public async Task<ActionResult> Edit(ShipmentEditDto dto)
+    {
+        var result = await _shipmentService.EditItem(dto);
+        return Ok(new ResponseDto<long>(result));
     }
 
     /// <summary>
@@ -33,7 +48,16 @@ public class ShipmentController : BaseCrudController<ShipmentEntity>
     [HttpPut("ChangeState")]
     public async Task<ActionResult> ChangeState(long id, string newStateCode)
     {
-        await (_crudService as ShipmentService)!.ChangeStateAsync(id, newStateCode);
+        await _shipmentService.ChangeStateAsync(id, newStateCode);
         return Ok(new ResponseDtoEmpty());
+    }
+
+    /// <summary>
+    /// Устаревший endpoint создания/редактирования на основе сущности отключён
+    /// </summary>
+    [NonAction]
+    public override Task<ActionResult> EditItem(ShipmentEntity entity)
+    {
+        throw new NotSupportedException("Use POST /Shipment/Edit instead.");
     }
 }

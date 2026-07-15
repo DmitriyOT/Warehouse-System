@@ -1,4 +1,5 @@
-﻿using Warehouse.Domain.Models.Base;
+using System.ComponentModel.DataAnnotations;
+using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Domain.Models;
 
@@ -10,11 +11,13 @@ public class BalanceEntity : BaseEntityWithId
     /// <summary>
     /// Навигационное поле ресурса
     /// </summary>
+    [Range(1, long.MaxValue, ErrorMessage = "Идентификатор ресурса должен быть положительным.")]
     public long ResourceId { get; set; }
 
     /// <summary>
     /// Навигационное поле единица измерения
     /// </summary>
+    [Range(1, long.MaxValue, ErrorMessage = "Идентификатор единицы измерения должен быть положительным.")]
     public long UnitId { get; set; }
 
     /// <summary>
@@ -30,5 +33,6 @@ public class BalanceEntity : BaseEntityWithId
     /// <summary>
     /// Количество
     /// </summary>
+    [Range(0, long.MaxValue, ErrorMessage = "Количество не может быть отрицательным.")]
     public long Quantity { get; set; }
 }

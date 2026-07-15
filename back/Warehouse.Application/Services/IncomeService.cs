@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Warehouse.Application.Services.Base;
+using Warehouse.Contracts.Api.Request.Dtos;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
@@ -35,5 +31,27 @@ public class IncomeService : CrudService<IncomeEntity>
         }
 
         return base.EditItem(item);
+    }
+
+    /// <summary>
+    /// Создать или обновить документ поступления на основе DTO
+    /// </summary>
+    public Task<long> EditItem(IncomeEditDto dto)
+    {
+        var entity = new IncomeEntity
+        {
+            Id = dto.Id,
+            Number = dto.Number,
+            Date = dto.Date,
+            IncomeItems = dto.IncomeItems.Select(i => new IncomeItemEntity
+            {
+                Id = i.Id,
+                ResourceId = i.ResourceId,
+                UnitId = i.UnitId,
+                Quantity = i.Quantity
+            }).ToList()
+        };
+
+        return EditItem(entity);
     }
 }

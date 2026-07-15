@@ -4,6 +4,6 @@ import {INCOME_API_PATH, INCOME_PAGE_ROUTE} from "../../utils/consts";
 import createItemPage from "../../components/ItemPageGenerator";
 
 const IncomeItemPage = createItemPage<IncomeEntity>(INCOME_API_PATH, INCOME_PAGE_ROUTE,
-    'Поступление', IncomeItem, false )
+    'Поступление', IncomeItem, false, false, 'Edit')
 
 export default IncomeItemPage

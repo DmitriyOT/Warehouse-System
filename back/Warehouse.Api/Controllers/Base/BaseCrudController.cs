@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
@@ -76,7 +76,7 @@ public abstract class BaseCrudController<Entity> : ControllerBase where Entity :
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost("EditItem")]
-    public async Task<ActionResult> EditItem(Entity entity)
+    public virtual async Task<ActionResult> EditItem(Entity entity)
     {
         var result = await _crudService.EditItem(entity);
         return Ok(new ResponseDto<long>(result));

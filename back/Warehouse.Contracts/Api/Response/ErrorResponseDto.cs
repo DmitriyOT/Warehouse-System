@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Warehouse.Contracts.Api.Response;
 
 /// <summary>
@@ -12,16 +6,27 @@ namespace Warehouse.Contracts.Api.Response;
 public class ErrorResponseDto : ResponseDto<object?>
 {
     /// <summary>
-    /// Конструктор
+    /// Конструктор на основе исключения
     /// </summary>
     /// <param name="ex">Исключение</param>
-    public ErrorResponseDto(Exception ex) : base(null)
+    /// <param name="includeStackTrace">Включить stack trace (только для DEBUG)</param>
+    public ErrorResponseDto(Exception ex, bool includeStackTrace = false) : base(null)
     {
         HasError = true;
 #if DEBUG
-        ErrorMessage = ex.ToString();
+        ErrorMessage = includeStackTrace ? ex.ToString() : ex.Message;
 #else
         ErrorMessage = ex.Message;
 #endif
+    }
+
+    /// <summary>
+    /// Конструктор на основе сообщения
+    /// </summary>
+    /// <param name="message">Сообщение об ошибке</param>
+    public ErrorResponseDto(string message) : base(null)
+    {
+        HasError = true;
+        ErrorMessage = message;
     }
 }

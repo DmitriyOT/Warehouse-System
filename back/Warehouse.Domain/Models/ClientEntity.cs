@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Domain.Models;
@@ -9,8 +10,10 @@ namespace Warehouse.Domain.Models;
 public class ClientEntity : BaseEntityWithIdArchiveName
 {
     /// <summary>
-    /// Адресс клиента
+    /// Адрес клиента
     /// </summary>
+    [Required(ErrorMessage = "Не указан адрес клиента.")]
+    [MaxLength(500, ErrorMessage = "Адрес не может превышать 500 символов.")]
     public required string Address { get; set; }
 
     /// <summary>

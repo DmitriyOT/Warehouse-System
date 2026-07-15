@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Domain.Models;
@@ -21,6 +22,8 @@ public class IncomeItemEntity : BaseEntityWithId
     /// <summary>
     /// Ресурс
     /// </summary>
+    [Required(ErrorMessage = "Не выбран ресурс.")]
+    [Range(1, long.MaxValue, ErrorMessage = "Идентификатор ресурса должен быть положительным.")]
     public long ResourceId { get; set; }
 
     /// <summary>
@@ -30,10 +33,14 @@ public class IncomeItemEntity : BaseEntityWithId
     /// <summary>
     /// Единица измерения ресурса
     /// </summary>
+    [Required(ErrorMessage = "Не выбрана единица измерения.")]
+    [Range(1, long.MaxValue, ErrorMessage = "Идентификатор единицы измерения должен быть положительным.")]
     public long UnitId { get; set; }
 
     /// <summary>
     /// Количество ресурса
     /// </summary>
+    [Required(ErrorMessage = "Не указано количество.")]
+    [Range(1, long.MaxValue, ErrorMessage = "Количество должно быть положительным.")]
     public long Quantity { get; set; }
 }

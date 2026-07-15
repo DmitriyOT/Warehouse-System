@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -38,11 +37,20 @@ public class Program
 
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
-            // Обработка ошибки модели чтобы они тоже приходили в едином для всего ResponseDto формате
+            // Обработка ошибки модели: 400 Bad Request с перечнем ошибок валидации
             options.InvalidModelStateResponseFactory = context =>
             {
-                var state = context.ModelState;
-                return new JsonResult(new ErrorResponseDto(new Exception("Заполнены не все поля.")));
+                var errors = context.ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .SelectMany(x => x.Value!.Errors.Select(e => $"{x.Key}: {e.ErrorMessage}"))
+                    .ToList();
+
+                var message = errors.Count > 0
+                    ? string.Join("; ", errors)
+                    : "Заполнены не все поля.";
+
+                context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return new JsonResult(new ErrorResponseDto(message));
             };
         });
 
@@ -142,35 +150,30 @@ public class Program
         {
             handle.Run(async context =>
             {
-                context.Response.StatusCode = StatusCodes.Status200OK;
-
                 var exHandler = context.Features.Get<IExceptionHandlerPathFeature>();
+                var error = exHandler?.Error;
 
-                Console.WriteLine(exHandler?.Error?.ToString() ?? "Internal Error");
-                logger.LogError(exHandler?.Error?.ToString() ?? "Internal Error");
+                logger.LogError(error, "Unhandled exception occurred");
 
-                //Возвращаем пользователю только специальные ошибки предназначенные для пользователя
-                if (exHandler?.Error.GetType() == typeof(UserException))
+                if (error is UserException userEx)
                 {
-                    await context.Response.WriteAsJsonAsync(
-                                        new ErrorResponseDto(exHandler?.Error ?? new Exception("Ошибка системы."))
-                                        );
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsJsonAsync(new ErrorResponseDto(userEx.Message));
                 }
                 else
                 {
-                    await context.Response.WriteAsJsonAsync(
-                                        new ErrorResponseDto(new Exception("Ошибка системы."))
-                                        );
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    var message = app.Environment.IsDevelopment()
+                        ? error?.ToString() ?? "Internal Error"
+                        : "Ошибка системы.";
+                    await context.Response.WriteAsJsonAsync(new ErrorResponseDto(message ?? "Ошибка системы."));
                 }
-
             });
         });
 
         app.UseCors(MyAllowSpecificOrigins);
 
         app.UseHttpsRedirection();
-
-        app.UseAuthorization();
 
         app.MapControllers();
 

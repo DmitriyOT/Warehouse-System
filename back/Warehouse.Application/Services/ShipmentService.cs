@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Warehouse.Application.Services.Base;
+using Warehouse.Contracts.Api.Request.Dtos;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.Infrastracture;
 using Warehouse.Domain.Models;
@@ -15,8 +11,11 @@ namespace Warehouse.Application.Services;
 /// </summary>
 public class ShipmentService : CrudService<ShipmentEntity>
 {
+    private readonly IShipmentRepository _shipmentRepository;
+
     public ShipmentService(IShipmentRepository repository) : base(repository)
     {
+        _shipmentRepository = repository;
     }
 
     public override Task<long> EditItem(ShipmentEntity item)
@@ -34,15 +33,39 @@ public class ShipmentService : CrudService<ShipmentEntity>
         }
         else
         {
-            throw new UserException("Ошибка. Документе отгрузки должен содержать хотя бы 1 ресурс.");
+            throw new UserException("Ошибка. Документ отгрузки должен содержать хотя бы 1 ресурс.");
         }
 
         return base.EditItem(item);
     }
 
-    //Изменение состояния, подписание отгрузки
-    public async Task ChangeStateAsync(long id, string newStateCode)
+    /// <summary>
+    /// Создать или обновить документ отгрузки на основе DTO
+    /// </summary>
+    public Task<long> EditItem(ShipmentEditDto dto)
     {
-        await (_repository as IShipmentRepository)!.ChangeStateAsync(id, newStateCode);
+        var entity = new ShipmentEntity
+        {
+            Id = dto.Id,
+            Number = dto.Number,
+            Date = dto.Date,
+            ClientId = dto.ClientId,
+            IsApprove = dto.IsApprove,
+            ShipmentItems = dto.ShipmentItems.Select(i => new ShipmentItemEntity
+            {
+                Id = i.Id,
+                ResourceId = i.ResourceId,
+                UnitId = i.UnitId,
+                Quantity = i.Quantity
+            }).ToList()
+        };
+
+        return EditItem(entity);
+    }
+
+    //Изменение состояния, подписание отгрузки
+    public Task ChangeStateAsync(long id, string newStateCode)
+    {
+        return _shipmentRepository.ChangeStateAsync(id, newStateCode);
     }
 }
