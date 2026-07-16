@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: warehouse-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: warehouse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - warehouse
+
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: warehouse-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=warehouse;Username=postgres;Password=postgres
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "5001:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - warehouse
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: warehouse-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    networks:
+      - warehouse
+
+volumes:
+  postgres_data:
+
+networks:
+  warehouse:
+    driver: bridge
