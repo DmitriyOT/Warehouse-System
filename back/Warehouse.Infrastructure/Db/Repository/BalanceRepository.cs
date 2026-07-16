@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Domain.Models;
 using Warehouse.Infrastructure.Db.Repository.Base;
 

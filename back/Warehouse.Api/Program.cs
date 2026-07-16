@@ -102,7 +102,7 @@ public class Program
              options.AddPolicy(name: MyAllowSpecificOrigins,
                                policy =>
                                {
-                                   policy.WithOrigins("http://localhost:5173", "https://warehouse.dimonogen.ru")
+                                   policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
                                        .AllowAnyHeader()
                                        .WithMethods("GET", "POST", "PUT", "DELETE")
                                        .AllowCredentials();

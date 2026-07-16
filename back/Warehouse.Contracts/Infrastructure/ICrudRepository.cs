@@ -3,7 +3,7 @@ using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Domain.Models.Base;
 
-namespace Warehouse.Contracts.Infrastracture;
+namespace Warehouse.Contracts.Infrastructure;
 
 /// <summary>
 /// Интерфейс для обощённого CRUD репозитория

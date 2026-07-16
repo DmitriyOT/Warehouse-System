@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Domain.Models;
 using Warehouse.Domain.Models.Base;
 

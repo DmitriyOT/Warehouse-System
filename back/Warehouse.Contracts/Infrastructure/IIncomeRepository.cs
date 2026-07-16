@@ -1,6 +1,6 @@
 ﻿using Warehouse.Domain.Models;
 
-namespace Warehouse.Contracts.Infrastracture;
+namespace Warehouse.Contracts.Infrastructure;
 
 /// <summary>
 /// Репозиторий для поступлений

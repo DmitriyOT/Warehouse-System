@@ -1,5 +1,5 @@
 using Warehouse.Contracts.Application;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Domain.Models;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Application.Services.Base;

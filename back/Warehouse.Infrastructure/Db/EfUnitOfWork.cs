@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Infrastructure.Db;
 
 namespace Warehouse.Infrastructure.Db;

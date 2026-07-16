@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Domain.Models.Base;
 

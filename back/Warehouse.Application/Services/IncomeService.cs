@@ -2,7 +2,7 @@ using Warehouse.Application.Services.Base;
 using Warehouse.Contracts.Api.Request.Dtos;
 using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Exceptions;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Domain.Models;
 
 namespace Warehouse.Application.Services;

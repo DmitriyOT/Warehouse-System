@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
 using Warehouse.Contracts.Api.Response;
 using Warehouse.Contracts.Application;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 using Warehouse.Domain.Models.Base;
 
 namespace Warehouse.Application.Services.Base;

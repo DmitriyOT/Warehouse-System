@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Infrastructure.Db;
 using Warehouse.Infrastructure.Db.Repository;
 using Warehouse.Infrastructure.Db.Repository.Base;
-using Warehouse.Contracts.Infrastracture;
+using Warehouse.Contracts.Infrastructure;
 
 namespace Warehouse.Infrastructure;
 

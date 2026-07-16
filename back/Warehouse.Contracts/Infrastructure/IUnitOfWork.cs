@@ -1,4 +1,4 @@
-namespace Warehouse.Contracts.Infrastracture;
+namespace Warehouse.Contracts.Infrastructure;
 
 /// <summary>
 /// Абстракция транзакции
