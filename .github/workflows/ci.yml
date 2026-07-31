@@ -29,6 +29,9 @@ jobs:
       - name: Verify EF Core migrations are up-to-date
         run: dotnet ef migrations has-pending-model-changes --project Warehouse.Infrastructure --startup-project Warehouse.Api
         working-directory: back
+        env:
+          # Design-time DbContext creation only needs the options, no live DB
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=warehouse;Username=postgres;Password=postgres
 
   frontend:
     runs-on: ubuntu-latest
