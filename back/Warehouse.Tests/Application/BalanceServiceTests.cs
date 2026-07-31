@@ -83,8 +83,8 @@ public class BalanceServiceTests
     }
 
     [Theory]
-    //[MemberData(nameof(SimpleRemove))]
-    //[MemberData(nameof(SimpleEditCount))]
+    [MemberData(nameof(SimpleRemove))]
+    [MemberData(nameof(SimpleEditCount))]
     [MemberData(nameof(EditCountAndType))]
     public async Task TestCalculateAndApplyDifference(List<IncomeItemEntity> nowItems, List<BalanceEntity> result)
     {
@@ -167,6 +167,32 @@ public class BalanceServiceTests
 
         var allItems = await balanceRepository.GetAll(null);
         Assert.Empty(allItems.Items);
+    }
+
+    [Fact]
+    public async Task ApplyShipmentDifference_PartialReduce_KeepsRemainder()
+    {
+        var balanceRepository = new TestBalanceRepository();
+        await balanceRepository.EditItem(new BalanceEntity
+        {
+            Id = 1,
+            ResourceId = 1,
+            UnitId = 1,
+            Quantity = 5
+        });
+
+        var balanceService = new BalanceService(balanceRepository);
+
+        var items = new List<ShipmentItemEntity>
+        {
+            new ShipmentItemEntity { Id = 1, ResourceId = 1, UnitId = 1, Quantity = -3 }
+        };
+
+        await balanceService.ApplyShipmentDifference(items);
+
+        var allItems = await balanceRepository.GetAll(null);
+        Assert.Single(allItems.Items);
+        Assert.Equal(2, allItems.Items[0].Quantity);
     }
 
     [Fact]

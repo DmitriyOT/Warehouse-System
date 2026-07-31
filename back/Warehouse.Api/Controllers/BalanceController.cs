@@ -6,11 +6,12 @@ using Warehouse.Domain.Models;
 namespace Warehouse.Api.Controllers;
 
 /// <summary>
-/// Баланс
+/// Баланс. Остатки меняются только документами (поступление/отгрузка),
+/// поэтому контроллер поддерживает только операции чтения
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-public class BalanceController : BaseCrudController<BalanceEntity>
+public class BalanceController : BaseReadController<BalanceEntity>
 {
     /// <summary>
     /// Конструктор

@@ -1,4 +1,4 @@
-﻿using Warehouse.Domain.Models;
+using Warehouse.Domain.Models;
 
 namespace Warehouse.Contracts.Infrastructure;
 
@@ -14,4 +14,13 @@ public interface IBalanceRepository : ICrudRepository<BalanceEntity>
     /// <param name="unitId"></param>
     /// <returns></returns>
     public Task<BalanceEntity?> GetBalanceAsync(long resourceId, long unitId);
+
+    /// <summary>
+    /// Атомарно применить изменение количества к строке баланса одним UPDATE
+    /// </summary>
+    /// <param name="resourceId"></param>
+    /// <param name="unitId"></param>
+    /// <param name="delta">Изменение количества (отрицательное — списание)</param>
+    /// <returns>false, если строка баланса не найдена или при отрицательной дельте остаток ушёл бы в минус</returns>
+    public Task<bool> TryApplyDeltaAsync(long resourceId, long unitId, long delta);
 }

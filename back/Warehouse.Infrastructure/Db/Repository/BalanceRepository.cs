@@ -19,6 +19,36 @@ public class BalanceRepository : CrudRepository<BalanceEntity>, IBalanceReposito
     }
 
     /// <summary>
+    /// Атомарно применить изменение количества к строке баланса одним UPDATE
+    /// </summary>
+    public async Task<bool> TryApplyDeltaAsync(long resourceId, long unitId, long delta)
+    {
+        if (delta < 0)
+        {
+            //Остаток не должен уйти в минус — условие проверяется на стороне БД в том же UPDATE.
+            //Строгое неравенство: нулевой остаток нельзя записать из-за check-констрейнта (Quantity > 0)
+            var updated = await entities
+                .Where(x => x.ResourceId == resourceId && x.UnitId == unitId && x.Quantity + delta > 0)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Quantity, x => x.Quantity + delta));
+            if (updated > 0)
+            {
+                return true;
+            }
+
+            //Списание всего остатка в ноль — строку удаляем, нулевые остатки не храним
+            var deleted = await entities
+                .Where(x => x.ResourceId == resourceId && x.UnitId == unitId && x.Quantity + delta == 0)
+                .ExecuteDeleteAsync();
+            return deleted > 0;
+        }
+
+        var rows = await entities
+            .Where(x => x.ResourceId == resourceId && x.UnitId == unitId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.Quantity, x => x.Quantity + delta));
+        return rows > 0;
+    }
+
+    /// <summary>
     /// Получить список элементов для грида
     /// </summary>
     /// <param name="options"></param>

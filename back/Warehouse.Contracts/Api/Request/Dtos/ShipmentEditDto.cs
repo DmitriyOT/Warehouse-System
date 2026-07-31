@@ -33,11 +33,6 @@ public class ShipmentEditDto
     public long ClientId { get; set; }
 
     /// <summary>
-    /// Подписана ли отгрузка
-    /// </summary>
-    public bool IsApprove { get; set; }
-
-    /// <summary>
     /// Строки отгрузки
     /// </summary>
     [Required(ErrorMessage = "Документ должен содержать хотя бы одну строку.")]

@@ -47,30 +47,75 @@ public class ShipmentService : CrudService<ShipmentEntity>
     /// </summary>
     public async Task<long> EditItem(ShipmentEditDto dto)
     {
-        var entity = new ShipmentEntity
-        {
-            Id = dto.Id,
-            Number = dto.Number,
-            Date = dto.Date,
-            ClientId = dto.ClientId,
-            IsApprove = dto.IsApprove,
-            ShipmentItems = dto.ShipmentItems.Select(i => new ShipmentItemEntity
-            {
-                Id = i.Id,
-                ResourceId = i.ResourceId,
-                UnitId = i.UnitId,
-                Quantity = i.Quantity
-            }).ToList()
-        };
-
-        Validate(entity);
-
         await using var transaction = await _unitOfWork.BeginTransactionAsync();
         try
         {
+            ShipmentEntity? oldEntity = null;
+            if (dto.Id > 0)
+            {
+                oldEntity = await _shipmentRepository.GetItem(dto.Id);
+            }
+
+            var entity = new ShipmentEntity
+            {
+                Id = dto.Id,
+                Number = dto.Number,
+                Date = dto.Date,
+                ClientId = dto.ClientId,
+                //Состояние подписи меняется только через ChangeStateAsync, при редактировании сохраняем текущее
+                IsApprove = oldEntity?.IsApprove ?? false,
+                ShipmentItems = dto.ShipmentItems.Select(i => new ShipmentItemEntity
+                {
+                    Id = i.Id,
+                    ResourceId = i.ResourceId,
+                    UnitId = i.UnitId,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
+
+            Validate(entity);
+
             var id = await _shipmentRepository.EditItem(entity);
+
+            //Пересчитываем баланс только для подписанного документа:
+            //возвращаем старые количества и списываем новые (отгрузка уменьшает остаток)
+            if (oldEntity is { IsApprove: true } && oldEntity.ShipmentItems != null && entity.ShipmentItems != null)
+            {
+                await _balanceService.CalculateAndApplyShipmentDifference(oldEntity.ShipmentItems, entity.ShipmentItems);
+            }
+
             await transaction.CommitAsync();
             return id;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Удалить документ отгрузки и вернуть товар на баланс, если документ был подписан
+    /// </summary>
+    public override async Task DeleteItem(long id)
+    {
+        await using var transaction = await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            var item = await _shipmentRepository.GetItem(id);
+            await _shipmentRepository.DeleteItem(id);
+
+            //Подписанная отгрузка списала остаток — возвращаем количества на баланс
+            if (item.IsApprove && item.ShipmentItems != null)
+            {
+                foreach (var i in item.ShipmentItems)
+                {
+                    i.Quantity = Math.Abs(i.Quantity);
+                }
+                await _balanceService.ApplyShipmentDifference(item.ShipmentItems);
+            }
+
+            await transaction.CommitAsync();
         }
         catch
         {

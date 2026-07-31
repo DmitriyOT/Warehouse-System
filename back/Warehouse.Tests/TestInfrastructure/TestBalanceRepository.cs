@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,5 +27,27 @@ public class TestBalanceRepository : TestCrudRepository<BalanceEntity>, IBalance
             }
         }
         return Task.FromResult<BalanceEntity?>(null);
+    }
+
+    public Task<bool> TryApplyDeltaAsync(long resourceId, long unitId, long delta)
+    {
+        var item = _entities.Values.FirstOrDefault(x => x.ResourceId == resourceId && x.UnitId == unitId);
+        if (item == null)
+        {
+            return Task.FromResult(false);
+        }
+
+        if (delta < 0 && item.Quantity + delta < 0)
+        {
+            return Task.FromResult(false);
+        }
+
+        item.Quantity += delta;
+        if (delta < 0 && item.Quantity == 0)
+        {
+            _entities.Remove(item.Id);
+        }
+
+        return Task.FromResult(true);
     }
 }

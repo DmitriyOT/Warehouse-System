@@ -79,6 +79,33 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         await ApplyDiff(CalculateDiff(arrOld, arrNow));
     }
 
+    /// <summary>
+    /// Вычислить разницу отгрузки и применить её к балансу (отгрузка уменьшает остаток)
+    /// </summary>
+    /// <param name="itemsOld"></param>
+    /// <param name="itemsNow"></param>
+    /// <returns></returns>
+    public async Task CalculateAndApplyShipmentDifference(ICollection<ShipmentItemEntity> itemsOld, ICollection<ShipmentItemEntity> itemsNow)
+    {
+        var arrOld = itemsOld.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = -x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        var arrNow = itemsNow.Select(x => new BalanceDiffItem
+        {
+            Id = x.Id,
+            ResourceId = x.ResourceId,
+            UnitId = x.UnitId,
+            Delta = -x.Quantity
+        }).ToDictionary(x => x.Id);
+
+        await ApplyDiff(CalculateDiff(arrOld, arrNow));
+    }
+
     //Функция для вычисления и суммирования разницы по товарам
     private ICollection<BalanceItem> CalculateDiff(Dictionary<long, BalanceDiffItem> oldItems, Dictionary<long, BalanceDiffItem> nowItems)
     {
@@ -145,46 +172,35 @@ public class BalanceService : CrudService<BalanceEntity>, IBalanceService
         return result;
     }
 
-    //Применяем разницу к балансу
+    //Применяем разницу к балансу атомарным UPDATE, чтобы параллельные списания не уводили остаток в минус
     private async Task ApplyDiff(ICollection<BalanceItem> items)
     {
         foreach (var item in items)
         {
-            var balance = await _balanceRepository.GetBalanceAsync(item.ResourceId, item.UnitId);
-            if (balance == null)
+            if (item.Delta == 0)
             {
-                if (item.Delta < 0)
-                {
-                    throw new UserException("Ошибка. Недостаточно ресурсов на балансе.");
-                }
-
-                if (item.Delta == 0)
-                {
-                    continue;
-                }
-
-                balance = new BalanceEntity
-                {
-                    Id = 0,
-                    Quantity = item.Delta,
-                    ResourceId = item.ResourceId,
-                    UnitId = item.UnitId,
-                };
+                continue;
             }
-            else
+
+            var applied = await _balanceRepository.TryApplyDeltaAsync(item.ResourceId, item.UnitId, item.Delta);
+            if (applied)
             {
-                if(balance.Quantity + item.Delta < 0)
-                {
-                    throw new UserException("Ошибка. Недостаточно ресурсов на балансе.");
-                }
-
-                balance.Quantity += item.Delta;
+                continue;
             }
-            
-            if (balance.Quantity != 0)
-                await _balanceRepository.EditItem(balance);
-            else
-                await _balanceRepository.DeleteItem(balance.Id);
+
+            if (item.Delta < 0)
+            {//Строки баланса нет или остатка не хватает
+                throw new UserException("Ошибка. Недостаточно ресурсов на балансе.");
+            }
+
+            //Строки баланса ещё нет — создаём её (только для положительного изменения)
+            await _balanceRepository.EditItem(new BalanceEntity
+            {
+                Id = 0,
+                Quantity = item.Delta,
+                ResourceId = item.ResourceId,
+                UnitId = item.UnitId,
+            });
         }
     }
 

@@ -1,4 +1,4 @@
-﻿using Warehouse.Domain.Models;
+using Warehouse.Domain.Models;
 
 namespace Warehouse.Contracts.Application;
 
@@ -26,4 +26,12 @@ public interface IBalanceService : ICrudService<BalanceEntity>
     /// <param name="itemsNow"></param>
     /// <returns></returns>
     public Task CalculateAndApplyDifference(ICollection<IncomeItemEntity> itemsOld, ICollection<IncomeItemEntity> itemsNow);
+
+    /// <summary>
+    /// Посчитать и применить изменения баланса для отгрузки (отгрузка уменьшает остаток)
+    /// </summary>
+    /// <param name="itemsOld"></param>
+    /// <param name="itemsNow"></param>
+    /// <returns></returns>
+    public Task CalculateAndApplyShipmentDifference(ICollection<ShipmentItemEntity> itemsOld, ICollection<ShipmentItemEntity> itemsNow);
 }

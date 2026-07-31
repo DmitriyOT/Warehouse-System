@@ -38,7 +38,7 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
-            throw new UserException($"Ошибка. Объект не найден в базе данных.");
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
         }
         else
         {
@@ -149,12 +149,38 @@ public class ShipmentRepository : CrudRepository<ShipmentEntity>, IShipmentRepos
         return item.Id;
     }
 
+    /// <summary>
+    /// Удалить элемент
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public override async Task DeleteItem(long id)
+    {
+        var item = await entities
+            .Include(x => x.ShipmentItems)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (item == null)
+        {
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
+        }
+
+        entities.Remove(item);
+        await DB.SaveChangesAsync();
+    }
+
     public async Task ChangeStateAsync(long id, string newStateCode)
     {
-        var item = await entities.Include(x => x.ShipmentItems).FirstAsync(x => x.Id == id);
-        item.IsApprove = newStateCode == "approve";
+        //ExecuteUpdateAsync без загрузки и отслеживания сущности: атомарно и не оставляет
+        //в контексте отслеживаемых ShipmentItems (иначе последующий DeleteItem в том же
+        //контексте падает с конфликтом трекинга при Attach позиций)
+        var rows = await entities.Where(x => x.Id == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsApprove, newStateCode == "approve"));
 
-        await DB.SaveChangesAsync();
-        DB.Entry(item).State = EntityState.Detached;
+        if (rows == 0)
+        {
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
+        }
     }
 }
