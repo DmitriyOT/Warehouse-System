@@ -21,6 +21,8 @@ public class PostgresDbContext : DbContext
 
     public DbSet<ShipmentItemEntity> ShipmentItems { get; set; } = null!;
 
+    public DbSet<UserEntity> Users { get; set; } = null!;
+
     public PostgresDbContext(DbContextOptions<PostgresDbContext> options) : base(options)
     {
     }

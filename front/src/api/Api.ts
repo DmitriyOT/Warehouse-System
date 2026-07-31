@@ -3,11 +3,31 @@ import type {ResponseDto, ResponseGridDto} from "../types/Response";
 import type {GridOptions} from "../types/Request";
 import type {ModalContextType} from "../types/Modal";
 import {LoadStringToDate, UploadDateToString} from "../utils/functions";
+import {LOGIN_PAGE_ROUTE, TOKEN_KEY} from "../utils/consts";
 
 const baseUrlApi = import.meta.env.VITE_APP_API_URL
 
 const $host = axios.create({
     baseURL: baseUrlApi
+})
+
+// Подстановка JWT-токена во все запросы
+$host.interceptors.request.use(config => {
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
+
+// При 401 (просрочен/невалиден токен) — удаляем токен и отправляем на страницу входа
+$host.interceptors.response.use(response => response, error => {
+    if (axios.isAxiosError(error) && error.response?.status === 401
+        && window.location.pathname !== LOGIN_PAGE_ROUTE) {
+        localStorage.removeItem(TOKEN_KEY)
+        window.location.href = LOGIN_PAGE_ROUTE
+    }
+    return Promise.reject(error)
 })
 
 const showError = (text: string, modalC: ModalContextType) => {
@@ -28,7 +48,15 @@ const errorHandle = async <T>(script: () => Promise<ResponseDto<T>>, modalC: Mod
         }
     }
     catch (e) {
-        showError( (e as unknown as Error).message, modalC );
+        if (axios.isAxiosError(e)) {
+            const data = e.response?.data as ResponseDto<unknown> | undefined;
+            const message = data?.errorMessage
+                ?? (e.response !== undefined && e.response.status >= 500 ? 'Ошибка сервера' : 'Ошибка сети');
+            showError(message, modalC);
+        }
+        else {
+            showError(e instanceof Error ? e.message : 'Ошибка сети', modalC);
+        }
     }
 }
 
@@ -42,7 +70,6 @@ const createItemApi = function<T> (itemPath: string, modalC: ModalContextType, e
                     if (!data.hasError && data.response) {
                         LoadStringToDate(data.response as Record<string, unknown>);
                     }
-                    console.log('load',data);
                     return data;
                 } else {
                     return {hasError: false, errorMessage: '', response: undefined as unknown as T};
@@ -88,4 +115,4 @@ const createGridApi = function<T> (itemPath: string, modalC: ModalContextType) {
     }
 }
 
-export { $host, createItemApi, createGridApi }
+export { $host, errorHandle, createItemApi, createGridApi }

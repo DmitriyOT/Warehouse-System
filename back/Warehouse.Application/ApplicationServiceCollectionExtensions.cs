@@ -15,6 +15,9 @@ public static class ApplicationServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddWarehouseApplication(this IServiceCollection services)
     {
+        // Кэш в памяти (используется DashboardService для сводки, TTL ~30 сек)
+        services.AddMemoryCache();
+
         // Универсальные CRUD-сервисы
         services.AddScoped(typeof(ICrudService<>), typeof(CrudService<>));
         services.AddScoped(typeof(IArchiveCrudService<>), typeof(ArchiveCrudService<>));
@@ -23,6 +26,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddScoped<IncomeService>();
         services.AddScoped<ShipmentService>();
         services.AddScoped<IBalanceService, BalanceService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }

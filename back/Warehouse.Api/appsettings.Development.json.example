@@ -5,5 +5,12 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "ConnectionString": "Host=localhost;Port=5432;Database=warehouse;Username=postgres;Password=YOUR_PASSWORD_HERE;IncludeErrorDetail=true;"
+  "ConnectionString": "Host=localhost;Port=5432;Database=warehouse;Username=postgres;Password=<your-password>;IncludeErrorDetail=true;",
+  "Jwt": {
+    "Key": "<your-local-dev-jwt-key-at-least-32-chars>"
+  },
+  "AdminUser": {
+    "Login": "admin",
+    "Password": "<your-local-admin-password>"
+  }
 }

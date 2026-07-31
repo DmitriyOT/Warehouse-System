@@ -22,6 +22,10 @@ export const INCOME_API_PATH: string = '/Income'
 export const SHIPMENT_PAGE_ROUTE: string = '/shipment'
 export const SHIPMENT_API_PATH: string = '/Shipment'
 
+export const LOGIN_PAGE_ROUTE: string = '/login'
+export const AUTH_API_PATH: string = '/Auth'
+export const TOKEN_KEY: string = 'token'
+
 
 export const DEFAULT_PAGE_VIEW: PageView = {page: 1, size: 10, totalPages: 0}
 export const DATE_FORMAT: string = 'yyyy-MM-dd'

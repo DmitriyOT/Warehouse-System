@@ -1,29 +1,46 @@
-import {Button} from "react-bootstrap";
 import {useLocation, useNavigate} from "react-router-dom";
 import {
     BALANCE_PAGE_ROUTE,
+    BASE_PAGE_ROUTE,
     CLIENT_PAGE_ROUTE,
     INCOME_PAGE_ROUTE,
+    LOGIN_PAGE_ROUTE,
     RESOURCE_PAGE_ROUTE,
     SHIPMENT_PAGE_ROUTE,
+    TOKEN_KEY,
     UNIT_PAGE_ROUTE
 } from "../../utils/consts.js";
+import {
+    ArrowDownToLine,
+    ArrowUpFromLine,
+    LayoutDashboard,
+    LogOut,
+    Moon,
+    Package,
+    Ruler,
+    Scale,
+    Sun,
+    Users,
+    type LucideIcon
+} from "lucide-react";
+import {useThemeMode} from "../../theme/themeMode";
 
-const menu: Array<{label: string, elems: Array<{name: string, href: string}>}> = [
+const menu: Array<{label: string, elems: Array<{name: string, href: string, icon: LucideIcon}>}> = [
     {
         label: "Склад",
         elems: [
-            {name: 'Баланс', href: BALANCE_PAGE_ROUTE},
-            {name: 'Поступления', href: INCOME_PAGE_ROUTE},
-            {name: 'Отгрузки', href: SHIPMENT_PAGE_ROUTE},
+            {name: 'Дашборд', href: BASE_PAGE_ROUTE, icon: LayoutDashboard},
+            {name: 'Баланс', href: BALANCE_PAGE_ROUTE, icon: Scale},
+            {name: 'Поступления', href: INCOME_PAGE_ROUTE, icon: ArrowDownToLine},
+            {name: 'Отгрузки', href: SHIPMENT_PAGE_ROUTE, icon: ArrowUpFromLine},
         ]
     },
     {
         label: "Справочники",
         elems: [
-            {name: 'Клиенты', href: CLIENT_PAGE_ROUTE},
-            {name: 'Единицы измерения', href: UNIT_PAGE_ROUTE},
-            {name: 'Ресурсы', href: RESOURCE_PAGE_ROUTE},
+            {name: 'Клиенты', href: CLIENT_PAGE_ROUTE, icon: Users},
+            {name: 'Единицы измерения', href: UNIT_PAGE_ROUTE, icon: Ruler},
+            {name: 'Ресурсы', href: RESOURCE_PAGE_ROUTE, icon: Package},
         ]
     }
 ]
@@ -32,26 +49,40 @@ const LeftMenuComponent = () => {
 
     const navigate = useNavigate()
     const location = useLocation()
+    const [mode, toggleTheme] = useThemeMode()
+
+    const logout = () => {
+        localStorage.removeItem(TOKEN_KEY)
+        navigate(LOGIN_PAGE_ROUTE)
+    }
 
   return (
-      <div className='min-vh-100 p-3' style={{width: '300px', minWidth: '300px'}}>
-          <div className='Block h-100'>
-              <h5>Управление складом</h5>
+      <div className='LeftMenu min-vh-100'>
+          <div className='LeftMenu__inner'>
+              <h5 className='LeftMenu__title'>Управление складом</h5>
               {
                   menu.map(e => <div key={e.label}>
-                      <h3  className='mt-4 mb-3'>{e.label}</h3>
+                      <div className='LeftMenu__group'>{e.label}</div>
                       {
                           e.elems.map(elem =>
-                          <div key={elem.href} className='w-100 ps-2'>
-                            <Button className='w-100 mt-1 text-start' onClick={() => navigate(elem.href)}
-                                    variant={location.pathname === elem.href ? 'dark' : 'outline-dark'} >
-                                {elem.name}
-                            </Button>
+                          <div key={elem.href}
+                               className={'LeftMenu__item' + (location.pathname === elem.href ? ' LeftMenu__item--active' : '')}
+                               onClick={() => navigate(elem.href)}>
+                              <elem.icon size={16} />
+                              {elem.name}
                           </div>
                           )
                       }
                   </div>)
               }
+          </div>
+          <div className='LeftMenu__theme-toggle' onClick={logout}>
+              <LogOut size={16} />
+              Выйти
+          </div>
+          <div className='LeftMenu__theme-toggle' onClick={toggleTheme}>
+              {mode === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              {mode === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
           </div>
       </div>
   )
