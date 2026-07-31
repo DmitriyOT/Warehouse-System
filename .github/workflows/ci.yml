@@ -22,8 +22,10 @@ jobs:
         working-directory: back
       - name: Build
         run: dotnet build back/Warehouse.sln --no-restore --configuration Release
-      - name: Test
+      - name: Test (unit + integration + API via Testcontainers)
         run: dotnet test back/Warehouse.sln --no-build --verbosity normal
+        # Integration/API tests spin up a PostgreSQL 16 container;
+        # Docker is preinstalled on ubuntu-latest runners
       - name: Verify EF Core migrations are up-to-date
         run: dotnet ef migrations has-pending-model-changes --project Warehouse.Infrastructure --startup-project Warehouse.Api
         working-directory: back
@@ -45,5 +47,7 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Unit tests
+        run: npm test
       - name: Build
         run: npm run build
