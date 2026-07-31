@@ -40,7 +40,7 @@ const errorHandle = async <T>(script: () => Promise<ResponseDto<T>>, modalC: Mod
         const result = await script();
         if(result?.hasError)
         {
-            showError( result.errorMessage, modalC )
+            showError( result.errorMessage ?? 'Ошибка', modalC )
         }
         else
         {

@@ -1,3 +1,5 @@
+// Бэк: DashboardSummaryDto.cs (Kpis/WeekMovement/LastOperations, decimal -> number).
+// TODO: regenerate api-generated.ts (npm run generate:api) after backend restart — схем Dashboard нет в сгенерированном файле
 export interface DashboardKpisDto {
     totalBalance: number,
     balanceDeltaPercent: number,

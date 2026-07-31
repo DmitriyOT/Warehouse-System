@@ -1,3 +1,11 @@
+import type {components} from "./api-generated";
+
+// Схемы из OpenAPI (генерация: npm run generate:api).
+// В сгенерированных схемах поля id и пр. опциональны — на фронте после загрузки
+// они всегда заполнены, поэтому уточняем обязательность через Required.
+type Schemas = components['schemas'];
+
+// Базовые интерфейсы фронта (бэк: BaseEntityWithId / BaseEntityWithIdArchiveName)
 export interface BaseEntityId {
     id: number
 }
@@ -6,57 +14,44 @@ export interface BaseEntityIdArchive extends BaseEntityId {
     isArchive: boolean
 }
 
-export interface ResourceEntity extends BaseEntityIdArchive{
-    name: string
+export type ResourceEntity = Required<Schemas['ResourceEntity']>
+
+export type UnitEntity = Required<Schemas['UnitEntity']>
+
+export type ClientEntity = Required<Schemas['ClientEntity']>
+
+export type BalanceEntity = Required<Omit<Schemas['BalanceEntity'], 'resource' | 'unit'>> & {
+    resource?: ResourceEntity,
+    unit?: UnitEntity
 }
 
-export interface UnitEntity extends BaseEntityIdArchive{
-    name: string
-}
-
-export interface ClientEntity extends BaseEntityIdArchive{
-    name: string,
-    address: string
-}
-
+// getItem возвращает доменную сущность бэка, по полям совпадающую с EditDto;
+// дату (DateOnly на бэке) фронт конвертирует в Date (LoadStringToDate/UploadDateToString)
 export interface IncomeEntity extends BaseEntityId {
-    number: string,
+    number: Schemas['IncomeEditDto']['number'],
     date: Date,
     incomeItems: Array<IncomeItemEntity>
 }
 
-export interface IncomeItemEntity extends BaseEntityId {
-    quantity: number,
+export type IncomeItemEntity = Required<Schemas['IncomeItemEditDto']> & {
     resource?: ResourceEntity,
-    unit?: UnitEntity,
-    resourceId: number,
-    unitId: number,
+    unit?: UnitEntity
 }
 
+// clientName и isApprove есть в доменной сущности ShipmentEntity бэка,
+// но не в ShipmentEditDto (в api-generated.ts поле isApprove устарело — его уже нет в DTO бэка)
 export interface ShipmentEntity extends BaseEntityId {
-    number: string,
+    number: Schemas['ShipmentEditDto']['number'],
     date: Date,
-    clientId: number,
+    clientId: Schemas['ShipmentEditDto']['clientId'],
     clientName?: string,
     isApprove: boolean,
     shipmentItems: Array<ShipmentItemEntity>
 }
 
-export interface ShipmentItemEntity extends BaseEntityId {
-    quantity: number,
+export type ShipmentItemEntity = Required<Schemas['ShipmentItemEditDto']> & {
     resource?: ResourceEntity,
-    unit?: UnitEntity,
-    resourceId: number,
-    unitId: number,
-    clientId: number
-}
-
-export interface BalanceEntity extends BaseEntityId {
-    resourceId: number,
-    unitId: number,
-    resource?: ResourceEntity,
-    unit?: UnitEntity,
-    quantity: number
+    unit?: UnitEntity
 }
 
 export interface ItemComponentProps<T> {
