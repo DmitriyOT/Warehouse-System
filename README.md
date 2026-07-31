@@ -24,6 +24,7 @@ The fastest way to run the whole stack:
 ```bash
 git clone https://github.com/DmitriyOT/Warehouse-System.git
 cd WarehouseSystem
+cp .env.example .env   # PostgreSQL credentials for Compose; change them for real deployments
 docker compose up --build
 ```
 

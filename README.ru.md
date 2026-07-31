@@ -24,6 +24,7 @@
 ```bash
 git clone https://github.com/DmitriyOT/Warehouse-System.git
 cd WarehouseSystem
+cp .env.example .env   # креденшелы PostgreSQL для Compose; поменяй для реального развёртывания
 docker compose up --build
 ```
 

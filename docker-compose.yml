@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     container_name: warehouse-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: warehouse
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -25,8 +25,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=warehouse;Username=postgres;Password=postgres
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       ASPNETCORE_ENVIRONMENT: Production
+      Jwt__Key: ${JWT_KEY}
+      AdminUser__Password: ${ADMIN_PASSWORD}
     ports:
       - "5001:8080"
     healthcheck:
