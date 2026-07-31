@@ -50,7 +50,7 @@ const PureSelectMultiInput = ({options = [], selectedOptions = [], onChange} : S
                             key={option.value}
                             as="div"
                             style={{maxWidth: '50vw'}}
-                            className={"px-2 overflow-auto " + (isSelected? "bg-secondary bg-opacity-50":"")}
+                            className={"px-2 overflow-auto " + (isSelected? "dropdown-item--selected":"")}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();

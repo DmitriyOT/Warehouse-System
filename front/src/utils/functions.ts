@@ -1,7 +1,10 @@
 export const LoadStringToDate = (item: Record<string, unknown>) => {
+    // Конвертируем только строки формата ISO-даты (2026-07-25 или 2026-07-25T10:00:00),
+    // иначе new Date() распарсит даже номера документов вида "П-101" (год 101) и испортит данные
+    const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T.*)?$/;
     for (const key in item) {
         const value = item[key];
-        if (typeof value === 'string') {
+        if (typeof value === 'string' && isoDatePattern.test(value)) {
             const date = new Date(value);
             if (!isNaN(date.getTime())) {
                 item[key] = date;

@@ -1,10 +1,8 @@
-
+import DashboardPage from "./dashboard/DashboardPage";
 
 const BasePage = () => {
     return (
-        <>
-
-        </>
+        <DashboardPage/>
     )
 }
 

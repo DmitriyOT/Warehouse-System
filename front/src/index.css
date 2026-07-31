@@ -1,39 +1,494 @@
+:root {
+    --font-main:   'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono:   'JetBrains Mono', 'Consolas', monospace;
+}
+
+/* Тёмная тема (по умолчанию): графит + золото */
+:root, [data-theme='dark'] {
+    --panel:       #0E1016;  /* фон окна */
+    --panel-2:     #12151D;  /* сайдбар, карточки, панели */
+    --line:        rgba(255,255,255,0.08);  /* hairline-бордеры */
+    --line-strong: rgba(255,255,255,0.16);  /* ось графика, видимые бордеры */
+    --text:        #9AA1B2;
+    --text-dim:    #5B6172;  /* подписи */
+    --heading:     #E8EAF0;  /* заголовки */
+    --value:       #EEF0F5;  /* значения KPI */
+    --gold:        #E2B15C;  /* акцент: активный пункт меню, пиковый столбец */
+    --gold-dim:    rgba(226,177,92,0.16);
+    --indigo:      #8B93F8;  /* столбцы графика */
+    --green:       #5FC98A;  /* OK, положительные дельты, приход */
+    --green-dim:   rgba(95,201,138,0.16);   /* фон health-бара */
+    --red:         #E4685C;  /* отрицательные дельты, расход */
+    --red-dim:     rgba(228,104,92,0.16);
+    --hover:       rgba(255,255,255,0.06);  /* фон при наведении */
+    --shadow:      none;  /* в тёмной теме вместо теней — hairline-бордеры */
+}
+
+/* Светлая тема: корпоративная, в стиле Linear/Stripe */
+[data-theme='light'] {
+    --panel:       #F2F4F9;
+    --panel-2:     #FFFFFF;
+    --line:        rgba(17,22,40,0.10);
+    --line-strong: rgba(17,22,40,0.20);
+    --text:        #4B5268;
+    --text-dim:    #8B91A6;
+    --heading:     #181D2C;
+    --value:       #12172A;
+    --gold:        #B98A2F;
+    --gold-dim:    rgba(185,138,47,0.14);
+    --indigo:      #5A63E8;
+    --green:       #1F9D63;
+    --green-dim:   rgba(31,157,99,0.12);
+    --red:         #D34B3F;
+    --red-dim:     rgba(211,75,63,0.10);
+    --hover:       rgba(17,22,40,0.05);
+    --shadow:      0 1px 2px rgba(16,24,40,0.06), 0 1px 3px rgba(16,24,40,0.08);
+}
+
 html{
     min-height:100%;/* make sure it is at least as tall as the viewport */
     position:relative;
 }
 body{
     height:100%; /* force the BODY element to match the height of the HTML element */
-    background-color: rgb(241, 241, 232) !important;
+    background-color: var(--panel) !important;
+    color: var(--text);
+    font-family: var(--font-main);
+    transition: background-color .2s ease-in-out, color .2s ease-in-out;
 }
 
-.Block {
-    background-color: rgb(255, 255, 255);
-    filter: drop-shadow(0 0 0.5rem rgb(182, 182, 182));
-    border-radius: 5px;
-    padding: 20px;
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    color: var(--heading);
 }
+
+/* Тонкие скроллбары */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--panel);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim);
+}
+
+/* Карточки страниц */
+
+.page-card {
+    background-color: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    transition: background-color .2s ease-in-out, border-color .2s ease-in-out;
+}
+
+.page-card--grid {
+    padding: 0;
+    overflow: hidden;
+}
+
+.page-card--form {
+    max-width: 720px;
+}
+
+/* Шапка страницы: заголовок + тулбар с действиями */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+}
+
+.page-title {
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--heading);
+    margin: 0;
+}
+
+.page-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Панель фильтров */
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.filter-bar__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+/* Левое меню */
 
 .LeftMenu {
-    width: 20%;
-    min-height: 100vh;/*100vh;*/
+    width: 300px;
+    min-width: 300px;
+    min-height: 100vh;
+    background-color: var(--panel-2);
+    border-right: 1px solid var(--line);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    transition: background-color .2s ease-in-out, border-color .2s ease-in-out;
 }
 
-.FieldLeft {
-    width: 30%;
-    max-width: 30%;
-    min-width: 30%;
+.LeftMenu__title {
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--heading);
 }
 
-.dropdown:hover .SelectedItem {
-    background-color: rgba(255, 255, 255, 0.25);
+.LeftMenu__group {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-dim);
+    margin-top: 24px;
+    margin-bottom: 8px;
 }
 
-.show .SelectedItem {
-    background-color: rgba(255, 255, 255, 0.25);
+.LeftMenu__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 2px;
+    color: var(--text);
+    font-family: var(--font-main);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s ease-in-out, color .15s ease-in-out;
 }
+
+.LeftMenu__item:hover {
+    background-color: var(--hover);
+    color: var(--heading);
+}
+
+.LeftMenu__item--active,
+.LeftMenu__item--active:hover {
+    background-color: var(--gold-dim);
+    color: var(--gold);
+}
+
+.LeftMenu__theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: auto;
+    color: var(--text-dim);
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s ease-in-out, color .15s ease-in-out;
+}
+
+.LeftMenu__theme-toggle:hover {
+    background-color: var(--hover);
+    color: var(--heading);
+}
+
+/* Подпись поля формы (label над инпутом) */
+
+.FieldLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+
+/* Чипы выбранных значений в мультиселекте */
 
 .SelectedItem {
-    background-color: rgba(0, 0, 0, 0.25);
-    transition: background-color .15s ease-in-out;
+    background-color: var(--gold-dim);
+    color: var(--gold);
+    font-size: 13px;
+}
+
+.dropdown-item--selected,
+.dropdown-item--selected:hover,
+.dropdown-item--selected:focus {
+    background-color: var(--gold-dim);
+    color: var(--gold);
+}
+
+/* Бейдж статуса документа в гриде */
+
+.status-badge {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge--ok {
+    background-color: var(--green-dim);
+    color: var(--green);
+}
+
+.status-badge--neutral {
+    background-color: var(--hover);
+    color: var(--text);
+}
+
+/* Таблица позиций документа */
+
+.items-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--panel-2);
+}
+
+.items-table th {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+}
+
+.items-table td {
+    padding: 6px 8px;
+    color: var(--text);
+}
+
+.items-table tbody tr + tr td {
+    border-top: 1px solid var(--line);
+}
+
+/* Пагинация */
+
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.pagination-bar__label,
+.pagination-bar__info {
+    font-size: 13px;
+    color: var(--text-dim);
+}
+
+.pagination-bar__info {
+    font-family: var(--font-mono);
+    margin: 0 8px;
+}
+
+.pagination-bar .form-select {
+    width: auto;
+    font-size: 13px;
+    padding: 4px 28px 4px 10px;
+}
+
+.pagination-bar .btn {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+/* Пагинация внутри карточки грида — отделяем hairline-бордером */
+
+.page-card--grid .pagination-bar {
+    margin-top: 0;
+    padding: 10px 12px;
+    border-top: 1px solid var(--line);
+}
+
+/* Bootstrap: базовый вид кнопок */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-main);
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+/* Bootstrap: кнопки, приглушённые под токены темы */
+
+.btn-dark {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: #1A1206;
+}
+.btn-dark:hover, .btn-dark:active, .btn-dark:focus-visible {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: #1A1206;
+}
+
+.btn-outline-dark {
+    --bs-btn-color: var(--text);
+    --bs-btn-border-color: var(--line-strong);
+    --bs-btn-hover-color: var(--heading);
+    --bs-btn-hover-bg: var(--hover);
+    --bs-btn-hover-border-color: var(--line-strong);
+    --bs-btn-active-color: var(--heading);
+    --bs-btn-active-bg: var(--hover);
+    --bs-btn-active-border-color: var(--line-strong);
+    --bs-btn-disabled-color: var(--text-dim);
+    --bs-btn-disabled-border-color: var(--line);
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--text);
+    --bs-btn-border-color: var(--line-strong);
+    --bs-btn-hover-color: var(--heading);
+    --bs-btn-hover-bg: var(--hover);
+    --bs-btn-hover-border-color: var(--line-strong);
+    --bs-btn-active-color: var(--heading);
+    --bs-btn-active-bg: var(--hover);
+    --bs-btn-active-border-color: var(--line-strong);
+    --bs-btn-disabled-color: var(--text-dim);
+    --bs-btn-disabled-border-color: var(--line);
+}
+
+.btn-outline-success {
+    --bs-btn-color: var(--green);
+    --bs-btn-border-color: var(--green);
+    --bs-btn-hover-color: var(--green);
+    --bs-btn-hover-bg: var(--green-dim);
+    --bs-btn-hover-border-color: var(--green);
+    --bs-btn-active-color: var(--green);
+    --bs-btn-active-bg: var(--green-dim);
+    --bs-btn-active-border-color: var(--green);
+    --bs-btn-disabled-color: var(--text-dim);
+    --bs-btn-disabled-border-color: var(--line);
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--red);
+    --bs-btn-border-color: var(--red);
+    --bs-btn-hover-color: var(--red);
+    --bs-btn-hover-bg: var(--red-dim);
+    --bs-btn-hover-border-color: var(--red);
+    --bs-btn-active-color: var(--red);
+    --bs-btn-active-bg: var(--red-dim);
+    --bs-btn-active-border-color: var(--red);
+    --bs-btn-disabled-color: var(--text-dim);
+    --bs-btn-disabled-border-color: var(--line);
+}
+
+/* Bootstrap: поля ввода */
+
+.form-control, .form-select {
+    background-color: var(--panel);
+    border-color: var(--line-strong);
+    border-radius: 8px;
+    color: var(--heading);
+    font-size: 14px;
+}
+
+.form-control:focus {
+    background-color: var(--panel);
+    border-color: var(--indigo);
+    color: var(--heading);
+    box-shadow: 0 0 0 .25rem rgba(139, 147, 248, 0.25);
+}
+
+.form-control::placeholder {
+    color: var(--text-dim);
+}
+
+.form-control:disabled, .form-select:disabled {
+    background-color: var(--panel-2);
+    color: var(--text-dim);
+}
+
+.form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%239AA1B2' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+[data-theme='light'] .form-select {
+    --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234B5268' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 .25rem rgba(139, 147, 248, 0.25);
+}
+
+/* Bootstrap: модальные окна */
+
+.modal-content {
+    background-color: var(--panel-2);
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--line);
+}
+
+.modal-title {
+    color: var(--heading);
+}
+
+/* Bootstrap: выпадающие меню */
+
+.dropdown-menu {
+    background-color: var(--panel-2);
+    border: 1px solid var(--line-strong);
+    color: var(--text);
+}
+
+.dropdown-item {
+    color: var(--text);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--hover);
+    color: var(--heading);
+}
+
+/* Bootstrap: таблицы и бордеры */
+
+.border-dark {
+    border-color: var(--line-strong) !important;
+}
+
+.table {
+    --bs-table-color: var(--text);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: var(--line);
 }

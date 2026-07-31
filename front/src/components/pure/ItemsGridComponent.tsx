@@ -1,6 +1,7 @@
 import PureSelectInput from "./controls/PureSelectInput";
 import PureTextInput from "./controls/PureTextInput";
 import { Button } from "react-bootstrap";
+import {Plus, X} from "lucide-react";
 import type { SelectOption } from "../../types/Filters";
 import PureNumberInput from "./controls/PureNumberInput";
 import type {BaseEntityId} from "../../types/Entities";
@@ -102,15 +103,16 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
     };
 
     return (
-        <table className='table-bordered2 border-dark border mt-2'>
-            <thead className='bg-secondary bg-opacity-25'>
+        <table className='items-table mt-2'>
+            <thead>
             <tr>
                 <th className='p-1'>
                     <Button
                         variant='outline-success'
+                        size='sm'
                         onClick={handleAddItem}
                     >
-                        +
+                        <Plus size={14} />
                     </Button>
                 </th>
                 {columns.map(column => (
@@ -120,13 +122,14 @@ const ItemsGridComponent = function<T extends BaseEntityId> ({ items, onChange, 
             </thead>
             <tbody>
             {items?.map(item => (
-                <tr key={item.id} className='border-dark border'>
+                <tr key={item.id}>
                     <td className='p-1'>
                         <Button
                             variant='outline-danger'
+                            size='sm'
                             onClick={() => handleDeleteItem(item)}
                         >
-                            X
+                            <X size={14} />
                         </Button>
                     </td>
                     {columns.map(column => (

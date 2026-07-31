@@ -8,12 +8,11 @@ type SelectInputOptions = {
     size?: 'large' | 'medium'
 }
 
-const PureSelectInput = ({options = [], onChange, selected, size = 'large'} : SelectInputOptions) => {
+const PureSelectInput = ({options = [], onChange, selected} : SelectInputOptions) => {
 
     return(
         <>
-            <Form.Select className={ size === "large" ? 'fs-5' : 'fs-6'}
-                         value={selected?.value ?? '-1'}
+            <Form.Select value={selected?.value ?? '-1'}
                          onChange={(e) => {onChange(e.target.value);}}
             >
                 {

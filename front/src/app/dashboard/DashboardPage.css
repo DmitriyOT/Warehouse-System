@@ -1,0 +1,204 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: var(--text);
+}
+
+.dashboard__card {
+    background-color: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.dashboard__card-title {
+    font-family: var(--font-main);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--heading);
+    margin-bottom: 12px;
+}
+
+/* KPI-карточки */
+
+.dashboard__kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.dashboard__stat-label {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.dashboard__stat-value {
+    font-family: var(--font-main);
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--value);
+    margin-top: 4px;
+}
+
+.dashboard__stat-delta {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.dashboard__stat-delta--up {
+    color: var(--green);
+}
+
+.dashboard__stat-delta--down {
+    color: var(--red);
+}
+
+/* График + операции */
+
+.dashboard__middle {
+    display: grid;
+    grid-template-columns: 57fr 42fr;
+    gap: 24px;
+}
+
+.dashboard__chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.dashboard__chart-bar {
+    fill: var(--indigo);
+    fill-opacity: 0.55;
+}
+
+.dashboard__chart-bar--peak {
+    fill: var(--gold);
+    fill-opacity: 1;
+}
+
+.dashboard__chart-baseline {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+}
+
+.dashboard__chart-label {
+    fill: var(--text-dim);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+/* Последние операции */
+
+.dashboard__operations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard__operation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard__operation-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dashboard__operation-dot--in {
+    background-color: var(--green);
+}
+
+.dashboard__operation-dot--out {
+    background-color: var(--red);
+}
+
+.dashboard__operation-text {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard__empty {
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+/* Health-бар */
+
+.dashboard__health {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+}
+
+.dashboard__health--ok {
+    background-color: var(--green-dim);
+}
+
+.dashboard__health--error {
+    background-color: var(--red-dim);
+}
+
+.dashboard__health-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: dashboard-pulse 1.6s ease-in-out infinite;
+}
+
+.dashboard__health-dot--ok {
+    background-color: var(--green);
+}
+
+.dashboard__health-dot--error {
+    background-color: var(--red);
+}
+
+@keyframes dashboard-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard__health-dot {
+        animation: none;
+    }
+}
+
+.dashboard__health-text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+}
+
+/* Бейджи технологий */
+
+.dashboard__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dashboard__chip {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    background-color: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+}

@@ -1,4 +1,5 @@
 import {Button, Form} from "react-bootstrap";
+import {ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight} from "lucide-react";
 import type {PageView} from "../../types/PageView";
 
 type PurePaginationProps = {
@@ -8,37 +9,40 @@ type PurePaginationProps = {
     pageSizes?: number[]
 }
 
+// Окно номеров страниц вокруг текущей (не более 5)
+const pageWindow = (page: number, totalPages: number): number[] => {
+    let start = Math.max(1, page - 2);
+    const end = Math.min(totalPages, start + 4);
+    start = Math.max(1, end - 4);
+    const result: number[] = [];
+    for (let i = start; i <= end; i++)
+        result.push(i);
+    return result;
+}
+
 const PurePaginationComponent = ({pageView, pageSizes, onPageChange, onPageSizeChange}: PurePaginationProps) => {
 
     pageSizes ??= [10,20,50,100];
 
-    const arrayPages = [
-        {text: '«', id: -4, onClick: () => {onPageChange(1)}, variant: 'outline-dark'},
-        {text: '‹', id: -3, onClick: () => {onPageChange(Math.max(pageView.page - 1, 1))}, variant: 'outline-dark'},
-    ]
-
-    for(let i = 1; i <= pageView.totalPages; i++)
-    {
-        arrayPages.push({text: i.toString(), id: i, onClick: () => {onPageChange(i)},
-            variant: pageView.page === i ? 'dark' :'outline-dark'})
-    }
-
-    arrayPages.push( {text: '›', id: -2, onClick: () =>
-        {onPageChange(Math.min(pageView.page + 1, pageView.totalPages))}, variant: 'outline-dark'} )
-    arrayPages.push( {text: '»', id: -1, onClick: () => {onPageChange(pageView.totalPages)}, variant: 'outline-dark'} )
-
     return(
-        <div className='d-flex flex-wrap align-items-center mt-2 justify-content-center'>
-            <div>Размер страницы</div>
-            <div className='ms-2 me-2 '>
-                <Form.Select id='Pagination' value={pageView.size} onChange={(size) => onPageSizeChange(+size.target.value)}>
-                    {pageSizes.map(s => <option key={s}>{s}</option>)}
-                </Form.Select>
-            </div>
-             Страница {pageView.page} / {pageView.totalPages}
-            <div className='ms-2 mt-2'>
-                {arrayPages.map(e => <Button key={e.id} className='ms-1' variant={e.variant} onClick={e.onClick}>{e.text}</Button>)}
-            </div>
+        <div className='pagination-bar'>
+            <span className='pagination-bar__label'>Размер страницы</span>
+            <Form.Select id='Pagination' value={pageView.size} onChange={(size) => onPageSizeChange(+size.target.value)}>
+                {pageSizes.map(s => <option key={s}>{s}</option>)}
+            </Form.Select>
+            <span className='pagination-bar__info'>Стр. {pageView.page} из {pageView.totalPages}</span>
+            <Button variant='outline-dark' disabled={pageView.page <= 1}
+                    onClick={() => onPageChange(1)}><ChevronsLeft size={16} /></Button>
+            <Button variant='outline-dark' disabled={pageView.page <= 1}
+                    onClick={() => onPageChange(Math.max(pageView.page - 1, 1))}><ChevronLeft size={16} /></Button>
+            {pageWindow(pageView.page, pageView.totalPages).map(p =>
+                <Button key={p} variant={pageView.page === p ? 'dark' : 'outline-dark'}
+                        onClick={() => onPageChange(p)}>{p}</Button>
+            )}
+            <Button variant='outline-dark' disabled={pageView.page >= pageView.totalPages}
+                    onClick={() => onPageChange(Math.min(pageView.page + 1, pageView.totalPages))}><ChevronRight size={16} /></Button>
+            <Button variant='outline-dark' disabled={pageView.page >= pageView.totalPages}
+                    onClick={() => onPageChange(pageView.totalPages)}><ChevronsRight size={16} /></Button>
         </div>
     )
 }

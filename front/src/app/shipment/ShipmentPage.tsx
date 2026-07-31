@@ -22,8 +22,8 @@ const ShipmentPage = createGridPage<ShipmentEntity>(SHIPMENT_API_PATH, SHIPMENT_
         {field: 'date', headerName: 'Дата', width: 100},
         {field: 'clientName', headerName: 'Клиент', width: 150},
         {field: 'isApprove', headerName: 'Статус', width: 150, renderCell:
-                (params) => (params.value !== undefined ? <span className={(params.value ? 'bg-success' : 'bg-secondary')
-                    + ' p-1 ps-2 pe-2 rounded-2 text-white'}>{params.value ? 'Подписан' : 'Не подписан'}</span> : null)},
+                (params) => (params.value !== undefined ? <span className={'status-badge p-1 ps-2 pe-2 rounded-2 '
+                    + (params.value ? 'status-badge--ok' : 'status-badge--neutral')}>{params.value ? 'Подписан' : 'Не подписан'}</span> : null)},
         {field: 'resource', headerName: 'Ресурс', width: 150},
         {field: 'unit', headerName: 'Единица измерения', width: 150},
         {field: 'quantity', headerName: 'Количество', width: 150},
