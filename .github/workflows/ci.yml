@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: dotnet build back/Warehouse.sln --no-restore --configuration Release
       - name: Test (unit + integration + API via Testcontainers)
-        run: dotnet test back/Warehouse.sln --no-build --verbosity normal
+        run: dotnet test back/Warehouse.sln --configuration Release --no-build --verbosity normal
         # Integration/API tests spin up a PostgreSQL 16 container;
         # Docker is preinstalled on ubuntu-latest runners
       - name: Verify EF Core migrations are up-to-date
@@ -40,7 +40,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # jsdom 30 -> undici 8 требует Node >= 22.19 (worker_threads.markAsUncloneable)
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: front/package-lock.json
       - name: Install dependencies
