@@ -8,38 +8,18 @@ import type {
 import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
-import {useContext, useEffect, useState} from "react";
-import {DataProvider} from "../../api/DataProvider";
+import {useState} from "react";
 import {RESOURCE_API_PATH, UNIT_API_PATH} from "../../utils/consts";
-import type {SelectOption} from "../../types/Filters";
-import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
-import {ModalContext} from "../../context/ModalContext";
+import {useSelectOptions} from "../../api/queries";
 
 
 const IncomeItem = ({data, onChange}: ItemComponentProps<IncomeEntity>) => {
 
-    const mContext = useContext(ModalContext)
-
     const [nextId, setNextId] = useState<number>(-1)
 
-    const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
-    const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
-
-    useEffect(() => {
-        const dpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
-        const dpUnit = new DataProvider<UnitEntity>(UNIT_API_PATH, mContext);
-
-        dpResource.getData().then(data => {
-            const dataT = data as GridData<ResourceEntity>;
-            setOptionsResource( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) );
-        })
-        dpUnit.getData().then(data => {
-            const dataT = data as GridData<UnitEntity>;
-            setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
-        })
-
-    }, [mContext])
+    const {data: optionsResource = []} = useSelectOptions<ResourceEntity>(RESOURCE_API_PATH)
+    const {data: optionsUnit = []} = useSelectOptions<UnitEntity>(UNIT_API_PATH)
 
    return (
        <>

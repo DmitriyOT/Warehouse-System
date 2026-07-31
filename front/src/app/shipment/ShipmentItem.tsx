@@ -8,59 +8,63 @@ import PureTextInput from "../../components/pure/controls/PureTextInput";
 import PureDateInput from "../../components/pure/controls/PureDateInput";
 import FieldComponent from "../../components/pure/controls/FieldComponent";
 import {useContext, useEffect, useState} from "react";
-import {DataProvider} from "../../api/DataProvider";
 import {
+    BALANCE_API_PATH,
     CLIENT_API_PATH,
     RESOURCE_API_PATH,
     SHIPMENT_API_PATH,
     SHIPMENT_PAGE_ROUTE,
     UNIT_API_PATH
 } from "../../utils/consts";
-import type {SelectOption} from "../../types/Filters";
-import type {GridData} from "../../types/Response";
 import ItemsGridComponent from "../../components/pure/ItemsGridComponent";
 import {ModalContext} from "../../context/ModalContext";
 import PureSelectInput from "../../components/pure/controls/PureSelectInput";
 import {Button} from "react-bootstrap";
+import {CheckCheck, Save, Trash2, Undo2} from "lucide-react";
 import {createItemApi} from "../../api/Api";
 import {useNavigate} from "react-router-dom";
+import {useQueryClient} from "@tanstack/react-query";
+import {gridKey, itemKey, useSelectOptions} from "../../api/queries";
+import {validateDocument} from "../../utils/validation";
 
 type ShipmentButtonsCode = 'save' | 'approve' | 'disApprove' | 'delete';
 
 const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) => {
 
     const mContext = useContext(ModalContext)
+    const queryClient = useQueryClient()
 
     const [nextId, setNextId] = useState<number>(-1)
 
-    const [optionsResource, setOptionsResource] = useState<Array<SelectOption>>([])
-    const [optionsUnit, setOptionsUnit] = useState<Array<SelectOption>>([])
-    const [optionsClient, setOptionsClient] = useState<Array<SelectOption>>([])
+    const {data: optionsResource = []} = useSelectOptions<ResourceEntity>(RESOURCE_API_PATH)
+    const {data: optionsUnit = []} = useSelectOptions<UnitEntity>(UNIT_API_PATH)
+    const {data: optionsClient = []} = useSelectOptions<ClientEntity>(CLIENT_API_PATH)
 
     const [buttons, setButtons] = useState<Array<ShipmentButtonsCode>>([]);
 
-    const {save, changeState} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext, 'Edit');
+    const {save, changeState, deleteItems} = createItemApi<ShipmentEntity>(SHIPMENT_API_PATH, mContext, 'Edit');
     const navigate = useNavigate()
 
-    useEffect(() => {
-        const dpResource = new DataProvider<ResourceEntity>(RESOURCE_API_PATH, mContext);
-        const dpUnit = new DataProvider<UnitEntity>(UNIT_API_PATH, mContext);
-        const dpClient = new DataProvider<ClientEntity>(CLIENT_API_PATH, mContext);
+    // После мутаций обновляем списки отгрузок и баланс (подписание меняет остатки)
+    const invalidateQueries = (withBalance: boolean = false) => {
+        queryClient.invalidateQueries({queryKey: gridKey(SHIPMENT_API_PATH)})
+        queryClient.invalidateQueries({queryKey: itemKey(SHIPMENT_API_PATH)})
+        if (withBalance)
+            queryClient.invalidateQueries({queryKey: gridKey(BALANCE_API_PATH)})
+    }
 
-        dpResource.getData().then(data => {
-            const dataT = data as GridData<ResourceEntity>;
-            setOptionsResource( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) );
-        })
-        dpUnit.getData().then(data => {
-            const dataT = data as GridData<UnitEntity>;
-            setOptionsUnit( dataT.items.map(e => ({value: e.id.toString(), title: e.name}) ) )
-        })
-        dpClient.getData().then(data => {
-            const dataT = data as GridData<ClientEntity>;
-            setOptionsClient( dataT.items.map(e => ({value: e.id.toString(), title: e.name})))
-        })
-
-    }, [mContext])
+    // Перед сохранением проверяем заполненность документа
+    const validate = (): boolean => {
+        if (data === undefined)
+            return false;
+        const error = validateDocument({number: data.number, date: data.date, items: data.shipmentItems});
+        if (error !== null) {
+            mContext?.setModal({header: 'Ошибка', content: error, buttonText: 'Ок',
+                onClose: () => mContext?.setModal(null)})
+            return false;
+        }
+        return true;
+    }
 
     useEffect(() => {
         if(id === 0) {
@@ -80,39 +84,51 @@ const ShipmentItem = ({data, id, onChange}: ItemComponentProps<ShipmentEntity>) 
         }
     }, [data, id])
 
-    const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, onClick: () => void}> = [
-        {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', onClick: () => {
+    const buttonsTemplate: Array<{ code: ShipmentButtonsCode, className: string, variant: string, text: string, icon: React.ReactNode, onClick: () => void}> = [
+        {code: 'save', className: 'me-2', variant: 'outline-dark', text:'Сохранить', icon: <Save size={16} />, onClick: () => {
+                if (!validate()) return;
                 save(data!).then(res => {
                     if(res !== (id ?? 0) && res !== undefined )
                         navigate(SHIPMENT_PAGE_ROUTE + '/' + res);
                     else if(res !== undefined) navigate(SHIPMENT_PAGE_ROUTE)
+                    if (res !== undefined) invalidateQueries();
                 } )
             } },
-        {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', onClick: () => {
+        {code: 'approve', className: 'me-2', variant: 'outline-success', text: 'Сохранить и подписать', icon: <CheckCheck size={16} />, onClick: () => {
+                if (!validate()) return;
                 save(data!).then(res => {
-                        if (res !== undefined) changeState(id, 'approve')
-                            .then(() => onChange({...data!, isApprove: true}))
+                        if (res !== undefined) changeState(res, 'approve')
+                            .then(() => { onChange({...data!, isApprove: true}); invalidateQueries(true); })
                     }
                 )
             } },
-        {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', onClick: () => {
+        {code: 'disApprove', className: 'me-2', variant: 'outline-dark', text: 'Отозвать', icon: <Undo2 size={16} />, onClick: () => {
                 changeState(id, 'disApprove')
-                    .then(() => onChange({...data!, isApprove: false}) )
+                    .then(() => { onChange({...data!, isApprove: false}); invalidateQueries(true); } )
             } },
-        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', onClick: () => {
-
+        {code: 'delete', className: '', variant: 'outline-danger', text:'Удалить', icon: <Trash2 size={16} />, onClick: () => {
+                mContext?.setModal({
+                    header: 'Удаление отгрузки',
+                    content: 'Удалить отгрузку №' + (data?.number ?? '') + '?',
+                    buttonText: 'Удалить',
+                    cancelText: 'Отмена',
+                    onClose: () => {
+                        mContext?.setModal(null);
+                        deleteItems(id).then(() => { invalidateQueries(); navigate(SHIPMENT_PAGE_ROUTE); });
+                    },
+                    onCancel: () => mContext?.setModal(null)
+                })
             }},
     ]
 
    return (
        <>
-           <div className='d-flex flex-wrap mt-3 mb-3'>
-               <span className='me-2 mt-1 fs-5'>Действия: </span>
+           <div className='page-toolbar mb-3'>
                {buttonsTemplate?.map(b => {
                        const button = buttons.find(x => x === b.code);
                        if (button)
                            return <Button key={b.code} className={b.className} variant={b.variant}
-                                          onClick={() => b.onClick()}>{b.text}</Button>
+                                          onClick={() => b.onClick()}>{b.icon}{b.text}</Button>
                        else
                            return null;
                    }

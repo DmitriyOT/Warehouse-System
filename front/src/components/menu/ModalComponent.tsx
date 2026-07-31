@@ -3,11 +3,11 @@ import {createPortal} from "react-dom";
 import {Button} from "react-bootstrap";
 import type {Modal} from "../../types/Modal";
 
-const ModalComponent = ({ header, content, buttonText, onClose }: Modal) => {
+const ModalComponent = ({ header, content, buttonText, onClose, cancelText, onCancel }: Modal) => {
     // Обработчик нажатия клавиши Escape
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
-    }, [onClose]);
+        if (e.key === 'Escape') (onCancel ?? onClose)();
+    }, [onClose, onCancel]);
 
     useEffect(() => {
         // Блокировка скролла страницы при открытии модалки
@@ -26,7 +26,7 @@ const ModalComponent = ({ header, content, buttonText, onClose }: Modal) => {
         <div
             className="modal show d-block"
             style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-            onClick={onClose}
+            onClick={onCancel ?? onClose}
         >
             <div
                 className="modal-dialog modal-dialog-centered"
@@ -42,6 +42,9 @@ const ModalComponent = ({ header, content, buttonText, onClose }: Modal) => {
                     </div>
 
                     <div className="modal-footer">
+                        {onCancel !== undefined &&
+                            <Button variant={'outline-dark'} className='me-2' onClick={onCancel} > {cancelText ?? 'Отмена'} </Button>
+                        }
                         <Button variant={'dark'} onClick={onClose} > {buttonText} </Button>
                     </div>
                 </div>

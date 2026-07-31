@@ -3,6 +3,8 @@ export type Modal = {
     content: string;
     buttonText: string;
     onClose: () => void;
+    cancelText?: string;
+    onCancel?: () => void;
 }
 
 export type ModalContextType = {

@@ -1,12 +1,10 @@
 import type {FilterOptions, SelectFilterOptions, SelectOption} from "../types/Filters";
 import PureSelectMultiInput from "./pure/controls/PureSelectMultiInput";
-import {useContext, useEffect, useState} from "react";
-import {DataProvider} from "../api/DataProvider";
-import {ModalContext} from "../context/ModalContext";
+import {useState} from "react";
 import PureDateIntervalInput from "./pure/controls/PureDateIntervalInput";
 import {DateToStringFormat} from "../utils/functions";
 import type {BaseEntityId} from "../types/Entities";
-import type {GridData} from "../types/Response";
+import {useSelectOptions} from "../api/queries";
 
 
 const FilterComponent = (props:FilterOptions) => {
@@ -15,25 +13,12 @@ const FilterComponent = (props:FilterOptions) => {
     const apiPath = type === 'select' ? (props as SelectFilterOptions).apiPath : undefined;
 
     const [selectedOptions, setSelectedOptions] = useState<Array<SelectOption>>([])
-    const [options, setOptions] = useState<Array<SelectOption>>([])
 
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
-    const mContext = useContext(ModalContext)
-
-    useEffect(() => {
-        if (type !== 'select' || apiPath === undefined) {
-            return;
-        }
-
-        const dp = new DataProvider<BaseEntityId>(apiPath, mContext, true)
-        dp.getData().then(data => {
-            const dataT = data as GridData<BaseEntityId>;
-            const dataOp: Array<SelectOption> = dataT.items.map(e => ({value: e.id.toString(), title: (e as {name?: string, number?: string}).name ?? (e as {name?: string, number?: string}).number ?? ''}))
-            setOptions(dataOp)
-        })
-    }, [type, apiPath, mContext])
+    const {data: fetchedOptions = []} = useSelectOptions<BaseEntityId>(type === 'select' ? apiPath : undefined, true)
+    const options = fetchedOptions
 
     const returnSelect = () => {
         switch (type) {
@@ -56,8 +41,8 @@ const FilterComponent = (props:FilterOptions) => {
     }
 
     return(
-      <div className='d-flex flex-column align-items-center' style={{minWidth: '200px'}}>
-        <span className='fs-5'>{name}</span>
+      <div className='d-flex flex-column' style={{minWidth: '200px'}}>
+        <span className='filter-bar__label'>{name}</span>
           {
               returnSelect()
           }

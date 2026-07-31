@@ -1,4 +1,5 @@
-import type {ComponentType} from "react";
+import type {ComponentType, LazyExoticComponent} from "react";
+import {lazy} from "react";
 import {
     BALANCE_PAGE_ROUTE,
     BASE_PAGE_ROUTE,
@@ -7,20 +8,22 @@ import {
     SHIPMENT_PAGE_ROUTE,
     UNIT_PAGE_ROUTE
 } from "./consts";
-import BasePage from "../app/BasePage";
-import BalancePage from "../app/balance/BalancePage";
-import IncomePage from "../app/income/IncomePage";
-import ShipmentPage from "../app/shipment/ShipmentPage";
-import ClientPage from "../app/client/ClientPage";
-import UnitPage from "../app/unit/UnitPage";
-import ResourcePage from "../app/resource/ResourcePage";
-import ResourceItemPage from "../app/resource/ResourceItemPage";
-import ClientItemPage from "../app/client/ClientItemPage";
-import UnitItemPage from "../app/unit/UnitItemPage";
-import IncomeItemPage from "../app/income/IncomeItemPage";
-import ShipmentItemPage from "../app/shipment/ShipmentItemPage";
 
-export const routes: Array<{path: string, Component: ComponentType}> = [
+// Страницы грузятся лениво — код списков/карточек попадает в отдельные чанки
+const BasePage = lazy(() => import("../app/BasePage"));
+const BalancePage = lazy(() => import("../app/balance/BalancePage"));
+const IncomePage = lazy(() => import("../app/income/IncomePage"));
+const ShipmentPage = lazy(() => import("../app/shipment/ShipmentPage"));
+const ClientPage = lazy(() => import("../app/client/ClientPage"));
+const UnitPage = lazy(() => import("../app/unit/UnitPage"));
+const ResourcePage = lazy(() => import("../app/resource/ResourcePage"));
+const ResourceItemPage = lazy(() => import("../app/resource/ResourceItemPage"));
+const ClientItemPage = lazy(() => import("../app/client/ClientItemPage"));
+const UnitItemPage = lazy(() => import("../app/unit/UnitItemPage"));
+const IncomeItemPage = lazy(() => import("../app/income/IncomeItemPage"));
+const ShipmentItemPage = lazy(() => import("../app/shipment/ShipmentItemPage"));
+
+export const routes: Array<{path: string, Component: ComponentType | LazyExoticComponent<ComponentType>}> = [
     {
         path: BASE_PAGE_ROUTE,
         Component: BasePage

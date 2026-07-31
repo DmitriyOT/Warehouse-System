@@ -9,15 +9,18 @@ type PureNumberInputProps = {
     textSize?: 'large' | 'small',
 }
 
-const PureNumberInput = ({value, onChange, id, placeholder, disabled, textSize = 'large'} : PureNumberInputProps) => {
+const PureNumberInput = ({value, onChange, id, placeholder, disabled} : PureNumberInputProps) => {
 
     return (
         <div className="w-100">
             <Form.Control
                 id={id}
                 value={value}
-                className={( textSize === 'large' ? " fs-5" : ' fs-6')}
-                onChange={e => {onChange(Number(e.target.value) );} }
+                onChange={e => {
+                    // Пустой/некорректный ввод не прокидываем как NaN — считаем нулём
+                    const n = (e.target as HTMLInputElement).valueAsNumber;
+                    onChange(Number.isNaN(n) ? 0 : n);
+                } }
                 placeholder={placeholder}
                 disabled={disabled}
                 type={'number'}
