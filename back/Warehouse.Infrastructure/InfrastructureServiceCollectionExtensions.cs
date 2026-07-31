@@ -45,6 +45,8 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<IIncomeRepository, IncomeRepository>();
         services.AddScoped<IShipmentRepository, ShipmentRepository>();
         services.AddScoped<IBalanceRepository, BalanceRepository>();
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<IUnitOfWork, EfUnitOfWork>();
 
@@ -52,7 +54,10 @@ public static class InfrastructureServiceCollectionExtensions
             .AddNpgSql(
                 connectionString,
                 name: "postgresql",
-                failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy);
+                failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy,
+                // Тег "ready": /health/ready фильтрует проверки по нему,
+                // без тега readiness-эндпоинт всегда отвечал 200 без проверки БД
+                tags: new[] { "ready" });
 
         return services;
     }

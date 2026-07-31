@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections;
@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.Api.Request;
+using Warehouse.Contracts.Exceptions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Warehouse.Infrastructure.Extentions;
@@ -94,7 +95,19 @@ internal static class IQueryableExtensions
         {
             foreach (var item in argument.Split(','))
             {
-                var constExp = Expression.Constant(Convert.ChangeType(item, propertyAccess.Type));
+                //Значение фильтра приходит от клиента строкой: некорректный ввод
+                //превращаем в понятную 400-ошибку, а не в FormatException -> 500
+                object value;
+                try
+                {
+                    value = Convert.ChangeType(item, propertyAccess.Type);
+                }
+                catch (Exception ex) when (ex is FormatException or OverflowException or InvalidCastException)
+                {
+                    throw new UserException(
+                        $"Ошибка. Некорректное значение фильтра <{item}> для поля <{property?.Name}>.");
+                }
+                var constExp = Expression.Constant(value);
                 if (exp == null)
                 {
                     exp = Expression.Equal(propertyAccess, constExp);
@@ -108,16 +121,21 @@ internal static class IQueryableExtensions
         else if (type == "dateRange")
         {
             var args = argument.Split(',');
+            if (args.Length < 2)
+            {
+                throw new UserException(
+                    $"Ошибка. Некорректное значение фильтра <{argument}> для поля <{property?.Name}>: ожидаются две даты через запятую.");
+            }
             Expression? startExp = null;
             Expression? endExp = null;
             if (args[0] != "undefined")
             {
-                DateOnly start = DateOnly.Parse(args[0]);
+                DateOnly start = ParseFilterDate(args[0], property);
                 startExp = Expression.GreaterThanOrEqual(propertyAccess, Expression.Constant(start));
             }
             if (args[1] != "undefined")
             {
-                DateOnly end = DateOnly.Parse(args[1]);
+                DateOnly end = ParseFilterDate(args[1], property);
                 endExp = Expression.LessThanOrEqual(propertyAccess, Expression.Constant(end));
             }
 
@@ -133,5 +151,16 @@ internal static class IQueryableExtensions
             }
         }
         return exp;
+    }
+
+    private static DateOnly ParseFilterDate(string value, PropertyInfo? property)
+    {
+        //Аналогично: дата от клиента парсится строго, ошибка ввода -> 400
+        if (!DateOnly.TryParse(value, out var date))
+        {
+            throw new UserException(
+                $"Ошибка. Некорректная дата <{value}> в фильтре по полю <{property?.Name}>.");
+        }
+        return date;
     }
 }

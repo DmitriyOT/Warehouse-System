@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
+using System.Text;
 using Warehouse.Application;
 using Warehouse.Contracts.Api.Response;
+using Warehouse.Contracts.Application;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Domain.Models;
 using Warehouse.Domain.Models.Base;
@@ -88,6 +92,31 @@ public class Program
                 var xmlPathContract = Path.Combine(Path.GetDirectoryName(contractAssembly.Location) ?? "", xmlFileContract);
                 c.IncludeXmlComments(xmlPathContract);
             }
+
+            // Кнопка Authorize в Swagger: ввод JWT-токена (Bearer)
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Введите JWT-токен, полученный через /Auth/login"
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
         });
 
         // Инфраструктурные сервисы: БД, репозитории, единица работы, health checks
@@ -96,16 +125,54 @@ public class Program
         // Прикладные бизнес-сервисы
         builder.Services.AddWarehouseApplication();
 
+        // JWT-аутентификация. Ключ подписи задаётся в конфигурации (Jwt:Key),
+        // в проде переопределяется переменной окружения Jwt__Key
+        var jwtKey = builder.Configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            throw new InvalidOperationException(
+                "Ключ подписи JWT не задан. Укажите 'Jwt:Key' в конфигурации " +
+                "или переменную окружения 'Jwt__Key'.");
+        }
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+            });
+        builder.Services.AddAuthorization();
+
         // CORS добавляем
         builder.Services.AddCors(options =>
          {
              options.AddPolicy(name: MyAllowSpecificOrigins,
                                policy =>
                                {
-                                   policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
-                                       .AllowAnyHeader()
-                                       .WithMethods("GET", "POST", "PUT", "DELETE")
-                                       .AllowCredentials();
+                                   if (builder.Environment.IsDevelopment())
+                                   {
+                                       // В разработке разрешаем любой порт localhost: vite может занять не 5173,
+                                       // а следующий свободный (5174, 5175...), если порт уже занят
+                                       policy.SetIsOriginAllowed(origin => new Uri(origin).IsLoopback)
+                                           .AllowAnyHeader()
+                                           .WithMethods("GET", "POST", "PUT", "DELETE")
+                                           .AllowCredentials();
+                                   }
+                                   else
+                                   {
+                                       policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+                                           .AllowAnyHeader()
+                                           .WithMethods("GET", "POST", "PUT", "DELETE")
+                                           .AllowCredentials();
+                                   }
                                });
          });
 
@@ -116,6 +183,18 @@ public class Program
         {
             var context = serviceScope.ServiceProvider.GetRequiredService<PostgresDbContext>();
             context.Database.Migrate();
+
+            // Первый пользователь (администратор) создаётся из конфигурации AdminUser,
+            // если в системе нет ни одного пользователя. Пароль в проде задаётся
+            // переменной окружения AdminUser__Password
+            var adminLogin = app.Configuration["AdminUser:Login"];
+            var adminPassword = app.Configuration["AdminUser:Password"];
+            if (!string.IsNullOrWhiteSpace(adminLogin) && !string.IsNullOrWhiteSpace(adminPassword))
+            {
+                var authService = serviceScope.ServiceProvider.GetRequiredService<IAuthService>();
+                authService.SeedAdmin(adminLogin, adminPassword).GetAwaiter().GetResult();
+                Log.Information("Проверен seed администратора '{Login}'", adminLogin);
+            }
         }
 
         // Только в режиме отладки включаем сваггер, так как сваггер дырявый
@@ -133,29 +212,51 @@ public class Program
                 var exHandler = context.Features.Get<IExceptionHandlerPathFeature>();
                 var error = exHandler?.Error;
 
-                Log.Error(error, "Unhandled exception occurred");
-
-                if (error is UserException userEx)
+                switch (error)
                 {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsJsonAsync(new ErrorResponseDto(userEx.Message));
-                }
-                else
-                {
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    var message = app.Environment.IsDevelopment()
-                        ? error?.ToString() ?? "Internal Error"
-                        : "Ошибка системы.";
-                    await context.Response.WriteAsJsonAsync(new ErrorResponseDto(message ?? "Ошибка системы."));
+                    // Пользовательские ошибки — ожидаемая ситуация, логируем как Warning, без стектрейса в ответе
+                    case NotFoundException notFoundEx:
+                        Log.Warning(notFoundEx, "Объект не найден");
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        await context.Response.WriteAsJsonAsync(new ErrorResponseDto(notFoundEx.Message));
+                        break;
+                    case UserException userEx:
+                        Log.Warning(userEx, "Ошибка пользовательского запроса");
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        await context.Response.WriteAsJsonAsync(new ErrorResponseDto(userEx.Message));
+                        break;
+                    // Конфликт при сохранении в БД: гонка номера документа, дубль баланса,
+                    // несуществующие связанные Id — отдаём 409 с понятным сообщением
+                    case DbUpdateException dbEx:
+                        Log.Warning(dbEx, "Конфликт при сохранении данных в БД");
+                        context.Response.StatusCode = StatusCodes.Status409Conflict;
+                        await context.Response.WriteAsJsonAsync(new ErrorResponseDto(GetDbConflictMessage(dbEx)));
+                        break;
+                    default:
+                        Log.Error(error, "Unhandled exception occurred");
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        var message = app.Environment.IsDevelopment()
+                            ? error?.ToString() ?? "Internal Error"
+                            : "Ошибка системы.";
+                        await context.Response.WriteAsJsonAsync(new ErrorResponseDto(message ?? "Ошибка системы."));
+                        break;
                 }
             });
         });
 
         app.UseCors(MyAllowSpecificOrigins);
 
-        app.UseHttpsRedirection();
+        // В Development фронт ходит по http (5189) — редирект на https ломает запросы
+        // из-за недоверенного dev-сертификата. В Production редирект остаётся.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.UseSerilogRequestLogging();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapHealthChecks("/health");
         app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
@@ -171,5 +272,26 @@ public class Program
         {
             Log.CloseAndFlush();
         }
+    }
+
+    /// <summary>
+    /// Понятное сообщение для 409 Conflict по коду ошибки PostgreSQL
+    /// </summary>
+    private static string GetDbConflictMessage(DbUpdateException dbEx)
+    {
+        if (dbEx.InnerException is Npgsql.PostgresException pgEx)
+        {
+            return pgEx.SqlState switch
+            {
+                // Нарушение уникальности: дубль номера документа, дубль строки баланса
+                Npgsql.PostgresErrorCodes.UniqueViolation =>
+                    "Ошибка. Запись с такими значениями уже существует.",
+                // Нарушение внешнего ключа: несуществующие ResourceId/UnitId и т.п.
+                Npgsql.PostgresErrorCodes.ForeignKeyViolation =>
+                    "Ошибка. Нарушение связей данных: связанный объект не существует или используется.",
+                _ => "Ошибка. Конфликт при сохранении данных.",
+            };
+        }
+        return "Ошибка. Конфликт при сохранении данных.";
     }
 }

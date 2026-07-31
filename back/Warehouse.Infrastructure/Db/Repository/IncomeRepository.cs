@@ -27,7 +27,7 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
             .FirstOrDefaultAsync(x => x.Id == id);
         if (item == null)
         {
-            throw new UserException($"Ошибка. Объект не найден в базе данных.");
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
         }
         else
         {
@@ -140,7 +140,12 @@ public class IncomeRepository : CrudRepository<IncomeEntity>, IIncomeRepository
         var item = await entities
             .Include(x => x.IncomeItems)
             .AsNoTracking()
-            .FirstAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (item == null)
+        {
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
+        }
 
         entities.Remove(item);
         await DB.SaveChangesAsync();

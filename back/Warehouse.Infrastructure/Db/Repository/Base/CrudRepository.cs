@@ -73,7 +73,7 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
             .FirstOrDefaultAsync(x => x.Id == id);
         if(item == null)
         {
-            throw new UserException($"Ошибка. Объект не найден в базе данных.");
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
         }
         else
         {
@@ -146,7 +146,12 @@ public class CrudRepository<Entity> : ICrudRepository<Entity> where Entity : Bas
 
         var item = await query
             .AsNoTracking()
-            .FirstAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (item == null)
+        {
+            throw new NotFoundException($"Ошибка. Объект не найден в базе данных.");
+        }
 
         foreach (var collection in collections)
         {

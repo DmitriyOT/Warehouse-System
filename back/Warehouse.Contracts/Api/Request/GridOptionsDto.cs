@@ -1,4 +1,6 @@
-﻿namespace Warehouse.Contracts.Api.Request;
+using System.ComponentModel.DataAnnotations;
+
+namespace Warehouse.Contracts.Api.Request;
 
 /// <summary>
 /// Параметры грида
@@ -8,10 +10,12 @@ public class GridOptionsDto
     /// <summary>
     /// Номер страницы, начиная с 1-ой
     /// </summary>
+    [Range(1, int.MaxValue, ErrorMessage = "Номер страницы должен быть не меньше 1.")]
     public int Page { get; set; }
     /// <summary>
-    /// Размер страницы
+    /// Размер страницы, максимум 200
     /// </summary>
+    [Range(1, 200, ErrorMessage = "Размер страницы должен быть от 1 до 200.")]
     public int PageSize { get; set; }
 
     /// <summary>

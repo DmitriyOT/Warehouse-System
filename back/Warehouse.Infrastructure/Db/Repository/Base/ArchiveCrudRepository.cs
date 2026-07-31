@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.Infrastructure;
 using Warehouse.Contracts.Exceptions;
 using Warehouse.Domain.Models.Base;
@@ -31,7 +31,7 @@ public class ArchiveCrudRepository<Entity> : CrudRepository<Entity>, IArchiveCru
 
         if (itemDb == null)
         {
-            throw new UserException("Ошибка. Объект не найден.");
+            throw new NotFoundException("Ошибка. Объект не найден.");
         }
 
         itemDb.IsArchive = newState;
